@@ -15,6 +15,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import io.smalldata.beehiveapp.fragment.AboutFragment;
+import io.smalldata.beehiveapp.fragment.ConnectFragment;
+import io.smalldata.beehiveapp.fragment.DashboardFragment;
+import io.smalldata.beehiveapp.fragment.SettingsFragment;
+import io.smalldata.beehiveapp.fragment.StudyFragment;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override

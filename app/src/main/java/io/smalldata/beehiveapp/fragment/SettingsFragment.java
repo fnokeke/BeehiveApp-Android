@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp;
+package io.smalldata.beehiveapp.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -7,20 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import io.smalldata.beehiveapp.R;
+
 //import android.support.v4.app.Fragment;
 
 /**
  * Created by fnokeke on 1/20/17.
  */
 
-public class ConnectFragment extends Fragment {
+public class SettingsFragment extends Fragment {
 
-    View connectView;
+    View settingsView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        connectView = inflater.inflate(R.layout.fragment_connect, container, false);
-        return connectView;
+        settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
+        return settingsView;
     }
 }

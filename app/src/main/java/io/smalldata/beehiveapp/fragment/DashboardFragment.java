@@ -1,26 +1,27 @@
-package io.smalldata.beehiveapp;
+package io.smalldata.beehiveapp.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+//import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-//import android.support.v4.app.Fragment;
+import io.smalldata.beehiveapp.R;
 
 /**
  * Created by fnokeke on 1/20/17.
  */
 
-public class StudyFragment extends Fragment {
+public class DashboardFragment extends Fragment {
 
-    View studyView;
+    View dashView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        studyView = inflater.inflate(R.layout.fragment_study, container, false);
-        return studyView;
+        dashView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        return dashView;
     }
 }
