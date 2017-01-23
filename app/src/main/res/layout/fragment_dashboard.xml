@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:orientation="vertical"
                 android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/todayTV"
         android:text="@string/info_dashboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="67dp"
-        android:layout_marginTop="180dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/todayIV"
+        android:contentDescription="@string/desc_today_image"
+        android:src="@drawable/ic_menu_camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

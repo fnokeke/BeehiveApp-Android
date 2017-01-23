@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.utils.Store;
 
 
 /**
@@ -28,6 +30,7 @@ public class ConnectFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getActivity().setTitle("Connect Study");
         return inflater.inflate(R.layout.fragment_connect, container, false);
     }
 
@@ -35,11 +38,28 @@ public class ConnectFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        populateFieldsFromStore();
+
         Button submitBtn = (Button) getActivity().findViewById(R.id.btnSubmit);
         submitBtn.setOnClickListener(submitBtnHandler);
 
         Button resetBtn = (Button) getActivity().findViewById(R.id.btnReset);
         resetBtn.setOnClickListener(resetBtnHandler);
+    }
+
+    public void populateFieldsFromStore() {
+        Store st = Store.getInstance(getActivity());
+        JSONObject fields = new JSONObject();
+        try {
+            fields.put("firstname", st.getString("firstname"));
+            fields.put("lastname", st.getString("lastname"));
+            fields.put("email", st.getString("email"));
+            fields.put("gender", st.getString("gender"));
+            fields.put("code", st.getString("code"));
+        } catch (JSONException je) {
+            je.printStackTrace();
+        }
+        populateConnectUI(fields);
     }
 
     View.OnClickListener resetBtnHandler = new View.OnClickListener() {
@@ -62,6 +82,7 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e("onConnectSuccess: ", result.toString());
+            updateFormInput(result);
         }
     };
 
@@ -83,6 +104,82 @@ public class ConnectFragment extends Fragment {
             e.printStackTrace();
         }
         return map;
+    }
+
+    public void updateFormInput(JSONObject result) {
+        Log.e("updateFormInput", result.toString());
+
+        TextView statusField = (TextView) getActivity().findViewById(R.id.connectStatusTV);
+
+        try {
+
+            if (result.optString("user", "").equals("")) {
+                statusField.setText(R.string.invalid_code);
+                resetFormInput();
+                return;
+            }
+            statusField.setText(result.getString("response"));
+
+            JSONObject user = new JSONObject(result.optString("user", ""));
+            populateConnectUI(user);
+            storeUser(user);
+
+            JSONObject experiment = new JSONObject(result.optString("experiment", ""));
+            storeExperiment(experiment);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void populateConnectUI(JSONObject user) {
+        EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
+        EditText lnField = (EditText) getActivity().findViewById(R.id.et_ln);
+        EditText emailField = (EditText) getActivity().findViewById(R.id.et_email);
+        EditText codeField = (EditText) getActivity().findViewById(R.id.et_code);
+
+        try {
+            fnField.setText(user.getString("firstname"));
+            lnField.setText(user.getString("lastname"));
+            emailField.setText(user.getString("email"));
+            codeField.setText(user.getString("code"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void storeUser(JSONObject user) {
+        Log.e("storeUser: ", user.toString());
+        try {
+            Store store = Store.getInstance(getActivity());
+            store.setString("firstname", user.getString("firstname"));
+            store.setString("lastname", user.getString("lastname"));
+            store.setString("email", user.getString("email"));
+            store.setString("gender", user.getString("gender"));
+            store.setString("code", user.getString("code"));
+            store.setInt("condition", user.getInt("condition"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void storeExperiment(JSONObject experiment) {
+        try {
+            Store store = Store.getInstance(getActivity());
+            store.setBoolean("actuators", experiment.getBoolean("actuators"));
+            store.setBoolean("geofence", experiment.getBoolean("geofence"));
+            store.setBoolean("actuators", experiment.getBoolean("reminder"));
+            store.setBoolean("text", experiment.getBoolean("text"));
+            store.setBoolean("rescuetime", experiment.getBoolean("rescuetime"));
+            store.setBoolean("reminder", experiment.getBoolean("reminder"));
+            store.setBoolean("image", experiment.getBoolean("image"));
+            store.setBoolean("aware", experiment.getBoolean("aware"));
+            store.setString("title", experiment.getString("title"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void resetFormInput() {

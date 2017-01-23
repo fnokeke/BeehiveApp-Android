@@ -17,12 +17,10 @@ import io.smalldata.beehiveapp.R;
 
 public class AboutFragment extends Fragment {
 
-    View aboutView;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        aboutView = inflater.inflate(R.layout.fragment_about, container, false);
-        return aboutView;
+        getActivity().setTitle("About");
+        return inflater.inflate(R.layout.fragment_about, container, false);
     }
 }

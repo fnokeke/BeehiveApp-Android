@@ -10,14 +10,16 @@
         android:orientation="horizontal" >
 
         <TextView
+            android:id="@+id/connectStatusTV"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="0.25"
             android:textAlignment="center"
-            android:text="@string/form_title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+            android:text="@string/desc_connect_status"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -28,14 +30,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/form_fn" />
+            android:text="@string/form_fn"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
             android:id="@+id/et_fn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
     </LinearLayout>
 
     <LinearLayout
@@ -47,14 +51,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/form_ln" />
+            android:text="@string/form_ln"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
             android:id="@+id/et_ln"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
     </LinearLayout>
 
     <LinearLayout
@@ -66,7 +72,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/form_gender" />
+            android:text="@string/form_gender"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <Spinner
             android:id="@+id/spinner_gender"
@@ -88,7 +95,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/form_email" />
+            android:text="@string/form_email"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
             android:id="@+id/et_email"
@@ -96,7 +104,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
     </LinearLayout>
 
     <LinearLayout
@@ -108,14 +117,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/form_code" />
+            android:text="@string/form_code"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <EditText
             android:id="@+id/et_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
 
     </LinearLayout>
 
@@ -140,14 +151,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="5"
-                android:text="@string/form_submit" />
+                android:text="@string/form_submit"
+                android:background="@android:color/holo_blue_dark"
+                style="@android:style/Widget.Holo.Button" />
 
             <Button
                 android:id="@+id/btnReset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="5"
-                android:text="@string/form_reset" />
+                android:text="@string/form_reset"
+                android:background="@android:color/holo_red_dark"
+                style="@android:style/Widget.Holo.Button" />
         </LinearLayout>
     </LinearLayout>
 

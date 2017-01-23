@@ -1,0 +1,13 @@
+<resources>
+    <string-array name="timeListArray">
+        <item>6am - Noon</item>
+        <item>Noon - 6PM</item>
+        <item>6PM - Midnight</item>
+    </string-array>
+
+    <string-array name="timeListValues">
+        <item>Morning</item>
+        <item>Afternoon</item>
+        <item>Evening</item>
+    </string-array>
+</resources>

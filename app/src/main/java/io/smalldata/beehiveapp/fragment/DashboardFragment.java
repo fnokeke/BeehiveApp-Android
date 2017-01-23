@@ -16,12 +16,11 @@ import io.smalldata.beehiveapp.R;
 
 public class DashboardFragment extends Fragment {
 
-    View dashView;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dashView = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        return dashView;
+        getActivity().setTitle("Dashboard");
+        return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
+
 }

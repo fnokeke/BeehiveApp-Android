@@ -6,11 +6,27 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="more">more</string>
 
-
     <string name="info_dashboard">Your message for today appears here.</string>
     <string name="info_experiment">Experiment details.</string>
 
+    <string name="study_code">Code</string>
+    <string name="study_title">Title</string>
+    <string name="study_code_placeholder">Your code</string>
+    <string name="study_title_placeholder">Your title</string>
+
     <string name="action_about">About</string>
+    <string name="desc_about">Beehive App is the mobile app companion to Beehive research platform, a framework for
+        running behavioral field experiments that involve participants\' small data.
+        For more details, visit <a href="https://slm.smalldata.io">Beehive Platform</a>.
+
+        \n\nSmall Data Lab
+        \nbeehive@smalldata.io
+        \nCornell Tech, NYC USA.
+    </string>
+    <string name="desc_today_image">Image for today</string>
+    <string name="desc_connect_status">Complete all fields</string>
+
+    <!-- navigation side menu -->
     <string name="action_dashboard">Dashboard</string>
     <string name="action_connect">Connect App</string>
     <string name="action_settings">Settings</string>
@@ -21,7 +37,7 @@
     <string name="form_fn">Firstname</string>
     <string name="form_ln">Lastname</string>
     <string name="form_email">Email</string>
-    <string name="form_code">Study Code</string>
+    <string name="form_code">Code</string>
     <string name="form_gender">Gender</string>
     <string-array name="form_gender_list">
         <item>male</item>
@@ -31,5 +47,7 @@
     <string name="form_submit">Submit</string>
     <string name="form_reset">Reset</string>
 
+
+    <string name="invalid_code">Invalid code</string>
 
 </resources>
