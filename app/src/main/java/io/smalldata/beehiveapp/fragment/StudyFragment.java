@@ -23,7 +23,7 @@ public class StudyFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().setTitle("Study Details");
+        getActivity().setTitle("Experiment Info");
         return inflater.inflate(R.layout.fragment_study, container, false);
     }
 

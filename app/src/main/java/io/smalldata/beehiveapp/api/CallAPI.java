@@ -18,8 +18,10 @@ import org.json.JSONObject;
 public class CallAPI {
 
     final static private String BASE_URL = "https://slm.smalldata.io";
+//    final static private String BASE_URL = "http://10.0.0.166:5000";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
     final static private String ALL_INTV_URL = BASE_URL + "/mobile/ordered/interventions";
+    final static private String CAL_CHECK_CONN = BASE_URL + "/mobile/check/calendar";
     final static private String RT_CHECK_CONN = BASE_URL + "/mobile/check/rescuetime";
     final static private String RT_SUMMARY_URL = BASE_URL + "/rescuetime/summary";
     final static private String RT_REALTIME_URL = BASE_URL + "/rescuetime/realtime";
@@ -77,8 +79,13 @@ public class CallAPI {
         SingletonRequest.getInstance(cxt).addToRequestQueue(request);
     }
 
-    public static void checkRescuetimeConn(final Context cxt, final JSONObject params, final VolleyJsonCallback callback) {
+    public static void checkRTConn(final Context cxt, final JSONObject params, final VolleyJsonCallback callback) {
         JsonObjectRequest request = createRequest(RT_CHECK_CONN, params, callback);
+        SingletonRequest.getInstance(cxt).addToRequestQueue(request);
+    }
+
+    public static void checkCalConn(final Context cxt, final JSONObject params, final VolleyJsonCallback callback) {
+        JsonObjectRequest request = createRequest(CAL_CHECK_CONN, params, callback);
         SingletonRequest.getInstance(cxt).addToRequestQueue(request);
     }
 
@@ -94,18 +101,6 @@ public class CallAPI {
 
 // TODO:
 /*
-    'check_rt_conn': { // email
-      method: 'POST',
-      url: BASE_URL + '/mobile/check/rescuetime',
-      timeout: TIMEOUT
-    },
-
-    'connect_study': { // fn, ln, email, gender, code
-      method: 'POST',
-      url: BASE_URL + '/mobile/connect/study',
-      timeout: TIMEOUT
-    },
-
     'fetch_all_intv_by_order': { // code
       method: 'GET',
       url: BASE_URL + '/mobile/ordered/interventions/:code',
