@@ -4,14 +4,14 @@
                 android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/todayTV"
+        android:id="@+id/tv_today_msg"
         android:text="@string/info_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <ImageView
-        android:id="@+id/todayIV"
+        android:id="@+id/iv_today_msg"
         android:contentDescription="@string/desc_today_image"
         android:src="@drawable/ic_menu_camera"
         android:layout_width="match_parent"

@@ -1,11 +1,10 @@
 package io.smalldata.beehiveapp;
 
 //import android.support.v4.app.FragmentManager;
+
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,12 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
-import io.smalldata.beehiveapp.fragment.DashboardFragment;
+import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
+import io.smalldata.beehiveapp.utils.Network;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame, new DashboardFragment()).commit();
+        transaction.replace(R.id.content_frame, new HomeFragment()).commit();
     }
 
     @Override
@@ -78,13 +79,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        promptIfDisconnected(this);
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         if (id == R.id.nav_dashboard) {
 
-            transaction.replace(R.id.content_frame, new DashboardFragment()).commit();
+            transaction.replace(R.id.content_frame, new HomeFragment()).commit();
 
         } else if (id == R.id.nav_study) {
 
@@ -107,4 +111,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void promptIfDisconnected(Context cxt) {
+        if (!Network.isDeviceOnline(cxt)) {
+            findViewById(R.id.tv_offline_prompt).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.tv_offline_prompt).setVisibility(View.INVISIBLE);
+        }
+    }
+
 }

@@ -62,5 +62,6 @@
     <string name="desc_how_to_connect">To setup and connect your Rescuetime and Google Calendar accounts, simply visit <a href="https://slm.smalldata.io">https://slm.smalldata.io</a>
     and follow instructions.
     </string>
+    <string name="no_network_prompt">No network connection detected.</string>
 
 </resources>

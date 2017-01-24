@@ -19,6 +19,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.utils.Display;
+import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 
@@ -57,11 +58,11 @@ public class ConnectFragment extends Fragment {
     public void populateFieldsFromStore() {
         Store st = Store.getInstance(getActivity());
         JSONObject fields = new JSONObject();
-        setJSONValue(fields, "firstname", st.getString("firstname"));
-        setJSONValue(fields, "lastname", st.getString("lastname"));
-        setJSONValue(fields, "email", st.getString("email"));
-        setJSONValue(fields, "gender", st.getString("gender"));
-        setJSONValue(fields, "code", st.getString("code"));
+        Helper.setJSONValue(fields, "firstname", st.getString("firstname"));
+        Helper.setJSONValue(fields, "lastname", st.getString("lastname"));
+        Helper.setJSONValue(fields, "email", st.getString("email"));
+        Helper.setJSONValue(fields, "gender", st.getString("gender"));
+        Helper.setJSONValue(fields, "code", st.getString("code"));
         populateConnectUI(fields);
     }
 
@@ -99,7 +100,7 @@ public class ConnectFragment extends Fragment {
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
+            Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
             CallAPI.checkRTConn(getActivity(), params, rtResponseHandler);
         }
     };
@@ -124,7 +125,7 @@ public class ConnectFragment extends Fragment {
     View.OnClickListener checkCalBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
+            Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
             CallAPI.checkCalConn(getActivity(), params, calResponseHandler);
         }
     };
@@ -147,18 +148,6 @@ public class ConnectFragment extends Fragment {
     };
 
 
-    public void validateInput() {
-
-    }
-
-    public void setJSONValue(JSONObject jsonObject, String key, Object value) {
-        try {
-            jsonObject.put(key, value);
-        } catch (JSONException je) {
-            je.printStackTrace();
-        }
-    }
-
     public JSONObject getFormInput() {
         EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
         EditText lnField = (EditText) getActivity().findViewById(R.id.et_ln);
@@ -167,11 +156,11 @@ public class ConnectFragment extends Fragment {
         Spinner genderField = (Spinner) getActivity().findViewById(R.id.spinner_gender);
 
         JSONObject map = new JSONObject();
-        setJSONValue(map, "firstname", fnField.getText().toString());
-        setJSONValue(map, "lastname", lnField.getText().toString());
-        setJSONValue(map, "email", emailField.getText().toString());
-        setJSONValue(map, "code", codeField.getText().toString());
-        setJSONValue(map, "gender", genderField.getSelectedItem().toString());
+        Helper.setJSONValue(map, "firstname", fnField.getText().toString());
+        Helper.setJSONValue(map, "lastname", lnField.getText().toString());
+        Helper.setJSONValue(map, "email", emailField.getText().toString());
+        Helper.setJSONValue(map, "code", codeField.getText().toString());
+        Helper.setJSONValue(map, "gender", genderField.getSelectedItem().toString());
         return map;
     }
 

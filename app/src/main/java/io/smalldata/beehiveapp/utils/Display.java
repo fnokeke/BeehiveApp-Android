@@ -18,6 +18,11 @@ public class Display {
         tv.setTextColor(ERROR);
     }
 
+    public static void showError(TextView tv, String msg) {
+        tv.setText(msg);
+        tv.setTextColor(ERROR);
+    }
+
     public static void showSuccess(TextView tv, int msgRid) {
         tv.setText(msgRid);
         tv.setTextColor(SUCCESS);
