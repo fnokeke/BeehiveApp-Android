@@ -15,6 +15,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
@@ -64,14 +74,18 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
-            JSONArray mJsonArray= result.optJSONArray("events");
+            JSONArray mJsonArray = result.optJSONArray("events");
 
-            String mJsonStr = getPrettyEvents(mJsonArray);
-            Log.e("mJsonStr: ", mJsonStr);
-            Display.showSuccess(todayTV, mJsonStr);
+            if (mJsonArray != null) {
+                String mJsonStr = getPrettyEvents(mJsonArray);
+                String mFreeStr = getFreeTime(mJsonArray);
+//                Log.e("mJsonStr: ", mJsonStr + "\n" + mFreeStr);
+                Display.showSuccess(todayTV, mJsonStr + "\nFree Hours:\n" + mFreeStr);
+            }
         }
 
         private String getPrettyEvents(JSONArray ja) {
+
             String results = "";
             String summary, start, end;
             JSONObject jo, joTmp;
@@ -92,5 +106,80 @@ public class HomeFragment extends Fragment {
 
             return results;
         }
+
+        private String getFreeTime(JSONArray ja) {
+
+            HashMap freeHoursOfDay = new HashMap();
+            for (Integer i = 0; i < 24; i++) {
+                freeHoursOfDay.put(i, String.format("%s:00 hrs", i.toString()));
+            }
+
+            JSONObject jo;
+            String start, end;
+            Date startDT, endDT;
+
+            for (Integer i = 0; i < ja.length(); i++) {
+                jo = ja.optJSONObject(i);
+
+                // use only events with specific begin/end time (not just begin/end date)
+                if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
+                    start = jo.optJSONObject("start").optString("dateTime");
+                    startDT = getDatetime(start);
+
+                    end = jo.optJSONObject("end").optString("dateTime");
+                    endDT = getDatetime(end);
+
+                    removeBusyTime(freeHoursOfDay, startDT, endDT);
+                }
+            }
+
+            return prettyHours(freeHoursOfDay);
+        }
+
+        private Date getDatetime(String datetimeStr) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-05:00", Locale.US);
+            Date result = new Date();
+            try {
+                result = dateFormat.parse(datetimeStr);
+            } catch(ParseException pe) {
+                pe.printStackTrace();
+            }
+            return result;
+        }
+
     };
+
+    private String prettyHours(HashMap freeHoursOfDay) {
+        String results = "";
+        for(Object value : freeHoursOfDay.values())  {
+           results += value.toString() + "  " ;
+        }
+        return results;
+    }
+
+    private void removeBusyTime(HashMap freeHrs, Date startDT, Date endDT) {
+        int startHr = getHours(startDT);
+        int endHr = getHours(endDT);
+        if (getMinutes(endDT) > 0) {
+            endHr += 1;
+        }
+
+        for (int i = startHr; i < endHr; i++) {
+            freeHrs.remove(i);
+        }
+    }
+
+    private int getHours(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    private int getMinutes(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.MINUTE);
+    }
 }
+
+// TODO: 1/24/17 deal with timeout errors on Volley
