@@ -1,10 +1,15 @@
 package io.smalldata.beehiveapp.fragment;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-//import android.support.v4.app.Fragment;
+import android.app.AlarmManager;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +17,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
+import io.smalldata.beehiveapp.MainActivity;
+import io.smalldata.beehiveapp.NotificationPublisher;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
@@ -52,6 +55,10 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         todayTV = (TextView) getActivity().findViewById(R.id.tv_today_msg);
         showCalEvents();
+
+        Context cxt = getActivity();
+        scheduleNotification(getActivity(), getNotification(cxt, "5 second delay"), 5000);
+
     }
 
     private void showCalEvents() {
@@ -80,7 +87,7 @@ public class HomeFragment extends Fragment {
                 String mJsonStr = getPrettyEvents(mJsonArray);
                 String mFreeStr = getFreeTime(mJsonArray);
 //                Log.e("mJsonStr: ", mJsonStr + "\n" + mFreeStr);
-                Display.showSuccess(todayTV, mJsonStr + "\nFree Hours:\n" + mFreeStr);
+                Display.showSuccess(todayTV, mJsonStr + "Free Hours:\n" + mFreeStr);
             }
         }
 
@@ -141,7 +148,7 @@ public class HomeFragment extends Fragment {
             Date result = new Date();
             try {
                 result = dateFormat.parse(datetimeStr);
-            } catch(ParseException pe) {
+            } catch (ParseException pe) {
                 pe.printStackTrace();
             }
             return result;
@@ -151,8 +158,8 @@ public class HomeFragment extends Fragment {
 
     private String prettyHours(HashMap freeHoursOfDay) {
         String results = "";
-        for(Object value : freeHoursOfDay.values())  {
-           results += value.toString() + "  " ;
+        for (Object value : freeHoursOfDay.values()) {
+            results += value.toString() + "\n";
         }
         return results;
     }
@@ -180,6 +187,44 @@ public class HomeFragment extends Fragment {
         calendar.setTime(date);
         return calendar.get(Calendar.MINUTE);
     }
+
+    private void scheduleNotification(Context cxt, Notification notification, int delay) {
+
+        Intent notificationIntent = new Intent(cxt, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(cxt, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    private Notification getNotification(Context cxt, String content) {
+        Notification.Builder builder = new Notification.Builder(cxt);
+
+
+        Intent resultIntent = new Intent(cxt, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(cxt);
+        stackBuilder.addParentStack(MainActivity.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(resultPendingIntent);
+
+        builder.setContentTitle("Beehive Mobile new message for you.")
+                .setContentText(content)
+                .setShowWhen(true)
+                .addAction(android.R.drawable.ic_input_add, "Cool, will do.", resultPendingIntent) // #0
+                .addAction(android.R.drawable.ic_input_delete, "Nope, not me.", resultPendingIntent)  // #1
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Please remove!", resultPendingIntent)     // #2
+                .setSmallIcon(android.R.drawable.ic_menu_agenda);
+
+        return builder.build();
+    }
+
 }
 
 // TODO: 1/24/17 deal with timeout errors on Volley
+// TODO: 1/25/17 move functions to Helper
