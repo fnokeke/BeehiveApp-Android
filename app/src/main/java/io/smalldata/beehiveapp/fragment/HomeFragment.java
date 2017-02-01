@@ -1,5 +1,6 @@
 package io.smalldata.beehiveapp.fragment;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.Notification;
@@ -15,6 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,6 +47,7 @@ import io.smalldata.beehiveapp.utils.Store;
 public class HomeFragment extends Fragment {
 
     TextView todayTV;
+    Activity gContext;
 
     @Nullable
     @Override
@@ -57,9 +63,11 @@ public class HomeFragment extends Fragment {
         showCalEvents();
 
         Context cxt = getActivity();
-        scheduleNotification(getActivity(), getNotification(cxt, "5 second delay"), 5000);
+        scheduleNotification(getActivity(), getNotification(cxt, "Spending 15 seconds each for 3 deep breaths."), 5000);
+        gContext = getActivity();
 
     }
+
 
     private void showCalEvents() {
         JSONObject params = new JSONObject();
@@ -86,107 +94,129 @@ public class HomeFragment extends Fragment {
             if (mJsonArray != null) {
                 String mJsonStr = getPrettyEvents(mJsonArray);
                 String mFreeStr = getFreeTime(mJsonArray);
-//                Log.e("mJsonStr: ", mJsonStr + "\n" + mFreeStr);
-                Display.showSuccess(todayTV, mJsonStr + "Free Hours:\n" + mFreeStr);
+                long busyTimeMs = computeBusyTimeMs(mJsonArray);
+                Float busyHours = (float) busyTimeMs / 3600000;
+                Integer noOfTodayEvents = countTodayEvents(mJsonArray);
+
+                Display.showSuccess(todayTV,
+                        "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
+                        "Total Busy Hours: " + String.format("%.02f", busyHours) + "\n\n" +
+                        "Today Events:\n" + mJsonStr +
+                        "Potential Notification Time:\n" + mFreeStr
+                );
             }
         }
 
-        private String getPrettyEvents(JSONArray ja) {
-
-            String results = "";
-            String summary, start, end;
-            JSONObject jo, joTmp;
-
-            for (int i = 0; i < ja.length(); i++) {
-                jo = ja.optJSONObject(i);
-
-                summary = jo.optString("summary");
-
-                joTmp = jo.optJSONObject("start");
-                start = joTmp.optString("dateTime").equals("") ? joTmp.optString("date") : joTmp.optString("dateTime");
-
-                joTmp = jo.optJSONObject("end");
-                end = joTmp.optString("dateTime").equals("") ? joTmp.optString("date") : joTmp.optString("dateTime");
-
-                results += summary + "\n" + start + " to " + end + "\n\n";
-            }
-
-            return results;
+        @Override
+        public void onConnectFailure(VolleyError error) {
+            handleVolleyError(error);
         }
-
-        private String getFreeTime(JSONArray ja) {
-
-            HashMap freeHoursOfDay = new HashMap();
-            for (Integer i = 0; i < 24; i++) {
-                freeHoursOfDay.put(i, String.format("%s:00 hrs", i.toString()));
-            }
-
-            JSONObject jo;
-            String start, end;
-            Date startDT, endDT;
-
-            for (Integer i = 0; i < ja.length(); i++) {
-                jo = ja.optJSONObject(i);
-
-                // use only events with specific begin/end time (not just begin/end date)
-                if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
-                    start = jo.optJSONObject("start").optString("dateTime");
-                    startDT = getDatetime(start);
-
-                    end = jo.optJSONObject("end").optString("dateTime");
-                    endDT = getDatetime(end);
-
-                    removeBusyTime(freeHoursOfDay, startDT, endDT);
-                }
-            }
-
-            return prettyHours(freeHoursOfDay);
-        }
-
-        private Date getDatetime(String datetimeStr) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-05:00", Locale.US);
-            Date result = new Date();
-            try {
-                result = dateFormat.parse(datetimeStr);
-            } catch (ParseException pe) {
-                pe.printStackTrace();
-            }
-            return result;
-        }
-
     };
 
-    private String prettyHours(HashMap freeHoursOfDay) {
-        String results = "";
-        for (Object value : freeHoursOfDay.values()) {
-            results += value.toString() + "\n";
+    private Integer countTodayEvents(JSONArray ja) {
+        JSONObject jo;
+        Integer totalEventCount = 0;
+
+        for (Integer i = 0; i < ja.length(); i++) {
+            jo = ja.optJSONObject(i);
+
+            // use only events with specific begin/end time (not just begin/end date)
+            if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
+                totalEventCount += 1;
+            }
         }
+        return totalEventCount;
+    }
+
+    private long computeBusyTimeMs(JSONArray ja) {
+        JSONObject jo;
+        String start, end;
+        Date startDT, endDT;
+        long totalMs = 0;
+
+        for (Integer i = 0; i < ja.length(); i++) {
+            jo = ja.optJSONObject(i);
+
+            // use only events with specific begin/end time (not just begin/end date)
+            if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
+                start = jo.optJSONObject("start").optString("dateTime");
+                startDT = Helper.getDatetime(start);
+
+                end = jo.optJSONObject("end").optString("dateTime");
+                endDT = Helper.getDatetime(end);
+
+                totalMs += endDT.getTime() - startDT.getTime();
+            }
+        }
+
+        return totalMs;
+    }
+
+    public void handleVolleyError(VolleyError error) {
+        if (error instanceof TimeoutError) {
+            Log.d("**TimeoutError**", "Check that your server is up and running");
+            Display.showError(todayTV, R.string.no_network_prompt);
+        } else if (error instanceof ServerError) {
+            Log.d("**ServerError**", "Typically happens when you have HttpAccessTokenRefreshError.");
+            Display.showError(todayTV, R.string.timeout_error_prompt);
+        } else {
+            String msg = "Something went wrong while fetching your info. Please contact your researcher. \n\nError details: " + error.toString();
+            Display.showError(todayTV, msg);
+        }
+    }
+
+    private String getPrettyEvents(JSONArray ja) {
+
+        String results = "";
+        String summary, start, end;
+        JSONObject jo, joTmp;
+
+        for (int i = 0; i < ja.length(); i++) {
+            jo = ja.optJSONObject(i);
+
+            summary = jo.optString("summary");
+
+            joTmp = jo.optJSONObject("start");
+            start = joTmp.optString("dateTime").equals("") ? joTmp.optString("date") : joTmp.optString("dateTime");
+
+            joTmp = jo.optJSONObject("end");
+            end = joTmp.optString("dateTime").equals("") ? joTmp.optString("date") : joTmp.optString("dateTime");
+
+            results += summary + "\n" + start + " to " + end + "\n\n";
+        }
+
         return results;
     }
 
-    private void removeBusyTime(HashMap freeHrs, Date startDT, Date endDT) {
-        int startHr = getHours(startDT);
-        int endHr = getHours(endDT);
-        if (getMinutes(endDT) > 0) {
-            endHr += 1;
+    private String getFreeTime(JSONArray ja) {
+
+        HashMap freeHoursOfDay = new HashMap();
+        for (Integer i = 0; i < 24; i++) {
+            freeHoursOfDay.put(i, String.format("%s:00 hrs", i.toString()));
         }
 
-        for (int i = startHr; i < endHr; i++) {
-            freeHrs.remove(i);
+        JSONObject jo;
+        String start, end;
+        Date startDT, endDT;
+
+        for (Integer i = 0; i < ja.length(); i++) {
+            jo = ja.optJSONObject(i);
+
+            // use only events with specific begin/end time (not just begin/end date)
+            if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
+                start = jo.optJSONObject("start").optString("dateTime");
+                startDT = Helper.getDatetime(start);
+
+                end = jo.optJSONObject("end").optString("dateTime");
+                endDT = Helper.getDatetime(end);
+
+                Helper.removeBusyTime(freeHoursOfDay, startDT, endDT);
+            }
         }
+
+        return Helper.prettyHours(freeHoursOfDay);
     }
 
-    private int getHours(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.HOUR_OF_DAY);
-    }
-
-    private int getMinutes(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.MINUTE);
-    }
 
     private void scheduleNotification(Context cxt, Notification notification, int delay) {
 
@@ -213,12 +243,12 @@ public class HomeFragment extends Fragment {
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
 
-        builder.setContentTitle("Beehive Mobile new message for you.")
+        builder.setContentTitle("Beehive Mobile message for you.")
                 .setContentText(content)
                 .setShowWhen(true)
-                .addAction(android.R.drawable.ic_input_add, "Cool, will do.", resultPendingIntent) // #0
-                .addAction(android.R.drawable.ic_input_delete, "Nope, not me.", resultPendingIntent)  // #1
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Please remove!", resultPendingIntent)     // #2
+                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", resultPendingIntent) // #0
+                .addAction(android.R.drawable.ic_input_delete, "Do later.", resultPendingIntent)  // #1
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", resultPendingIntent)     // #2
                 .setSmallIcon(android.R.drawable.ic_menu_agenda);
 
         return builder.build();

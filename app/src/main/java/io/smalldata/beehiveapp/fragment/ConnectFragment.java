@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,6 +97,9 @@ public class ConnectFragment extends Fragment {
             Log.e("onConnectSuccess: ", result.toString());
             updateFormInput(result);
         }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {}
     };
 
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
@@ -120,6 +125,9 @@ public class ConnectFragment extends Fragment {
                 Display.showPlain(howTV, R.string.desc_how_to_connect);
             }
         }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {}
     };
 
     View.OnClickListener checkCalBtnHandler = new View.OnClickListener() {
@@ -145,6 +153,9 @@ public class ConnectFragment extends Fragment {
                 Display.showPlain(howTV, R.string.desc_how_to_connect);
             }
         }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {}
     };
 
 
@@ -226,6 +237,8 @@ public class ConnectFragment extends Fragment {
         store.setBoolean("image", experiment.optBoolean("image"));
         store.setBoolean("aware", experiment.optBoolean("aware"));
         store.setString("title", experiment.optString("title", ""));
+        store.setString("start", experiment.optString("start"));
+        store.setString("end", experiment.optString("end"));
     }
 
     public void resetFormInput() {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Beehive App</string>
+    <string name="app_name">Beehive</string>
     <string name="app_name_longer">Beehive Mobile</string>
     <string name="app_sub_info">companion to web platform</string>
 
@@ -59,9 +59,12 @@
     <string name="rt_is_not_connected">Rescuetime not connected.</string>
     <string name="cal_is_connected">Google Calendar is connected.</string>
     <string name="cal_is_not_connected">Google Calendar not connected.</string>
-    <string name="desc_how_to_connect">To setup and connect your Rescuetime and Google Calendar accounts, simply visit <a href="https://slm.smalldata.io">https://slm.smalldata.io</a>
-    and follow instructions.
-    </string>
+    <string name="desc_how_to_connect">To setup and connect your Rescuetime and Google Calendar accounts, simply visit <a href="https://slm.smalldata.io">https://slm.smalldata.io</a> and follow instructions.</string>
     <string name="no_network_prompt">No network connection detected.</string>
+    <string name="timeout_error_prompt">Experiment is unavailable. Contact Researcher.</string>
+    <string name="study_start">Start Date</string>
+    <string name="study_end">End Date</string>
+    <string name="end_date_placeholder">when study ends...</string>
+    <string name="start_date_placeholder">when study starts...</string>
 
 </resources>

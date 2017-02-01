@@ -2,6 +2,7 @@ package io.smalldata.beehiveapp;
 
 //import android.support.v4.app.FragmentManager;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,18 +12,26 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
+import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Network;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    View mView;
+    Context mContext;
+    TextView mTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +51,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, new HomeFragment()).commit();
+
+        mTV = (TextView) findViewById(R.id.tv_timeout_prompt);
     }
+
 
     @Override
     public void onBackPressed() {
@@ -80,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        promptIfDisconnected(this);
+        promptIfDisconnected();
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -112,12 +124,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void promptIfDisconnected(Context cxt) {
-        if (!Network.isDeviceOnline(cxt)) {
+    public void promptIfDisconnected() {
+        if (!Network.isDeviceOnline(getApplicationContext())) {
             findViewById(R.id.tv_offline_prompt).setVisibility(View.VISIBLE);
         } else {
             findViewById(R.id.tv_offline_prompt).setVisibility(View.INVISIBLE);
         }
     }
 
+    public void stupidErrorPrompt(Boolean shouldDisplay) {
+        if (shouldDisplay) {
+            mTV.setVisibility(View.VISIBLE);
+        } else {
+            mTV.setVisibility(View.INVISIBLE);
+        }
+    }
+
+//    public TextView getTVTimeout() {
+//       return (TextView)findViewById(R.id.tv_timeout_prompt);
+//    }
+
+//    public void (Boolean isTimeoutError) {
+//        if (isTimeoutError) {
+//            findViewById(R.id.tv_timeout_prompt).setVisibility(View.VISIBLE);
+//        } else {
+//            findViewById(R.id.tv_timeout_prompt).setVisibility(View.INVISIBLE);
+//        }
+//
+//    }
 }

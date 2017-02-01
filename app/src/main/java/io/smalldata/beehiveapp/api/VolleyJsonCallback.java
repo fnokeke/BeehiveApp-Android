@@ -1,6 +1,8 @@
 package io.smalldata.beehiveapp.api;
 
 
+import com.android.volley.VolleyError;
+
 import org.json.JSONObject;
 
 /**
@@ -10,5 +12,7 @@ import org.json.JSONObject;
 
 public interface VolleyJsonCallback {
     void onConnectSuccess(JSONObject result);
+
+    void onConnectFailure(VolleyError error);
 }
 

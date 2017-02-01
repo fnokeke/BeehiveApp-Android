@@ -42,4 +42,8 @@ public class Display {
         tv.setText("");
         tv.setTextColor(PLAIN);
     }
+
+    public static void showTimeoutPrompt() {
+
+    }
 }

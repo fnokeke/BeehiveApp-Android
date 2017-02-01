@@ -1,16 +1,21 @@
 package io.smalldata.beehiveapp.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import io.smalldata.beehiveapp.MainActivity;
+import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Created by fnokeke on 1/22/17.
@@ -18,9 +23,9 @@ import org.json.JSONObject;
 
 public class CallAPI {
 
-//    final static private String BASE_URL = "https://slm.smalldata.io";
+    final static private String BASE_URL = "https://slm.smalldata.io";
 //    final static private String BASE_URL = "http://10.0.0.166:5000";
-    final static private String BASE_URL = "http://10.144.4.230:5000";
+//    final static private String BASE_URL = "http://10.144.4.230:5000";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
     final static private String ALL_INTV_URL = BASE_URL + "/mobile/ordered/interventions";
     final static private String CAL_CHECK_CONN_URL = BASE_URL + "/mobile/check/calendar";
@@ -43,6 +48,7 @@ public class CallAPI {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        callback.onConnectFailure(error);
                         error.printStackTrace();
                     }
                 }

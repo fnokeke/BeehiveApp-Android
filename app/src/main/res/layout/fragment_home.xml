@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:orientation="vertical"
-                android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1">
 
     <TextView
         android:id="@+id/tv_today_msg"
-        android:text="@string/info_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:text="@string/info_dashboard"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <ImageView
         android:id="@+id/iv_today_msg"
-        android:contentDescription="@string/desc_today_image"
-        android:src="@drawable/ic_menu_camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:contentDescription="@string/desc_today_image"
+        android:src="@drawable/side_nav_bar" />
 
-</LinearLayout>
+    </TableLayout>
+
+</ScrollView>
