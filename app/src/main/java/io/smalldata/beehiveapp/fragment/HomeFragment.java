@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +26,6 @@ import com.android.volley.VolleyError;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -48,6 +47,14 @@ public class HomeFragment extends Fragment {
 
     TextView todayTV;
     Activity gContext;
+    Locale locale = Locale.getDefault();
+
+    private NotificationCompat.Builder mBuilder;
+    private NotificationManager mNotificationManager;
+    private boolean firstTime = true;
+    private final static int RESCUTIME_NOTIFICATION_ID = 8899;
+    private Context mContext;
+
 
     @Nullable
     @Override
@@ -59,15 +66,135 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mContext = getActivity();
         todayTV = (TextView) getActivity().findViewById(R.id.tv_today_msg);
-        showCalEvents();
+        mBuilder = new NotificationCompat.Builder (mContext);
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Context cxt = getActivity();
-        scheduleNotification(getActivity(), getNotification(cxt, "Spending 15 seconds each for 3 deep breaths."), 5000);
-        gContext = getActivity();
+        updateNotification("Stats will auto-updtate throughout the day.");
+        showRTActivity();
 
+//        showCalEvents();
+//        scheduleNotification(mContext,
+//                getNotification(mContext, "Beehive Mobile message for you.", "Spending 15 seconds each for 3 deep breaths."),
+//                5000);
     }
 
+    private void showRTActivity() {
+        JSONObject params = new JSONObject();
+        Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
+        Helper.setJSONValue(params, "date", Helper.getTodayDateFmt());
+        CallAPI.getRTRealtimeActivity(getActivity(), params, getRTResponseHandler);
+    }
+
+    VolleyJsonCallback getRTResponseHandler = new VolleyJsonCallback() {
+        @Override
+        public void onConnectSuccess(JSONObject result) {
+            JSONArray activities = result.optJSONArray("rows");
+            JSONObject currStats = computeProductivity(activities);
+
+            String fT = currStats.optString("focusedTotal");
+            String fP = currStats.optString("focusedPercent");
+            String fA = currStats.optString("focusedActivity");
+
+            String dT = currStats.optString("distrTotal");
+            String dP = currStats.optString("distrPercent");
+            String dA = currStats.optString("distrActivity");
+
+            String nT = currStats.optString("neutralTotal");
+            String nP = currStats.optString("neutralPercent");
+            String nA = currStats.optString("neutralActivity");
+
+            String rtStr = String.format(locale, "UPDATED RESCUETIME STATS: " +
+                    "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +
+                    String.format(locale, "\n\nDistracted: %s hrs (%s%%)\n%s", dT, dP, dA) +
+                    String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
+            Display.showSuccess(todayTV, rtStr);
+
+            String rtContent = String.format(locale,
+                    "Focused: %s hrs (%s%%)", fT, fP) +
+                    String.format(locale, " / Distracted: %s hrs (%s%%)", dT, dP);
+            updateNotification(rtContent);
+        }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {
+            handleVolleyError(error);
+        }
+    };
+
+    private void updateNotification(String message) {
+        String title = "Rescuetime ongoing stats";
+
+        if (firstTime) {
+            mBuilder.setSmallIcon(android.R.drawable.ic_menu_recent_history)
+                    .setPriority(NotificationCompat.PRIORITY_MIN)
+                    .setContentTitle(title)
+                    .setOngoing(true);
+            firstTime = false;
+        }
+
+        mBuilder.setContentText(message);
+        mNotificationManager.notify(RESCUTIME_NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private JSONObject computeProductivity(JSONArray activities) {
+        JSONArray row;
+        String activity, focusedActivity, distrActivity, neutralActivity;
+        Double productivity, timeSpent, focusedTotal, distrTotal, neutralTotal;
+
+        focusedActivity = "";
+        distrActivity = "";
+        neutralActivity = "";
+
+        focusedTotal = 0.0;
+        distrTotal = 0.0;
+        neutralTotal = 0.0;
+
+        for (int i = 0; i < activities.length(); i++) {
+            row = activities.optJSONArray(i);
+
+            timeSpent = row.optDouble(1);
+            activity = row.optString(3);
+            productivity = row.optDouble(5);
+
+            if (productivity < 0) {
+                distrActivity += activity + "\n ";
+                distrTotal += timeSpent;
+            } else if (productivity == 0) {
+                neutralActivity += activity + "\n ";
+                neutralTotal += timeSpent;
+            } else if (productivity > 0) {
+                focusedActivity += activity + "\n ";
+                focusedTotal += timeSpent;
+            }
+
+        }
+
+        focusedTotal /= 3600;
+        distrTotal /= 3600;
+        neutralTotal /= 3600;
+
+        Double totalTime = focusedTotal + distrTotal + neutralTotal;
+        String focusedPercent = String.format(locale, "%.1f", 100.0 * focusedTotal / totalTime);
+        String distrPercent = String.format(locale, "%.1f", 100.0 * distrTotal / totalTime);
+        String neutralPercent = String.format(locale, "%.1f", 100.0 * neutralTotal / totalTime);
+
+        JSONObject results = new JSONObject();
+        Helper.setJSONValue(results, "focusedActivity", focusedActivity);
+        Helper.setJSONValue(results, "focusedTotal", String.format(locale, "%.1f", focusedTotal));
+        Helper.setJSONValue(results, "focusedPercent", focusedPercent);
+
+        Helper.setJSONValue(results, "distrActivity", distrActivity);
+        Helper.setJSONValue(results, "distrTotal", String.format(locale, "%.1f", distrTotal));
+        Helper.setJSONValue(results, "distrPercent", distrPercent);
+
+        Helper.setJSONValue(results, "neutralActivity", neutralActivity);
+        Helper.setJSONValue(results, "neutralTotal", String.format(locale, "%.1f", neutralTotal));
+        Helper.setJSONValue(results, "neutralPercent", neutralPercent);
+
+        return results;
+    }
 
     private void showCalEvents() {
         JSONObject params = new JSONObject();
@@ -100,9 +227,9 @@ public class HomeFragment extends Fragment {
 
                 Display.showSuccess(todayTV,
                         "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
-                        "Total Busy Hours: " + String.format("%.02f", busyHours) + "\n\n" +
-                        "Today Events:\n" + mJsonStr +
-                        "Potential Notification Time:\n" + mFreeStr
+                                "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
+                                "Today Events:\n" + mJsonStr +
+                                "Potential Notification Time:\n" + mFreeStr
                 );
             }
         }
@@ -153,11 +280,12 @@ public class HomeFragment extends Fragment {
     }
 
     public void handleVolleyError(VolleyError error) {
+        error.printStackTrace();
         if (error instanceof TimeoutError) {
             Log.d("**TimeoutError**", "Check that your server is up and running");
             Display.showError(todayTV, R.string.no_network_prompt);
         } else if (error instanceof ServerError) {
-            Log.d("**ServerError**", "Typically happens when you have HttpAccessTokenRefreshError.");
+            Log.d("**ServerError**", "Typically happens when you have HttpAccessTokenRefreshError or your API url is incorrect.");
             Display.showError(todayTV, R.string.timeout_error_prompt);
         } else {
             String msg = "Something went wrong while fetching your info. Please contact your researcher. \n\nError details: " + error.toString();
@@ -192,7 +320,7 @@ public class HomeFragment extends Fragment {
 
         HashMap freeHoursOfDay = new HashMap();
         for (Integer i = 0; i < 24; i++) {
-            freeHoursOfDay.put(i, String.format("%s:00 hrs", i.toString()));
+            freeHoursOfDay.put(i, String.format(locale, "%s:00 hrs", i.toString()));
         }
 
         JSONObject jo;
@@ -230,7 +358,7 @@ public class HomeFragment extends Fragment {
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    private Notification getNotification(Context cxt, String content) {
+    private Notification getNotification(Context cxt, String title, String content) {
         Notification.Builder builder = new Notification.Builder(cxt);
 
 
@@ -243,18 +371,18 @@ public class HomeFragment extends Fragment {
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
 
-        builder.setContentTitle("Beehive Mobile message for you.")
+        builder.setContentTitle(title)
                 .setContentText(content)
                 .setShowWhen(true)
                 .addAction(android.R.drawable.ic_input_add, "Ok, do now.", resultPendingIntent) // #0
                 .addAction(android.R.drawable.ic_input_delete, "Do later.", resultPendingIntent)  // #1
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", resultPendingIntent)     // #2
-                .setSmallIcon(android.R.drawable.ic_menu_agenda);
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", resultPendingIntent) // #2
+                .setSmallIcon(android.R.drawable.ic_menu_recent_history);
 
         return builder.build();
     }
 
 }
 
-// TODO: 1/24/17 deal with timeout errors on Volley
 // TODO: 1/25/17 move functions to Helper
+// TODO: 2/1/17 make sure home fragment shows "Awaiting info" for first time use until connection done

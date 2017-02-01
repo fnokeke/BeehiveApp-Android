@@ -48,13 +48,17 @@ public class StudyFragment extends Fragment {
         studyTitleTV.setText(store.getString("title"));
 
 
-        TextView studyStartTV = (TextView) getActivity().findViewById(R.id.startStudyTV);
-        String start = getPrettyDate(store.getString("start"));
-        studyStartTV.setText(start);
+        if (!store.getString("start").equals("")) {
+            TextView studyStartTV = (TextView) getActivity().findViewById(R.id.startStudyTV);
+            String start = getPrettyDate(store.getString("start"));
+            studyStartTV.setText(start);
+        }
 
-        TextView studyEndTV = (TextView) getActivity().findViewById(R.id.endStudyTV);
-        String end = getPrettyDate(store.getString("end"));
-        studyEndTV.setText(end);
+        if (!store.getString("end").equals("")) {
+            TextView studyEndTV = (TextView) getActivity().findViewById(R.id.endStudyTV);
+            String end = getPrettyDate(store.getString("end"));
+            studyEndTV.setText(end);
+        }
     }
 
     private String getPrettyDate(String dateStr) {
