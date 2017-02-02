@@ -7,8 +7,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
@@ -26,6 +29,8 @@ import com.android.volley.VolleyError;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -44,6 +49,10 @@ import io.smalldata.beehiveapp.utils.Store;
  */
 
 public class HomeFragment extends Fragment {
+
+    AlarmManager alarmManager;
+    PendingIntent mPendingIntent;
+    BroadcastReceiver mReceiver;
 
     TextView todayTV;
     Activity gContext;
@@ -71,8 +80,14 @@ public class HomeFragment extends Fragment {
         mBuilder = new NotificationCompat.Builder (mContext);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        updateNotification("Stats will auto-updtate throughout the day.");
-        showRTActivity();
+//        unRegisterRTAlarmBroadcast();
+        registerRTAlarmBroadcast();
+
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
+
+        updateNotification("Stats will auto-updtate throughout the day.", "Current time: " + timeStamp);
+
+        fetchRTActivity();
 
 //        showCalEvents();
 //        scheduleNotification(mContext,
@@ -80,16 +95,17 @@ public class HomeFragment extends Fragment {
 //                5000);
     }
 
-    private void showRTActivity() {
+    private void fetchRTActivity() {
         JSONObject params = new JSONObject();
-        Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
+        Helper.setJSONValue(params, "email", Store.getInstance(mContext).getString("email"));
         Helper.setJSONValue(params, "date", Helper.getTodayDateFmt());
-        CallAPI.getRTRealtimeActivity(getActivity(), params, getRTResponseHandler);
+        CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
     }
 
     VolleyJsonCallback getRTResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
+            Log.w("RT onSuccess ", result.toString());
             JSONArray activities = result.optJSONArray("rows");
             JSONObject currStats = computeProductivity(activities);
 
@@ -111,29 +127,32 @@ public class HomeFragment extends Fragment {
                     String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
             Display.showSuccess(todayTV, rtStr);
 
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
+            String rtTitle = String.format("Rescuetime ongoing stats (%s)", timeStamp);
+
             String rtContent = String.format(locale,
                     "Focused: %s hrs (%s%%)", fT, fP) +
                     String.format(locale, " / Distracted: %s hrs (%s%%)", dT, dP);
-            updateNotification(rtContent);
+            updateNotification(rtTitle, rtContent);
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Log.w("RT onSuccess error:", error.toString());
             handleVolleyError(error);
         }
     };
 
-    private void updateNotification(String message) {
-        String title = "Rescuetime ongoing stats";
+    private void updateNotification(String title, String message) {
 
         if (firstTime) {
             mBuilder.setSmallIcon(android.R.drawable.ic_menu_recent_history)
                     .setPriority(NotificationCompat.PRIORITY_MIN)
-                    .setContentTitle(title)
                     .setOngoing(true);
             firstTime = false;
         }
 
+        mBuilder.setContentTitle(title);
         mBuilder.setContentText(message);
         mNotificationManager.notify(RESCUTIME_NOTIFICATION_ID, mBuilder.build());
     }
@@ -382,6 +401,47 @@ public class HomeFragment extends Fragment {
         return builder.build();
     }
 
+    private void registerRTAlarmBroadcast() {
+        Log.w("******AlarmRegistere***", "Alarm registerd.");
+        mReceiver = new BroadcastReceiver() {
+            // private static final String TAG = "Alarm Example Receiver";
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.w("******Alarm Time*******", "Alarm time has reached indeed.");
+                String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
+//                Toast.makeText(context, "Alarm look at me now.", Toast.LENGTH_LONG).show();
+//                updateNotification("look at me now: ", timeStamp);
+                fetchRTActivity();
+
+            }
+        };
+
+        mContext.registerReceiver(mReceiver, new IntentFilter("sample"));
+        mPendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent("sample"), 0);
+        alarmManager = (AlarmManager)(mContext.getSystemService(Context.ALARM_SERVICE));
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 15 * 60000, mPendingIntent);
+    }
+
+    private void unRegisterRTAlarmBroadcast() {
+        alarmManager.cancel(mPendingIntent);
+        mContext.unregisterReceiver(mReceiver);
+    }
+
+//    public static void registerNewAlarm(Context context) {
+//        Intent i = new Intent(context, YOURBROADCASTRECIEVER.class);
+//
+//        PendingIntent sender = PendingIntent.getBroadcast(context, 999, i, 0);
+//
+//        // We want the alarm to go off 3 seconds from now.
+//        long firstTime = SystemClock.elapsedRealtime();
+//        firstTime += 3 * 1000;//start 3 seconds after first register.
+//
+//        // Schedule the alarm!
+//        AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+//        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime,
+//                600000, sender);//10min interval
+//
+//    }
 }
 
 // TODO: 1/25/17 move functions to Helper
