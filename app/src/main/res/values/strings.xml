@@ -15,7 +15,6 @@
     <string name="action_refresh">Refresh View</string>
     <string name="action_about">About</string>
 
-    <string name="info_dashboard">Your message for today appears here.</string>
     <string name="info_experiment">Experiment details.</string>
 
     <!-- experiment details view -->
@@ -66,5 +65,8 @@
     <string name="study_end">End Date</string>
     <string name="end_date_placeholder">when study ends...</string>
     <string name="start_date_placeholder">when study starts...</string>
+    <string name="info_calendar">calendar events appear here.</string>
+    <string name="info_rescuetime">rescuetime events appear here</string>
+    <string name="need_to_connect">Connect to an experiment by selecting connect app from the side menu.</string>
 
 </resources>

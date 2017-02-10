@@ -9,19 +9,27 @@
         android:layout_height="wrap_content"
         android:stretchColumns="1">
 
-    <TextView
-        android:id="@+id/tv_today_msg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/info_dashboard"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        <TextView
+            android:id="@+id/tv_need_to_connect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/need_to_connect"
+            android:textColor="@color/colorPrimary"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-    <ImageView
-        android:id="@+id/iv_today_msg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/desc_today_image"
-        android:src="@drawable/side_nav_bar" />
+        <TextView
+            android:id="@+id/tv_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/info_calendar"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/tv_rescuetime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/info_rescuetime"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     </TableLayout>
 

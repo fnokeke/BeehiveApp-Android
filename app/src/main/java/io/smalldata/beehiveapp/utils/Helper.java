@@ -2,6 +2,9 @@ package io.smalldata.beehiveapp.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.view.View;
 
 import org.json.JSONException;
@@ -17,6 +20,8 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
 
+import static android.content.Context.TELEPHONY_SERVICE;
+
 /**
  * Created by fnokeke on 1/24/17.
  */
@@ -24,6 +29,15 @@ import io.smalldata.beehiveapp.R;
 public class Helper {
     Context context;
 
+    private static final String PREF_NAME = "prefs";
+
+    private static SharedPreferences getPrefs(Context context) {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public static String getStoreString(Context context, String key) {
+        return getPrefs(context).getString(key, "");
+    }
     public Helper(Context context) {
        this.context = context;
     }
@@ -36,7 +50,7 @@ public class Helper {
         }
     }
 
-    public static String getTodayDateFmt() {
+    public static String getTodayDateStr() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
@@ -103,4 +117,7 @@ public class Helper {
         calendar.setTime(date);
         return calendar.get(Calendar.MINUTE);
     }
+
+
+
 }

@@ -1,6 +1,8 @@
 package io.smalldata.beehiveapp.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -31,40 +33,44 @@ import io.smalldata.beehiveapp.utils.Store;
 
 public class ConnectFragment extends Fragment {
 
+    Context mContext;
+    Activity mActivity;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().setTitle("Connect to Study");
+        mActivity = getActivity();
+        mActivity.setTitle("Connect to Study");
         return inflater.inflate(R.layout.fragment_connect, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mContext = getActivity();
 
         populateFieldsFromStore();
 
-        Button submitBtn = (Button) getActivity().findViewById(R.id.btn_submit);
+        Button submitBtn = (Button) mActivity.findViewById(R.id.btn_submit);
         submitBtn.setOnClickListener(submitBtnHandler);
 
-        Button resetBtn = (Button) getActivity().findViewById(R.id.btn_reset);
+        Button resetBtn = (Button) mActivity.findViewById(R.id.btn_reset);
         resetBtn.setOnClickListener(resetBtnHandler);
 
-        Button checkRTBtn = (Button) getActivity().findViewById(R.id.btn_check_rt);
+        Button checkRTBtn = (Button) mActivity.findViewById(R.id.btn_check_rt);
         checkRTBtn.setOnClickListener(checkRTBtnHandler);
 
-        Button checkCalBtn = (Button) getActivity().findViewById(R.id.btn_check_cal);
+        Button checkCalBtn = (Button) mActivity.findViewById(R.id.btn_check_cal);
         checkCalBtn.setOnClickListener(checkCalBtnHandler);
     }
 
     public void populateFieldsFromStore() {
-        Store st = Store.getInstance(getActivity());
         JSONObject fields = new JSONObject();
-        Helper.setJSONValue(fields, "firstname", st.getString("firstname"));
-        Helper.setJSONValue(fields, "lastname", st.getString("lastname"));
-        Helper.setJSONValue(fields, "email", st.getString("email"));
-        Helper.setJSONValue(fields, "gender", st.getString("gender"));
-        Helper.setJSONValue(fields, "code", st.getString("code"));
+        Helper.setJSONValue(fields, "firstname", Store.getString(mContext, "firstname"));
+        Helper.setJSONValue(fields, "lastname", Store.getString(mContext, "lastname"));
+        Helper.setJSONValue(fields, "email", Store.getString(mContext, "email"));
+        Helper.setJSONValue(fields, "gender", Store.getString(mContext, "gender"));
+        Helper.setJSONValue(fields, "code", Store.getString(mContext, "code"));
         populateConnectUI(fields);
     }
 
@@ -99,14 +105,15 @@ public class ConnectFragment extends Fragment {
         }
 
         @Override
-        public void onConnectFailure(VolleyError error) {}
+        public void onConnectFailure(VolleyError error) {
+        }
     };
 
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
-            CallAPI.checkRTConn(getActivity(), params, rtResponseHandler);
+            Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
+            CallAPI.checkRTConn(mActivity, params, rtResponseHandler);
         }
     };
 
@@ -114,8 +121,8 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e(result.toString(), "rtResponseHandler");
-            TextView tv = (TextView) getActivity().findViewById(R.id.tv_check_status);
-            TextView howTV = (TextView) getActivity().findViewById(R.id.tv_how_to_conn);
+            TextView tv = (TextView) mActivity.findViewById(R.id.tv_check_status);
+            TextView howTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
 
             if (result.optBoolean("rt_response", false)) {
                 Display.showSuccess(tv, R.string.rt_is_connected);
@@ -127,13 +134,14 @@ public class ConnectFragment extends Fragment {
         }
 
         @Override
-        public void onConnectFailure(VolleyError error) {}
+        public void onConnectFailure(VolleyError error) {
+        }
     };
 
     View.OnClickListener checkCalBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            Helper.setJSONValue(params, "email", Store.getInstance(getActivity()).getString("email"));
+            Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
             CallAPI.checkCalConn(getActivity(), params, calResponseHandler);
         }
     };
@@ -155,7 +163,8 @@ public class ConnectFragment extends Fragment {
         }
 
         @Override
-        public void onConnectFailure(VolleyError error) {}
+        public void onConnectFailure(VolleyError error) {
+        }
     };
 
 
@@ -217,28 +226,26 @@ public class ConnectFragment extends Fragment {
 
     public void storeUser(JSONObject user) {
         Log.e("storeUser: ", user.toString());
-        Store store = Store.getInstance(getActivity());
-        store.setString("firstname", user.optString("firstname"));
-        store.setString("lastname", user.optString("lastname"));
-        store.setString("email", user.optString("email"));
-        store.setString("gender", user.optString("gender"));
-        store.setString("code", user.optString("code"));
-        store.setInt("condition", user.optInt("condition", 1));
+        Store.setString(mContext, "firstname", user.optString("firstname"));
+        Store.setString(mContext, "lastname", user.optString("lastname"));
+        Store.setString(mContext, "email", user.optString("email"));
+        Store.setString(mContext, "gender", user.optString("gender"));
+        Store.setString(mContext, "code", user.optString("code"));
+        Store.setInt(mContext, "condition", user.optInt("condition", 1));
     }
 
     public void storeExperiment(JSONObject experiment) {
-        Store store = Store.getInstance(getActivity());
-        store.setBoolean("actuators", experiment.optBoolean("actuators"));
-        store.setBoolean("geofence", experiment.optBoolean("geofence"));
-        store.setBoolean("actuators", experiment.optBoolean("reminder"));
-        store.setBoolean("text", experiment.optBoolean("text"));
-        store.setBoolean("rescuetime", experiment.optBoolean("rescuetime"));
-        store.setBoolean("reminder", experiment.optBoolean("reminder"));
-        store.setBoolean("image", experiment.optBoolean("image"));
-        store.setBoolean("aware", experiment.optBoolean("aware"));
-        store.setString("title", experiment.optString("title", ""));
-        store.setString("start", experiment.optString("start"));
-        store.setString("end", experiment.optString("end"));
+        Store.setBoolean(mContext, "actuators", experiment.optBoolean("actuators"));
+        Store.setBoolean(mContext, "geofence", experiment.optBoolean("geofence"));
+        Store.setBoolean(mContext, "actuators", experiment.optBoolean("reminder"));
+        Store.setBoolean(mContext, "text", experiment.optBoolean("text"));
+        Store.setBoolean(mContext, "rescuetime", experiment.optBoolean("rescuetime"));
+        Store.setBoolean(mContext, "reminder", experiment.optBoolean("reminder"));
+        Store.setBoolean(mContext, "image", experiment.optBoolean("image"));
+        Store.setBoolean(mContext, "aware", experiment.optBoolean("aware"));
+        Store.setString(mContext, "title", experiment.optString("title", ""));
+        Store.setString(mContext, "start", experiment.optString("start"));
+        Store.setString(mContext, "end", experiment.optString("end"));
     }
 
     public void resetFormInput() {

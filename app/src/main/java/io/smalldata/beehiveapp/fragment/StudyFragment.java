@@ -1,7 +1,9 @@
 package io.smalldata.beehiveapp.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -26,11 +28,16 @@ import io.smalldata.beehiveapp.utils.Store;
  */
 
 public class StudyFragment extends Fragment {
-    Store store;
+    Context mContext;
+    Activity mActivity;
+    Locale locale = Locale.getDefault();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mActivity = getActivity();
+        mContext = getActivity();
+
         getActivity().setTitle("Experiment Info");
         return inflater.inflate(R.layout.fragment_study, container, false);
     }
@@ -38,31 +45,30 @@ public class StudyFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mContext = getActivity();
 
-        store = Store.getInstance(getActivity());
+        TextView studyCodeTV = (TextView) mActivity.findViewById(R.id.studyCodeTV);
+        studyCodeTV.setText(Store.getString(mContext, "code"));
 
-        TextView studyCodeTV = (TextView) getActivity().findViewById(R.id.studyCodeTV);
-        studyCodeTV.setText(store.getString("code"));
+        TextView studyTitleTV = (TextView) mActivity.findViewById(R.id.studyTitleTV);
+        studyTitleTV.setText(Store.getString(mContext, "title"));
 
-        TextView studyTitleTV = (TextView) getActivity().findViewById(R.id.studyTitleTV);
-        studyTitleTV.setText(store.getString("title"));
+        String start = Store.getString(mContext, "start");
+        String end = Store.getString(mContext, "end");
 
+        if (start.equals("") || end.equals("")) return;
 
-        if (!store.getString("start").equals("")) {
-            TextView studyStartTV = (TextView) getActivity().findViewById(R.id.startStudyTV);
-            String start = getPrettyDate(store.getString("start"));
-            studyStartTV.setText(start);
-        }
+        TextView studyStartTV = (TextView) mActivity.findViewById(R.id.startStudyTV);
+        start = getPrettyDate(start);
+        studyStartTV.setText(start);
 
-        if (!store.getString("end").equals("")) {
-            TextView studyEndTV = (TextView) getActivity().findViewById(R.id.endStudyTV);
-            String end = getPrettyDate(store.getString("end"));
-            studyEndTV.setText(end);
-        }
+        TextView studyEndTV = (TextView) mActivity.findViewById(R.id.endStudyTV);
+        end = getPrettyDate(end);
+        studyEndTV.setText(end);
     }
 
     private String getPrettyDate(String dateStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date result = new Date();
         try {
@@ -71,7 +77,7 @@ public class StudyFragment extends Fragment {
             pe.printStackTrace();
         }
 
-        SimpleDateFormat prettyDateFormat = new SimpleDateFormat("'Midnight' EEE, MMM d, yyyy", Locale.US);
+        SimpleDateFormat prettyDateFormat = new SimpleDateFormat("'Midnight' EEE, MMM d, yyyy", locale);
         return prettyDateFormat.format(result);
     }
 

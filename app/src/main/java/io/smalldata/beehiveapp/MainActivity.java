@@ -2,7 +2,6 @@ package io.smalldata.beehiveapp;
 
 //import android.support.v4.app.FragmentManager;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,20 +11,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Network;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         transaction.replace(R.id.content_frame, new HomeFragment()).commit();
 
         mTV = (TextView) findViewById(R.id.tv_timeout_prompt);
+
     }
 
 

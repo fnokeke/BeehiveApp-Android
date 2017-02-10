@@ -9,49 +9,36 @@ import android.content.SharedPreferences;
 
 public class Store {
 
-    private static Store mInstance;
-    private final String PREF_NAME = "store";
-    private Context context;
-    private SharedPreferences.Editor editor;
+    private static final String PREF_NAME = "beehivePrefs";
 
-    public Store(Context cxt) {
-        this.context = cxt;
-        this.editor = getPrefs(context).edit();
-    }
-
-    public static synchronized Store getInstance(Context cxt) {
-        if (mInstance == null) {
-            mInstance = new Store(cxt);
-        }
-        return mInstance;
-    }
-
-    private SharedPreferences getPrefs(Context context) {
+    private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public void setString(String key, String input) {
-        editor.putString(key, input).apply();
+    public static void setString(Context context, String key, String input) {
+        getPrefs(context).edit().putString(key, input).apply();
     }
 
-    public String getString(String key) {
+    public static String getString(Context context, String key) {
         return getPrefs(context).getString(key, "");
     }
 
-    public void setInt(String key, Integer input) {
-        editor.putInt(key, input).apply();
+    public static void setInt(Context context, String key, Integer input) {
+        getPrefs(context).edit().putInt(key, input).apply();
     }
 
-    public Integer getInt(String key) {
+    public static Integer getInt(Context context, String key) {
         return getPrefs(context).getInt(key, 0);
     }
 
-    public void setBoolean(String key, Boolean input) {
-        editor.putBoolean(key, input).apply();
+    public static void setBoolean(Context context, String key, Boolean input) {
+        getPrefs(context).edit().putBoolean(key, input).apply();
     }
 
-    public Boolean getBoolean(String key) {
-        return getPrefs(context).getBoolean(key, false);
+    public static Boolean getBoolean(Context context, String key) {
+        return getPrefs(context).getBoolean(key, false); // use false as default value
     }
+
+
 
 }
