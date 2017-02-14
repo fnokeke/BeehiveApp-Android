@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 /**
+ *
  * Created by fnokeke on 1/23/17.
  */
 

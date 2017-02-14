@@ -3,8 +3,6 @@ package io.smalldata.beehiveapp.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.view.View;
 
 import org.json.JSONException;
@@ -20,16 +18,15 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
 
-import static android.content.Context.TELEPHONY_SERVICE;
-
 /**
- * Created by fnokeke on 1/24/17.
+ * Helper.java
+ * Created: 1/24/17
+ * author: Fabian Okeke
  */
 
 public class Helper {
-    Context context;
 
-    private static final String PREF_NAME = "prefs";
+    private static final String PREF_NAME = "beehivePrefs";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -38,8 +35,15 @@ public class Helper {
     public static String getStoreString(Context context, String key) {
         return getPrefs(context).getString(key, "");
     }
-    public Helper(Context context) {
-       this.context = context;
+
+    public static void copy(JSONObject from, JSONObject to) {
+
+        for (int i = 0; i < from.names().length(); i++) {
+            String key = from.names().optString(i);
+            Object value = from.opt(key);
+            setJSONValue(to, key, value);
+        }
+
     }
 
     public static void setJSONValue(JSONObject jsonObject, String key, Object value) {
@@ -56,20 +60,20 @@ public class Helper {
         return dateFormat.format(cal.getTime());
     }
 
-    public void promptIfNetworkError(Boolean isTimeoutError){
+    public static void promptIfNetworkError(Context context, Boolean isTimeoutError) {
         if (isTimeoutError) {
-            ((Activity)context).findViewById(R.id.tv_timeout_prompt).setVisibility(View.VISIBLE);
+            ((Activity) context).findViewById(R.id.tv_timeout_prompt).setVisibility(View.VISIBLE);
         } else {
-            ((Activity)context).findViewById(R.id.tv_timeout_prompt).setVisibility(View.INVISIBLE);
+            ((Activity) context).findViewById(R.id.tv_timeout_prompt).setVisibility(View.INVISIBLE);
         }
     }
 
 
-    public void promptIfDisconnected() {
+    public static void promptIfDisconnected(Context context) {
         if (!Network.isDeviceOnline(context)) {
-            ((Activity)context).findViewById(R.id.tv_offline_prompt).setVisibility(View.VISIBLE);
+            ((Activity) context).findViewById(R.id.tv_offline_prompt).setVisibility(View.VISIBLE);
         } else {
-            ((Activity)context).findViewById(R.id.tv_offline_prompt).setVisibility(View.INVISIBLE);
+            ((Activity) context).findViewById(R.id.tv_offline_prompt).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -117,7 +121,5 @@ public class Helper {
         calendar.setTime(date);
         return calendar.get(Calendar.MINUTE);
     }
-
-
 
 }

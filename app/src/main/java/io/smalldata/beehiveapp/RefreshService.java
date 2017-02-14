@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -80,15 +81,16 @@ public class RefreshService extends Service {
 
     private Runnable serverUpdateTask = new Runnable() {
         public void run() {
-            Log.i("refreshService", "refresh done.");
+            JSONObject phoneDetails = DeviceInfo.getPhoneDetails(mContext);
+            Log.i("BeehivePhoneDetails: ", phoneDetails.toString());
 
             String email = Store.getString(mContext, "email");
             if (email.equals("")) {
-                shouldPromptToConnect(true);
+//                shouldPromptToConnect(true);
                 return;
             }
 
-            shouldPromptToConnect(false);
+//            shouldPromptToConnect(false);
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", email);
             Helper.setJSONValue(params, "date", Helper.getTodayDateStr());
@@ -96,7 +98,7 @@ public class RefreshService extends Service {
             CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
             CallAPI.getAllCalEvents(mContext, params, showCalResponseHandler);
 
-            serverHandler.postDelayed(this, 3000);
+            serverHandler.postDelayed(this, 30*60*1000);
         }
     };
 
@@ -135,14 +137,14 @@ public class RefreshService extends Service {
                     "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +
                     String.format(locale, "\n\nDistracted: %s hrs (%s%%)\n%s", dT, dP, dA) +
                     String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
-            Display.showSuccess(rescuetimeTV, rtStr);
+//            Display.showSuccess(rescuetimeTV, rtStr);
 
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
             String rtTitle = String.format("Rescuetime updated stats (%s)", timeStamp);
 
             String rtContent = String.format(locale,
-                    "Focused: %s hrs (%s%%)", fT, fP) +
-                    String.format(locale, " / Distracted: %s hrs (%s%%)", dT, dP);
+                    "Focused: %shrs (%s%%)", fT, fP) +
+                    String.format(locale, "; Distracted: %shrs (%s%%)", dT, dP);
             updateNotification(rtTitle, rtContent);
         }
 
@@ -265,13 +267,13 @@ public class RefreshService extends Service {
                 long busyTimeMs = computeBusyTimeMs(mJsonArray);
                 Float busyHours = (float) busyTimeMs / 3600000;
                 Integer noOfTodayEvents = countTodayEvents(mJsonArray);
-
-                Display.showSuccess(calendarTV,
-                        "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
-                                "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
-                                "Today Events:\n" + mJsonStr +
-                                "Potential Notification Time:\n" + mFreeStr
-                );
+//
+//                Display.showSuccess(calendarTV,
+//                        "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
+//                                "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
+//                                "Today Events:\n" + mJsonStr +
+//                                "Potential Notification Time:\n" + mFreeStr
+//                );
             }
         }
 

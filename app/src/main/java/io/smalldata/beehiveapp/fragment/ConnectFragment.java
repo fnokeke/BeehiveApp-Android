@@ -22,12 +22,15 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 
 /**
+ * 
  * Created by fnokeke on 1/20/17.
  */
 
@@ -35,6 +38,9 @@ public class ConnectFragment extends Fragment {
 
     Context mContext;
     Activity mActivity;
+    TextView connResponseTV;
+    TextView calRTResponseTV;
+    TextView howToConnTV;
 
     @Nullable
     @Override
@@ -62,6 +68,10 @@ public class ConnectFragment extends Fragment {
 
         Button checkCalBtn = (Button) mActivity.findViewById(R.id.btn_check_cal);
         checkCalBtn.setOnClickListener(checkCalBtnHandler);
+
+        connResponseTV = (TextView) getActivity().findViewById(R.id.tv_connect_status);
+        calRTResponseTV = (TextView) mActivity.findViewById(R.id.tv_check_conn_status);
+        howToConnTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
     }
 
     public void populateFieldsFromStore() {
@@ -76,36 +86,39 @@ public class ConnectFragment extends Fragment {
 
     View.OnClickListener resetBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            setDefaultUI();
             resetFormInput();
         }
     };
 
     View.OnClickListener submitBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            setDefaultUI();
-            JSONObject params = getFormInput();
-            CallAPI.connectStudy(getActivity(), params, connectStudyResponseHandler);
+            Display.clear(howToConnTV);
+            JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
+            JSONObject toParams = getFormInput();
+            Helper.copy(fromPhoneDetails, toParams);
+
+            Display.showBusy(mContext, "Transferring your bio...");
+            CallAPI.connectStudy(getActivity(), toParams, connectStudyResponseHandler);
         }
     };
 
-    public void setDefaultUI() {
-        TextView titleTV = (TextView) getActivity().findViewById(R.id.tv_check_status);
-        Display.showPlain(titleTV, R.string.desc_check_conn);
-
-        TextView howTV = (TextView) getActivity().findViewById(R.id.tv_how_to_conn);
-        Display.clear(howTV);
-    }
 
     VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e("onConnectSuccess: ", result.toString());
             updateFormInput(result);
+            Display.dismissBusy();
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Log.e("onConnectFailure: ", error.toString());
+            String msg = String.format(Constants.locale, "Error submitting your bio. Please contact researcher. " +
+                    "Error details: %s", error.toString());
+            Display.showError(connResponseTV, msg);
+            error.printStackTrace();
+            Display.dismissBusy();
         }
     };
 
@@ -113,28 +126,26 @@ public class ConnectFragment extends Fragment {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
+
+            Display.showBusy(mContext, "Checking your RescueTime connectivity...");
             CallAPI.checkRTConn(mActivity, params, rtResponseHandler);
         }
     };
 
     VolleyJsonCallback rtResponseHandler = new VolleyJsonCallback() {
+
         @Override
         public void onConnectSuccess(JSONObject result) {
-            Log.e(result.toString(), "rtResponseHandler");
-            TextView tv = (TextView) mActivity.findViewById(R.id.tv_check_status);
-            TextView howTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
-
-            if (result.optBoolean("rt_response", false)) {
-                Display.showSuccess(tv, R.string.rt_is_connected);
-                Display.clear(howTV);
-            } else {
-                Display.showError(tv, R.string.rt_is_not_connected);
-                Display.showPlain(howTV, R.string.desc_how_to_connect);
-            }
+            Log.e("rtCheckSuccess:", result.toString());
+            handleConnSuccess(result, "RescueTime");
+            Display.dismissBusy();
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Log.e("rtCheckConnError:", error.toString());
+            handleConnErrors(error, "RescueTime");
+            Display.dismissBusy();
         }
     };
 
@@ -142,6 +153,8 @@ public class ConnectFragment extends Fragment {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
+
+            Display.showBusy(mContext, "Checking your Google Calendar connectivity...");
             CallAPI.checkCalConn(getActivity(), params, calResponseHandler);
         }
     };
@@ -149,23 +162,42 @@ public class ConnectFragment extends Fragment {
     VolleyJsonCallback calResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
-            Log.e(result.toString(), "calResponseHandler");
-            TextView tv = (TextView) getActivity().findViewById(R.id.tv_check_status);
-            TextView howTV = (TextView) getActivity().findViewById(R.id.tv_how_to_conn);
-
-            if (result.optBoolean("cal_response", false)) {
-                Display.showSuccess(tv, R.string.cal_is_connected);
-                Display.clear(howTV);
-            } else {
-                Display.showError(tv, R.string.cal_is_not_connected);
-                Display.showPlain(howTV, R.string.desc_how_to_connect);
-            }
+            Log.e("CalendarCheckSuccess:", result.toString());
+            handleConnSuccess(result, "Calendar");
+            Display.dismissBusy();
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Log.e("CalCheckConnError:", error.toString());
+            handleConnErrors(error, "Calendar");
+            Display.dismissBusy();
         }
     };
+
+    public void handleConnSuccess(JSONObject result, String app) {
+        Log.e(app + "ResponseHandler", result.toString());
+
+        Integer msgId;
+        String responseType = app.equals("RescueTime") ? "rt_response" : "cal_response";
+
+        if (result.optBoolean(responseType, false)) {
+            msgId = app.equals("RescueTime") ? R.string.cal_is_connected : R.string.rt_is_connected;
+            Display.showSuccess(calRTResponseTV, msgId);
+            Display.clear(howToConnTV);
+            Display.hide(connResponseTV);
+        } else {
+            msgId = app.equals("RescueTime") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
+            Display.showError(calRTResponseTV, msgId);
+            Display.showPlain(howToConnTV, R.string.desc_how_to_connect);
+        }
+    }
+
+    public void handleConnErrors(VolleyError error, String app) {
+        String msg = String.format(Constants.locale, "Error checking %s connectivity status. Please contact researcher.", app);
+        Display.showError(connResponseTV, msg);
+        error.printStackTrace();
+    }
 
 
     public JSONObject getFormInput() {
@@ -187,15 +219,13 @@ public class ConnectFragment extends Fragment {
     public void updateFormInput(JSONObject result) {
         Log.e("updateFormInput", result.toString());
 
-        TextView statusField = (TextView) getActivity().findViewById(R.id.connectStatusTV);
-
         if (result.optString("user").equals("")) {
-            Display.showError(statusField, R.string.invalid_code);
+            Display.showError(connResponseTV, R.string.invalid_code);
             resetFormInput();
             return;
         }
 
-        Display.showSuccess(statusField, result.optString("response"));
+        Display.showSuccess(connResponseTV, result.optString("response"));
 
         try {
 
@@ -249,6 +279,10 @@ public class ConnectFragment extends Fragment {
     }
 
     public void resetFormInput() {
+
+        Display.hide(howToConnTV);
+        Display.hide(calRTResponseTV);
+        Display.hide(connResponseTV);
 
         final EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
         final EditText lnField = (EditText) getActivity().findViewById(R.id.et_ln);
