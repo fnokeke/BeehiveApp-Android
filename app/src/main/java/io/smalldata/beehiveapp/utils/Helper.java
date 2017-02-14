@@ -1,8 +1,14 @@
 package io.smalldata.beehiveapp.utils;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 
 import org.json.JSONException;
@@ -122,4 +128,23 @@ public class Helper {
         return calendar.get(Calendar.MINUTE);
     }
 
+
+    public static void showInstantNotif(Context context, String title, String message) {
+
+        Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, "org.md2k.moodsurfing");
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(Constants.GENERAL_NOTIF_ID, mBuilder.build());
+    }
+
 }
+
+

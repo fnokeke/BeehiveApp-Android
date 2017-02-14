@@ -1,12 +1,14 @@
 package io.smalldata.beehiveapp;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -28,8 +30,8 @@ import java.util.Locale;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
-import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Store;
 
 public class RefreshService extends Service {
@@ -45,9 +47,6 @@ public class RefreshService extends Service {
     private final static long UPDATE_SERVER_INTERVAL_MS = 3000 * 1000;
 
     private Context mContext;
-    private static TextView rescuetimeTV;
-    private static TextView calendarTV;
-    private static TextView needToConnectTV;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -65,17 +64,19 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
-        updateNotification("Stats will update throughout the day.", "Current time: " + timeStamp);
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a", locale).format(Calendar.getInstance().getTime());
+        String rtStatusTitle = timeStamp + " " + Store.getString(mContext, "statusTitleRT");
+        String rtStatusContent = Store.getString(mContext, "statusContentRT");
+        if (rtStatusContent.equals("")) {
+           rtStatusContent = "Expect updates throughout the day.";
+        }
+        updateNotification(rtStatusTitle, rtStatusContent);
 
         serverHandler.postDelayed(serverUpdateTask, 0);
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public static void start(Context context, TextView ntv, TextView rtv, TextView ctv) {
-        needToConnectTV = ntv;
-        rescuetimeTV = rtv;
-        calendarTV = ctv;
+    public static void start(Context context) {
         context.startService(new Intent(context, RefreshService.class));
     }
 
@@ -85,12 +86,8 @@ public class RefreshService extends Service {
             Log.i("BeehivePhoneDetails: ", phoneDetails.toString());
 
             String email = Store.getString(mContext, "email");
-            if (email.equals("")) {
-//                shouldPromptToConnect(true);
-                return;
-            }
+            if (email.equals("")) { return; }
 
-//            shouldPromptToConnect(false);
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", email);
             Helper.setJSONValue(params, "date", Helper.getTodayDateStr());
@@ -102,17 +99,6 @@ public class RefreshService extends Service {
         }
     };
 
-    private void shouldPromptToConnect(Boolean promptToConnect) {
-        if (promptToConnect) {
-            needToConnectTV.setVisibility(View.VISIBLE);
-            rescuetimeTV.setVisibility(View.GONE);
-            calendarTV.setVisibility(View.GONE);
-        } else {
-            needToConnectTV.setVisibility(View.GONE);
-            rescuetimeTV.setVisibility(View.VISIBLE);
-            calendarTV.setVisibility(View.VISIBLE);
-        }
-    }
 
     VolleyJsonCallback getRTResponseHandler = new VolleyJsonCallback() {
         @Override
@@ -133,19 +119,23 @@ public class RefreshService extends Service {
             String nP = currStats.optString("neutralPercent");
             String nA = currStats.optString("neutralActivity");
 
-            String rtStr = String.format(locale, "UPDATED RESCUETIME STATS: " +
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a", locale).format(Calendar.getInstance().getTime());
+
+            String statsRT = String.format(locale, "UPDATED RESCUETIME STATS (" + timeStamp + "): " +
                     "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +
                     String.format(locale, "\n\nDistracted: %s hrs (%s%%)\n%s", dT, dP, dA) +
                     String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
-//            Display.showSuccess(rescuetimeTV, rtStr);
+            Store.setString(mContext, "statsRT", statsRT);
 
-            String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale).format(Calendar.getInstance().getTime());
-            String rtTitle = String.format("Rescuetime updated stats (%s)", timeStamp);
+            String statusTitleRT = String.format("Updated stats (%s)", timeStamp);
+            Store.setString(mContext, "statusTitleRT", statusTitleRT);
 
-            String rtContent = String.format(locale,
+            String statusContentRT = String.format(locale,
                     "Focused: %shrs (%s%%)", fT, fP) +
                     String.format(locale, "; Distracted: %shrs (%s%%)", dT, dP);
-            updateNotification(rtTitle, rtContent);
+            Store.setString(mContext, "statusContentRT", statusContentRT);
+
+            updateNotification(statusTitleRT, statusContentRT);
         }
 
         @Override
@@ -179,13 +169,13 @@ public class RefreshService extends Service {
             try {
                 if (productivity < 0) {
                     distrTotal += timeSpent;
-                    distrApps.put(activity, distrApps.optDouble(activity, 0));
+                    distrApps.put(activity, timeSpent + distrApps.optDouble(activity, 0));
                 } else if (productivity == 0) {
                     neutralTotal += timeSpent;
-                    neutralApps.put(activity, neutralApps.optDouble(activity, 0));
+                    neutralApps.put(activity, timeSpent + neutralApps.optDouble(activity, 0));
                 } else if (productivity > 0) {
                     focusedTotal += timeSpent;
-                    focusedApps.put(activity, focusedApps.optDouble(activity, 0));
+                    focusedApps.put(activity, timeSpent + focusedApps.optDouble(activity, 0));
                 }
 
             } catch (JSONException je) {
@@ -234,6 +224,8 @@ public class RefreshService extends Service {
     }
 
     private void updateNotification(String title, String message) {
+        Intent launchAppIntent = IntentLauncher.getLaunchIntent(mContext, mContext.getPackageName());
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (firstTime) {
             mBuilder.setSmallIcon(android.R.drawable.ic_menu_recent_history)
@@ -244,6 +236,7 @@ public class RefreshService extends Service {
 
         mBuilder.setContentTitle(title);
         mBuilder.setContentText(message);
+        mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(RESCUTIME_NOTIFICATION_ID, mBuilder.build());
     }
 
@@ -255,7 +248,7 @@ public class RefreshService extends Service {
             Log.d("onConnectSuccess: ", resultStr);
 
             if (result.optInt("events") == -1) {
-                Display.showError(calendarTV, "Could not fetch calendar info.");
+                Store.setString(mContext, "errorCal", "There are no available calendar events.");
                 return;
             }
 
@@ -267,13 +260,11 @@ public class RefreshService extends Service {
                 long busyTimeMs = computeBusyTimeMs(mJsonArray);
                 Float busyHours = (float) busyTimeMs / 3600000;
                 Integer noOfTodayEvents = countTodayEvents(mJsonArray);
-//
-//                Display.showSuccess(calendarTV,
-//                        "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
-//                                "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
-//                                "Today Events:\n" + mJsonStr +
-//                                "Potential Notification Time:\n" + mFreeStr
-//                );
+                String statsCal = "No of today events: " + noOfTodayEvents.toString() + "\n\n" +
+                                "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
+                                "Today Events:\n" + mJsonStr +
+                                "Potential Notification Time:\n" + mFreeStr;
+                Store.setString(mContext, "statsCal", statsCal);
             }
         }
 
@@ -326,13 +317,13 @@ public class RefreshService extends Service {
         error.printStackTrace();
         if (error instanceof TimeoutError) {
             Log.d("**TimeoutError**", "Check that your server is up and running");
-            Display.showError(rescuetimeTV, R.string.no_network_prompt);
+            Store.setString(mContext, "errorRT", "Error fetching Rescuetime data. No network connection detected.");
         } else if (error instanceof ServerError) {
-            Log.d("**ServerError**", "Typically happens when you have HttpAccessTokenRefreshError or your API url is incorrect.");
-            Display.showError(rescuetimeTV, R.string.timeout_error_prompt);
+            Log.d("**ServerError**", "Typically happens when your API url endpoint is incorrect.");
+            Store.setString(mContext, "errorRT", "Experiment is unavailable. Please contact researcher.");
         } else {
             String msg = "Something went wrong while fetching your info. Please contact your researcher. \n\nError details: " + error.toString();
-            Display.showError(rescuetimeTV, msg);
+            Store.setString(mContext, "errorRT", msg);
         }
     }
 

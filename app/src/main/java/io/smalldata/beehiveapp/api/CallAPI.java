@@ -20,9 +20,8 @@ import org.json.JSONObject;
 public class CallAPI {
 
 //    final static private String BASE_URL = "https://slm.smalldata.io";
-//    final static private String BASE_URL = "http://10.0.0.166:5000";
+    final static private String BASE_URL = "http://10.0.0.166:5000";
 //    final static private String BASE_URL = "http://10.144.4.230:5000";
-    final static private String BASE_URL = "http://192.168.55.216:5000";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
     final static private String ALL_INTV_URL = BASE_URL + "/mobile/ordered/interventions";
     final static private String CAL_CHECK_CONN_URL = BASE_URL + "/mobile/check/calendar";

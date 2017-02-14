@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.RefreshService;
+import io.smalldata.beehiveapp.utils.Display;
+import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Fabian Okeke
@@ -23,6 +25,9 @@ public class HomeFragment extends Fragment {
 
     private Context mContext;
     private Activity mActivity;
+    private TextView needToConnectTV;
+    private TextView rescuetimeTV;
+    private TextView calendarTV;
 
     @Nullable
     @Override
@@ -38,12 +43,30 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        TextView needToConnectTV = (TextView) mActivity.findViewById(R.id.tv_need_to_connect);
-        TextView rescuetimeTV = (TextView) mActivity.findViewById(R.id.tv_rescuetime);
-        TextView calendarTV = (TextView) mActivity.findViewById(R.id.tv_calendar);
+        needToConnectTV = (TextView) mActivity.findViewById(R.id.tv_need_to_connect);
+        rescuetimeTV = (TextView) mActivity.findViewById(R.id.tv_rescuetime);
+        calendarTV = (TextView) mActivity.findViewById(R.id.tv_calendar);
 
-        RefreshService.start(mContext, needToConnectTV, rescuetimeTV, calendarTV);
+        Display.showSuccess(rescuetimeTV, Store.getString(mContext, "statsRT"));
+        Display.showSuccess(calendarTV, Store.getString(mContext, "statsCal"));
+        checkPromptToConnect();
+
+        RefreshService.start(mContext);
     }
+
+    private void checkPromptToConnect() {
+
+        String email = Store.getString(mContext, "email");
+        if (email.equals("")) {
+            needToConnectTV.setVisibility(View.VISIBLE);
+            rescuetimeTV.setVisibility(View.GONE);
+            calendarTV.setVisibility(View.GONE);
+        } else {
+            needToConnectTV.setVisibility(View.GONE);
+            rescuetimeTV.setVisibility(View.VISIBLE);
+            calendarTV.setVisibility(View.VISIBLE);
+        }
+    } 
 
 
 //    private void scheduleNotification(Context cxt, Notification notification, int delay) {

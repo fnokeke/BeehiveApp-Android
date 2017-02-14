@@ -30,7 +30,7 @@ import io.smalldata.beehiveapp.utils.Store;
 
 
 /**
- * 
+ *
  * Created by fnokeke on 1/20/17.
  */
 
@@ -96,6 +96,9 @@ public class ConnectFragment extends Fragment {
             JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
             JSONObject toParams = getFormInput();
             Helper.copy(fromPhoneDetails, toParams);
+
+//            Helper.launchAnotherAppOrSelf(mContext, "io.smalldata.loginapp");
+            Helper.showInstantNotif(mContext, "One new message waiting for you.", "Tap to immediately see content.");
 
             Display.showBusy(mContext, "Transferring your bio...");
             CallAPI.connectStudy(getActivity(), toParams, connectStudyResponseHandler);
@@ -182,19 +185,20 @@ public class ConnectFragment extends Fragment {
         String responseType = app.equals("RescueTime") ? "rt_response" : "cal_response";
 
         if (result.optBoolean(responseType, false)) {
-            msgId = app.equals("RescueTime") ? R.string.cal_is_connected : R.string.rt_is_connected;
+            msgId = app.equals("Calendar") ? R.string.cal_is_connected : R.string.rt_is_connected;
             Display.showSuccess(calRTResponseTV, msgId);
             Display.clear(howToConnTV);
             Display.hide(connResponseTV);
         } else {
-            msgId = app.equals("RescueTime") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
+            msgId = app.equals("Calendar") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
             Display.showError(calRTResponseTV, msgId);
             Display.showPlain(howToConnTV, R.string.desc_how_to_connect);
         }
     }
 
     public void handleConnErrors(VolleyError error, String app) {
-        String msg = String.format(Constants.locale, "Error checking %s connectivity status. Please contact researcher.", app);
+        String msg = String.format(Constants.locale, "Error checking %s connectivity status. " +
+                "Please contact researcher. Error details: %s", app, error.toString());
         Display.showError(connResponseTV, msg);
         error.printStackTrace();
     }
