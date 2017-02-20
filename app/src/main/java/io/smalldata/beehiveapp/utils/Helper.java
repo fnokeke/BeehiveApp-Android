@@ -1,12 +1,15 @@
 package io.smalldata.beehiveapp.utils;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +17,12 @@ import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -95,39 +104,16 @@ public class Helper {
         return result;
     }
 
-
-    public static String prettyHours(HashMap freeHoursOfDay) {
-        String results = "";
-        for (Object value : freeHoursOfDay.values()) {
-            results += value.toString() + "\n";
+    public static Date getDatetime(String datetimeStr, String format) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.locale);
+        Date result = new Date();
+        try {
+            result = dateFormat.parse(datetimeStr);
+        } catch (ParseException pe) {
+            pe.printStackTrace();
         }
-        return results;
+        return result;
     }
-
-    public static void removeBusyTime(HashMap freeHrs, Date startDT, Date endDT) {
-        int startHr = getHours(startDT);
-        int endHr = getHours(endDT);
-        if (getMinutes(endDT) > 0) {
-            endHr += 1;
-        }
-
-        for (int i = startHr; i < endHr; i++) {
-            freeHrs.remove(i);
-        }
-    }
-
-    public static int getHours(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.HOUR_OF_DAY);
-    }
-
-    public static int getMinutes(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.MINUTE);
-    }
-
 
     public static void showInstantNotif(Context context, String title, String message) {
 
@@ -144,6 +130,81 @@ public class Helper {
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(Constants.GENERAL_NOTIF_ID, mBuilder.build());
     }
+
+    public static void downloadImage(Context context, String image_url) {
+        Log.i("BeehiveDownloadFile: ", image_url);
+//        File direct = new File(Environment.getExternalStorageDirectory()
+//                + "/Beehive");
+//
+//        if (!direct.exists()) {
+//            direct.mkdirs();
+//        }
+
+        DownloadManager mgr = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(image_url);
+        DownloadManager.Request request = new DownloadManager.Request(
+                downloadUri);
+
+        request.setAllowedNetworkTypes(
+                DownloadManager.Request.NETWORK_WIFI
+                        | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false).setTitle("Demo")
+                .setDescription("Something useful. No, really.")
+                .setDestinationInExternalPublicDir("/BeehiveFiles", "beehiveImage.jpg");
+
+        mgr.enqueue(request);
+
+    }
+
+    public static void downImage(Context context, String image_url) {
+        try {
+            URL url = new URL(image_url);
+            URLConnection connection = url.openConnection();
+            InputStream input = connection.getInputStream();
+            FileOutputStream output = context.openFileOutput("beehive.jpg", Context.MODE_PRIVATE);
+            byte[] data = new byte[1024];
+
+            output.write(data);
+            output.flush();
+            output.close();
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void downloadFile(Context context, String image_url) {
+        Log.i("BeehiveDownloadFile: ", image_url);
+        File direct = new File(Environment.getExternalStorageDirectory()
+                + "/Beehive");
+
+        if (!direct.exists()) {
+            direct.mkdirs();
+        }
+
+        DownloadManager mgr = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        Uri downloadUri = Uri.parse(image_url);
+        DownloadManager.Request request = new DownloadManager.Request(
+                downloadUri);
+
+        request.setAllowedNetworkTypes(
+                DownloadManager.Request.NETWORK_WIFI
+                        | DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false).setTitle("Demo")
+                .setDescription("Something useful. No, really.")
+                .setDestinationInExternalPublicDir("/BeehiveFiles", "beehiveImage.jpg");
+
+        mgr.enqueue(request);
+
+    }
+
+    public static String getTimestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.locale).format(Calendar.getInstance().getTime());
+    }
+
+
 
 }
 

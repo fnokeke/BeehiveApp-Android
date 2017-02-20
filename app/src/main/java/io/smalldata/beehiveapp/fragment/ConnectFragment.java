@@ -16,12 +16,15 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.RefreshService;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.properties.Intervention;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
@@ -47,6 +50,7 @@ public class ConnectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mActivity = getActivity();
         mActivity.setTitle("Connect to Study");
+
         return inflater.inflate(R.layout.fragment_connect, container, false);
     }
 
@@ -97,11 +101,11 @@ public class ConnectFragment extends Fragment {
             JSONObject toParams = getFormInput();
             Helper.copy(fromPhoneDetails, toParams);
 
-//            Helper.launchAnotherAppOrSelf(mContext, "io.smalldata.loginapp");
             Helper.showInstantNotif(mContext, "One new message waiting for you.", "Tap to immediately see content.");
 
             Display.showBusy(mContext, "Transferring your bio...");
-            CallAPI.connectStudy(getActivity(), toParams, connectStudyResponseHandler);
+            CallAPI.connectStudy(mContext, toParams, connectStudyResponseHandler);
+            Log.w("Connect study details: ", toParams.toString());
         }
     };
 
@@ -110,8 +114,26 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e("onConnectSuccess: ", result.toString());
+            JSONObject response = result.optJSONObject("response");
+
+            JSONObject experiment = result.optJSONObject("experiment");
+            Store.saveExperimentSettings(mContext, response, experiment);
+
+            JSONArray calendarSetting = experiment.optJSONArray("calendar_setting");
+            Store.saveCalendarSetting(mContext, response, calendarSetting);
+
+            JSONArray interventions = experiment.optJSONArray("interventions");
+            new Intervention(mContext).save(interventions);
+
+            JSONObject user = result.optJSONObject("user");
+            Store.save_user_features(mContext, response, user);
+
             updateFormInput(result);
             Display.dismissBusy();
+
+            RefreshService.start(mContext);
+//            JSONObject params = getInterventionParams();
+//            CallAPI.fetchIntervention(mContext, params, intvResponseHandler);
         }
 
         @Override
@@ -130,8 +152,8 @@ public class ConnectFragment extends Fragment {
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
 
-            Display.showBusy(mContext, "Checking your RescueTime connectivity...");
-            CallAPI.checkRTConn(mActivity, params, rtResponseHandler);
+            Display.showBusy(mContext, "Checking your Rescuetime connectivity...");
+            CallAPI.checkRTConn(mContext, params, rtResponseHandler);
         }
     };
 
@@ -140,14 +162,14 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e("rtCheckSuccess:", result.toString());
-            handleConnSuccess(result, "RescueTime");
+            handleConnSuccess(result, "Rescuetime");
             Display.dismissBusy();
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
             Log.e("rtCheckConnError:", error.toString());
-            handleConnErrors(error, "RescueTime");
+            handleConnErrors(error, "Rescuetime");
             Display.dismissBusy();
         }
     };
@@ -157,8 +179,8 @@ public class ConnectFragment extends Fragment {
             JSONObject params = new JSONObject();
             Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
 
-            Display.showBusy(mContext, "Checking your Google Calendar connectivity...");
-            CallAPI.checkCalConn(getActivity(), params, calResponseHandler);
+            Display.showBusy(mContext, "Checking your Google GoogleCalendar connectivity...");
+            CallAPI.checkCalConn(mContext, params, calResponseHandler);
         }
     };
 
@@ -166,31 +188,53 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.e("CalendarCheckSuccess:", result.toString());
-            handleConnSuccess(result, "Calendar");
+            handleConnSuccess(result, "GoogleCalendar");
             Display.dismissBusy();
         }
 
         @Override
         public void onConnectFailure(VolleyError error) {
             Log.e("CalCheckConnError:", error.toString());
-            handleConnErrors(error, "Calendar");
+            handleConnErrors(error, "GoogleCalendar");
             Display.dismissBusy();
         }
     };
+
+//    private JSONObject getInterventionParams() {
+//        JSONObject params = new JSONObject();
+//        Helper.setJSONValue(params, "code", Store.getString(mContext, "code"));
+//        return params;
+//    }
+
+
+//    VolleyJsonCallback intvResponseHandler = new VolleyJsonCallback() {
+//        @Override
+//        public void onConnectSuccess(JSONObject result) {
+//            Log.e("BeehiveIntvSuccess:", result.toString());
+//            JSONArray interventions = result.optJSONArray("intv_response");
+//            new Intervention(mContext).save(interventions);
+//        }
+//
+//        @Override
+//        public void onConnectFailure(VolleyError error) {
+//            Log.d("BeehiveIntvError:", error.toString());
+//            error.printStackTrace();
+//        }
+//    };
 
     public void handleConnSuccess(JSONObject result, String app) {
         Log.e(app + "ResponseHandler", result.toString());
 
         Integer msgId;
-        String responseType = app.equals("RescueTime") ? "rt_response" : "cal_response";
+        String responseType = app.equals("Rescuetime") ? "rt_response" : "cal_response";
 
         if (result.optBoolean(responseType, false)) {
-            msgId = app.equals("Calendar") ? R.string.cal_is_connected : R.string.rt_is_connected;
+            msgId = app.equals("GoogleCalendar") ? R.string.cal_is_connected : R.string.rt_is_connected;
             Display.showSuccess(calRTResponseTV, msgId);
             Display.clear(howToConnTV);
             Display.hide(connResponseTV);
         } else {
-            msgId = app.equals("Calendar") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
+            msgId = app.equals("GoogleCalendar") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
             Display.showError(calRTResponseTV, msgId);
             Display.showPlain(howToConnTV, R.string.desc_how_to_connect);
         }
@@ -202,7 +246,6 @@ public class ConnectFragment extends Fragment {
         Display.showError(connResponseTV, msg);
         error.printStackTrace();
     }
-
 
     public JSONObject getFormInput() {
         EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
@@ -229,7 +272,8 @@ public class ConnectFragment extends Fragment {
             return;
         }
 
-        Display.showSuccess(connResponseTV, result.optString("response"));
+        JSONObject response = result.optJSONObject("response");
+        Display.showSuccess(connResponseTV, response.optString("user_response"));
 
         try {
 

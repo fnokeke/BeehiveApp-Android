@@ -33,14 +33,14 @@ public class DeviceInfo {
         phoneModel = phoneModel.length() > 30 ? phoneModel.substring(0, 30) : phoneModel;
 
         JSONObject phoneDetails = new JSONObject();
-        setJSONValue(phoneDetails, "lastInstalledMS", String.valueOf(lastInstalledTimeMS));
-        setJSONValue(phoneDetails, "prettyLastInstalled", prettyLastInstalledTime);
-        setJSONValue(phoneDetails, "appVersionName", BuildConfig.VERSION_CODE);
-        setJSONValue(phoneDetails, "appVersionCode", BuildConfig.VERSION_NAME);
-        setJSONValue(phoneDetails, "model", phoneModel);
-        setJSONValue(phoneDetails, "androidVersion", Build.VERSION.RELEASE);
-        setJSONValue(phoneDetails, "deviceCountry", getDeviceCountry(context));
-        setJSONValue(phoneDetails, "deviceID", getDeviceID(context));
+        setJSONValue(phoneDetails, "last_installed_ms", String.valueOf(lastInstalledTimeMS));
+        setJSONValue(phoneDetails, "pretty_last_installed", prettyLastInstalledTime);
+        setJSONValue(phoneDetails, "app_version_name", BuildConfig.VERSION_CODE);
+        setJSONValue(phoneDetails, "app_version_code", BuildConfig.VERSION_NAME);
+        setJSONValue(phoneDetails, "phone_model", phoneModel);
+        setJSONValue(phoneDetails, "android_version", Build.VERSION.RELEASE);
+        setJSONValue(phoneDetails, "device_country", getDeviceCountry(context));
+        setJSONValue(phoneDetails, "device_id", getDeviceID(context));
 
         return phoneDetails;
     }

@@ -3,6 +3,9 @@ package io.smalldata.beehiveapp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Created by fnokeke on 1/23/17.
  */
@@ -40,5 +43,30 @@ public class Store {
     }
 
 
+    public static void save_user_features(Context context, JSONObject response, JSONObject user) {
+        if (response.optString("user_response").contains("Successful")) {
+            Store.setString(context, "code", user.optString("code"));
+            Store.setString(context, "firstname", user.optString("firstname"));
+            Store.setString(context, "lastname", user.optString("lastname"));
+            Store.setString(context, "gender", user.optString("gender"));
+            Store.setString(context, "email", user.optString("email"));
+            Store.setString(context, "condition", user.optString("condition"));
+            Store.setString(context, "code", user.optString("code"));
+        }
 
+    }
+
+    public static void saveCalendarSetting(Context context, JSONObject response, JSONArray calendarSetting) {
+        JSONObject lastItem = calendarSetting.optJSONObject(calendarSetting.length() - 1);
+        Store.setString(context, "calEventNumLimit", lastItem.optString("event_num_limit"));
+        Store.setString(context, "calEventTimeLimit", lastItem.optString("event_time_limit"));
+    }
+
+    public static void saveExperimentSettings(Context context, JSONObject response, JSONObject experiment) {
+        if (response.optString("user_response").contains("Successful")) {
+            Store.setString(context, "expStart", experiment.optString("start"));
+            Store.setString(context, "expEnd", experiment.optString("end"));
+            Store.setString(context, "expTitle", experiment.optString("title"));
+        }
+    }
 }

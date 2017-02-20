@@ -65,9 +65,10 @@
     <string name="study_end">End Date</string>
     <string name="end_date_placeholder">when study ends...</string>
     <string name="start_date_placeholder">when study starts...</string>
-    <string name="info_calendar">calendar events appear here.</string>
+    <string name="info_calendar">googleCalendar events appear here.</string>
     <string name="info_rescuetime">rescuetime events appear here</string>
     <string name="need_to_connect">Connect to an experiment by selecting \"connect app\" from the side menu.</string>
     <string name="error_checking_conn_status">Error checking connectivity. Please contact researcher.</string>
+    <string name="desc_today_text">Today text shows here.</string>
 
 </resources>

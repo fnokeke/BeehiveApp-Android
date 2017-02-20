@@ -31,6 +31,20 @@
             android:text="@string/info_rescuetime"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
+        <TextView
+            android:id="@+id/tv_today_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/desc_today_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <ImageView
+            android:id="@+id/iv_today_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/desc_today_image"/>
+
     </TableLayout>
 
 </ScrollView>
