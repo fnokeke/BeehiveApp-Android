@@ -2,9 +2,14 @@ package io.smalldata.beehiveapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by fnokeke on 1/23/17.
@@ -42,6 +47,10 @@ public class Store {
         return getPrefs(context).getBoolean(key, false); // use false as default value
     }
 
+    public static void reset(Context context) {
+        getPrefs(context).edit().clear().apply();
+    }
+
 
     public static void save_user_features(Context context, JSONObject response, JSONObject user) {
         if (response.optString("user_response").contains("Successful")) {
@@ -56,17 +65,33 @@ public class Store {
 
     }
 
-    public static void saveCalendarSetting(Context context, JSONObject response, JSONArray calendarSetting) {
-        JSONObject lastItem = calendarSetting.optJSONObject(calendarSetting.length() - 1);
-        Store.setString(context, "calEventNumLimit", lastItem.optString("event_num_limit"));
-        Store.setString(context, "calEventTimeLimit", lastItem.optString("event_time_limit"));
-    }
+    @SuppressWarnings("unchecked")
+    public static void printAll(Context context) {
+        Map<String, ?> prefs = getPrefs(context).getAll();
+        for (String key : prefs.keySet()) {
+            Object pref = prefs.get(key);
+            String printVal = "";
+            if (pref instanceof Boolean) {
+                printVal =  key + " : " + (Boolean) pref;
+            }
+            if (pref instanceof Float) {
+                printVal =  key + " : " + (Float) pref;
+            }
+            if (pref instanceof Integer) {
+                printVal =  key + " : " + (Integer) pref;
+            }
+            if (pref instanceof Long) {
+                printVal =  key + " : " + (Long) pref;
+            }
+            if (pref instanceof String) {
+                printVal =  key + " : " + (String) pref;
+            }
+            if (pref instanceof Set<?>) {
+                printVal =  key + " : " + (Set<String>) pref;
+            }
 
-    public static void saveExperimentSettings(Context context, JSONObject response, JSONObject experiment) {
-        if (response.optString("user_response").contains("Successful")) {
-            Store.setString(context, "expStart", experiment.optString("start"));
-            Store.setString(context, "expEnd", experiment.optString("end"));
-            Store.setString(context, "expTitle", experiment.optString("title"));
+            Log.d("PrefValue", printVal);
+            // create a TextView with printVal as text and add to layout
         }
     }
 }

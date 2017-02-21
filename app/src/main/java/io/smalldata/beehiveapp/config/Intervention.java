@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.properties;
+package io.smalldata.beehiveapp.config;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,16 +21,23 @@ import io.smalldata.beehiveapp.utils.ImageSaver;
 import io.smalldata.beehiveapp.utils.Store;
 
 /**
- *
+ * All daily interventions assigned through Beehive Platform will be handled here.
  * Created by fnokeke on 2/15/17.
  */
 
-public class Intervention extends BaseProperty<JSONArray> {
+public class Intervention extends BaseConfig {
     private  Context mContext;
 
     public Intervention(Context context) {
-        super(context);
         mContext = context;
+    }
+
+    @Override
+    public void saveSettings(JSONArray interventions) {
+        if (interventions == null) {
+            interventions = new JSONArray();
+        }
+        setAllInterventions(interventions);
     }
 
     private static Boolean isForToday(JSONObject jo) {
@@ -41,15 +48,6 @@ public class Intervention extends BaseProperty<JSONArray> {
         long rightNow = java.util.Calendar.getInstance().getTimeInMillis();
 
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
-    }
-
-    @Override
-    public void save(JSONArray interventions) {
-
-        if (interventions == null) {
-            interventions = new JSONArray();
-        }
-        setAllInterventions(interventions);
     }
 
     private void setAllInterventions(JSONArray interventions) {
@@ -165,3 +163,5 @@ public class Intervention extends BaseProperty<JSONArray> {
 
 //                .load("http://10.144.46.211:5000/_uploads/photos/salamba-sarvangasana.jpg")
 }
+
+// TODO: 2/21/17 use NYC timezone

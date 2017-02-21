@@ -1,13 +1,14 @@
 package io.smalldata.beehiveapp.utils;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DownloadManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
@@ -28,10 +29,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.main.NotificationPublisher;
+
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 /**
  * Helper.java
@@ -105,7 +108,7 @@ public class Helper {
     }
 
     public static Date getDatetime(String datetimeStr, String format) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.locale);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.LOCALE);
         Date result = new Date();
         try {
             result = dateFormat.parse(datetimeStr);
@@ -113,22 +116,6 @@ public class Helper {
             pe.printStackTrace();
         }
         return result;
-    }
-
-    public static void showInstantNotif(Context context, String title, String message) {
-
-        Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, "org.md2k.moodsurfing");
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(android.R.drawable.ic_popup_reminder)
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setContentText(message);
-
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(Constants.GENERAL_NOTIF_ID, mBuilder.build());
     }
 
     public static void downloadImage(Context context, String image_url) {
@@ -201,10 +188,55 @@ public class Helper {
     }
 
     public static String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.locale).format(Calendar.getInstance().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(Calendar.getInstance().getTime());
     }
 
+    public static String getTimestamp(Calendar cal) {
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(cal.getTime());
+    }
 
+    public static void scheduleNotification(Context cxt, String title, String content, String appIdToLaunch, long alarmTime) {
+        Notification notification = createNotification(cxt, title, content, appIdToLaunch);
+        Intent notificationIntent = new Intent(cxt, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(cxt, 0, notificationIntent, FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC, alarmTime, 60*60*1000, pendingIntent);
+    }
+
+    private static Notification createNotification(Context context, String title, String content, String appIdToLaunch) {
+        Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, appIdToLaunch);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        PendingIntent dismissIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setContentIntent(contentIntent);
+        builder.setContentTitle(title)
+                .setContentText(content)
+                .setShowWhen(true)
+                .setAutoCancel(true)
+                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
+                .setSmallIcon(android.R.drawable.ic_popup_reminder);
+
+        return builder.build();
+    }
+
+    public static void showInstantNotif(Context context, String title, String message) {
+        int NOTIF_ID = 4444;
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(android.R.drawable.ic_notification_overlay)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setContentText(message);
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIF_ID, mBuilder.build());
+    }
 
 }
 

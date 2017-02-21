@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp;
+package io.smalldata.beehiveapp.main;
 
 //import android.support.v4.app.FragmentManager;
 
@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.HomeFragment;

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Beehive</string>
+    <string name="app_name">mBeehive</string>
     <string name="app_name_longer">Beehive Mobile</string>
     <string name="app_sub_info">companion to web platform</string>
 
@@ -18,7 +18,7 @@
     <string name="info_experiment">Experiment details.</string>
 
     <!-- experiment details view -->
-    <string name="study_code">Code</string>
+    <string name="study_code">Experiment Code</string>
     <string name="study_title">Title</string>
     <string name="study_code_placeholder">Your code</string>
     <string name="study_title_placeholder">Your title</string>

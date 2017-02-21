@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:label="@string/app_name_longer"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,11 +24,11 @@
         </activity>
 
         <receiver
-            android:name=".NotificationPublisher"
+            android:name=".main.NotificationPublisher"
             android:process=":remote" />
 
         <service
-            android:name=".RefreshService"
+            android:name=".main.RefreshService"
             android:enabled="true"
             android:exported="false"/>
 

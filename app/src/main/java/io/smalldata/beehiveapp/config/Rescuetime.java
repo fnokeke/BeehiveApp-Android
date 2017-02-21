@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.properties;
+package io.smalldata.beehiveapp.config;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,28 +19,48 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Store;
 
 /**
+ * Rescuetime configurations set on Beehive Platform will be handled here.
  * Created by fnokeke on 2/20/17.
  */
 
-public class Rescuetime {
+public class Rescuetime extends BaseConfig {
     private Context mContext;
     private boolean firstTime = true;
     private NotificationCompat.Builder mBuilder;
     private NotificationManager mNotificationManager;
     private final static int RESCUTIME_NOTIFICATION_ID = 8899;
-    private final static String KEY = "statsRT";
-    private static Locale locale = Locale.getDefault();
+    private final static String STATS_RT = "statsRT";
+
+    private final static String PRODUCTIVE_DURATION = "productive_duration";
+    private final static String DISTRACTED_DURATION = "distracted_duration";
+    private final static String PRODUCTIVE_MSG = "productive_msg";
+    private final static String DISTRACTED_MSG = "distracted_msg";
+    private final static String SHOW_STATS = "show_stats";
+
+    private static Locale locale = Constants.LOCALE;
 
 
     public Rescuetime(Context context) {
         mContext = context;
         mBuilder = new NotificationCompat.Builder(mContext);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    public void saveSettings(JSONArray rescuetimeConfig) {
+        if (rescuetimeConfig == null || rescuetimeConfig.length() == 0) return;
+
+        JSONObject lastItem = rescuetimeConfig.optJSONObject(rescuetimeConfig.length() - 1);
+        Store.setString(mContext, PRODUCTIVE_DURATION, lastItem.optString(PRODUCTIVE_DURATION));
+        Store.setString(mContext, DISTRACTED_DURATION, lastItem.optString(DISTRACTED_DURATION));
+        Store.setString(mContext, PRODUCTIVE_MSG, lastItem.optString(PRODUCTIVE_MSG));
+        Store.setString(mContext, DISTRACTED_MSG, lastItem.optString(DISTRACTED_MSG));
+        Store.setString(mContext, SHOW_STATS, lastItem.optString(SHOW_STATS));
     }
 
 
@@ -84,7 +104,7 @@ public class Rescuetime {
                     "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +
                     String.format(locale, "\n\nDistracted: %s hrs (%s%%)\n%s", dT, dP, dA) +
                     String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
-            Store.setString(mContext, KEY, statsRT);
+            Store.setString(mContext, STATS_RT, statsRT);
 
             String statusTitleRT = String.format("Updated stats (%s)", timeStamp);
             Store.setString(mContext, "statusTitleRT", statusTitleRT);
@@ -212,6 +232,6 @@ public class Rescuetime {
     }
 
     public String getStoredStats() {
-        return Store.getString(mContext, KEY);
+        return Store.getString(mContext, STATS_RT);
     }
 }

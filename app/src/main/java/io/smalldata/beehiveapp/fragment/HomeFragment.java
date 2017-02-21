@@ -18,14 +18,13 @@ import org.json.JSONObject;
 import java.io.File;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.api.CallAPI;
-import io.smalldata.beehiveapp.properties.GoogleCalendar;
-import io.smalldata.beehiveapp.properties.Rescuetime;
+import io.smalldata.beehiveapp.config.GoogleCalendar;
+import io.smalldata.beehiveapp.config.Rescuetime;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
-import io.smalldata.beehiveapp.properties.Intervention;
+import io.smalldata.beehiveapp.config.Intervention;
 
 /**
  * Fabian Okeke
@@ -75,7 +74,7 @@ public class HomeFragment extends Fragment {
 
         String eventNumLimit = googleCalendar.getNumLimit();
         String eventTimeLimit = googleCalendar.getTimeLimit();
-        String msg = String.format(Constants.locale, "Updated: %s\n\nEvent daily busy limit: %s events" +
+        String msg = String.format(Constants.LOCALE, "Updated: %s\n\nEvent daily busy limit: %s events" +
                 "\nEvent daily busy hours limit: %s hours\n\n %s",
                 Helper.getTimestamp(), eventNumLimit, eventTimeLimit, calendarTV.getText().toString());
         calendarTV.setText(msg);
@@ -89,7 +88,7 @@ public class HomeFragment extends Fragment {
 
         String todayText = todayIntervention.optString("treatment_text");
         String todayImage = todayIntervention.optString("treatment_image");
-        todayImage = todayImage.replace("http://localhost:5000", CallAPI.BASE_URL);
+//        todayImage = todayImage.replace("http://localhost:5000", CallAPI.BASE_URL);
 
 //        Picasso.with(mContext).load(todayImage).into(todayImageView);
         File imagePath = Intervention.getTodayImagePath(mContext);
@@ -117,40 +116,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-//    private void scheduleNotification(Context cxt, Notification notification, int delay) {
-//        Intent notificationIntent = new Intent(cxt, NotificationPublisher.class);
-//        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
-//        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(cxt, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        long futureInMillis = SystemClock.elapsedRealtime() + delay;
-//        AlarmManager alarmManager = (AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
-//    }
-
-//    private Notification getNotification(Context cxt, String title, String content) {
-//        Notification.Builder builder = new Notification.Builder(cxt);
-//
-//        Intent resultIntent = new Intent(cxt, MainActivity.class);
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(cxt);
-//        stackBuilder.addParentStack(MainActivity.class);
-//
-//        // Adds the Intent that starts the Activity to the top of the stack
-//        stackBuilder.addNextIntent(resultIntent);
-//        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//        builder.setContentIntent(resultPendingIntent);
-//
-//        builder.setContentTitle(title)
-//                .setContentText(content)
-//                .setShowWhen(true)
-//                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", resultPendingIntent) // #0
-//                .addAction(android.R.drawable.ic_input_delete, "Do later.", resultPendingIntent)  // #1
-//                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", resultPendingIntent) // #2
-//                .setSmallIcon(android.R.drawable.ic_menu_recent_history);
-//
-//        return builder.build();
-//    }
 
 }
 

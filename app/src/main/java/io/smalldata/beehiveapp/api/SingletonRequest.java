@@ -20,7 +20,6 @@ public class SingletonRequest {
     private SingletonRequest(Context context) {
         mCtx = context;
         mRequestQueue = getRequestQueue();
-
     }
 
     public static synchronized SingletonRequest getInstance(Context context) {

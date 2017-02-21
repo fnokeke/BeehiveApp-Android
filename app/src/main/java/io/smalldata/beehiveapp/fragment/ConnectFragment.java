@@ -16,15 +16,14 @@ import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.RefreshService;
+import io.smalldata.beehiveapp.main.RefreshService;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.properties.Intervention;
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
@@ -113,17 +112,13 @@ public class ConnectFragment extends Fragment {
     VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
+            Store.reset(mContext);
+
             Log.e("onConnectSuccess: ", result.toString());
             JSONObject response = result.optJSONObject("response");
 
             JSONObject experiment = result.optJSONObject("experiment");
-            Store.saveExperimentSettings(mContext, response, experiment);
-
-            JSONArray calendarSetting = experiment.optJSONArray("calendar_setting");
-            Store.saveCalendarSetting(mContext, response, calendarSetting);
-
-            JSONArray interventions = experiment.optJSONArray("interventions");
-            new Intervention(mContext).save(interventions);
+            new Experiment(mContext).save(experiment);
 
             JSONObject user = result.optJSONObject("user");
             Store.save_user_features(mContext, response, user);
@@ -139,7 +134,7 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectFailure(VolleyError error) {
             Log.e("onConnectFailure: ", error.toString());
-            String msg = String.format(Constants.locale, "Error submitting your bio. Please contact researcher. " +
+            String msg = String.format(Constants.LOCALE, "Error submitting your bio. Please contact researcher. " +
                     "Error details: %s", error.toString());
             Display.showError(connResponseTV, msg);
             error.printStackTrace();
@@ -241,7 +236,7 @@ public class ConnectFragment extends Fragment {
     }
 
     public void handleConnErrors(VolleyError error, String app) {
-        String msg = String.format(Constants.locale, "Error checking %s connectivity status. " +
+        String msg = String.format(Constants.LOCALE, "Error checking %s connectivity status. " +
                 "Please contact researcher. Error details: %s", app, error.toString());
         Display.showError(connResponseTV, msg);
         error.printStackTrace();
@@ -342,7 +337,6 @@ public class ConnectFragment extends Fragment {
         emailField.setText("");
         codeField.setText("");
     }
-
-
 }
+// TODO: 2/21/17 change classes to singleton instances
 

@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp;
+package io.smalldata.beehiveapp.main;
 
 import android.app.Service;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
-import io.smalldata.beehiveapp.properties.GoogleCalendar;
-import io.smalldata.beehiveapp.properties.Rescuetime;
+import io.smalldata.beehiveapp.config.GoogleCalendar;
+import io.smalldata.beehiveapp.config.Rescuetime;
 
 public class RefreshService extends Service {
 

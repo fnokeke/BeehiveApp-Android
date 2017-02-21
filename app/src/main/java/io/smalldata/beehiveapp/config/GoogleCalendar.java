@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.properties;
+package io.smalldata.beehiveapp.config;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,21 +17,43 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 /**
- *
+ * Google Calendar configurations set on Beehive Platform will be handled here.
  * Created by fnokeke on 2/15/17.
  */
 
-public class GoogleCalendar {
+public class GoogleCalendar extends BaseConfig {
     private Context mContext;
-    private static Locale locale = Locale.getDefault();
-    private final static String KEY = "statsCal";
+    private final static Locale locale = Constants.LOCALE;
+    private final static String STATS_CAL = "statsCal";
+    private final static String EVENT_NUM_LIMIT = "event_num_limit";
+    private final static String EVENT_TIME_LIMIT = "event_time_limit";
 
     public GoogleCalendar(Context context) {
         mContext = context;
+    }
+
+    public void saveSettings(JSONArray calendarConfig) {
+        if (calendarConfig == null || calendarConfig.length() == 0) return;
+        JSONObject lastItem = calendarConfig.optJSONObject(calendarConfig.length() - 1);
+        Store.setString(mContext, EVENT_NUM_LIMIT, lastItem.optString(EVENT_NUM_LIMIT));
+        Store.setString(mContext, EVENT_TIME_LIMIT, lastItem.optString(EVENT_TIME_LIMIT));
+    }
+
+    public String getStoredStats() {
+        return Store.getString(mContext, STATS_CAL);
+    }
+
+    public String getTimeLimit() {
+        return Store.getString(mContext, EVENT_TIME_LIMIT);
+
+    }
+    public String getNumLimit() {
+        return Store.getString(mContext, EVENT_NUM_LIMIT);
     }
 
     public void refreshAndStoreStats() {
@@ -67,7 +89,7 @@ public class GoogleCalendar {
                         "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
                         "Today Events:\n" + mJsonStr +
                         "Potential Notification Time:\n" + getFreeTime(mJsonArray) ;
-                Store.setString(mContext, KEY, statsCal);
+                Store.setString(mContext, STATS_CAL, statsCal);
             }
         }
 
@@ -214,15 +236,4 @@ public class GoogleCalendar {
         return calendar.get(Calendar.MINUTE);
     }
 
-
-    public String getStoredStats() {
-        return Store.getString(mContext, KEY);
-    }
-    public String getTimeLimit() {
-        return Store.getString(mContext, "calEventTimeLimit");
-
-    }
-    public String getNumLimit() {
-        return Store.getString(mContext, "calEventNumLimit");
-    }
 }

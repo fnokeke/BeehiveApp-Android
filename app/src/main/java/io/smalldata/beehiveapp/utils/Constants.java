@@ -8,7 +8,5 @@ import java.util.Locale;
  */
 
 public class Constants {
-
-    public static final Integer GENERAL_NOTIF_ID = 9999;
-    public static Locale locale = Locale.getDefault();
+    public static Locale LOCALE = Locale.getDefault();
 }
