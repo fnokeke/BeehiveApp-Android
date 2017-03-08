@@ -23,8 +23,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".main.NotificationPublisher" android:process=":remote"/>
 
         <receiver android:name=".main.StartMyServiceAtBootReceiver">
             <intent-filter>

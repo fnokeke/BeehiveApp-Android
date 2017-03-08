@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -61,6 +62,7 @@ public class HomeFragment extends Fragment {
         setResources();
         promptUserIfNotConnected();
         displayTodayIntervention();
+
     }
 
     private void setResources() {

@@ -61,32 +61,21 @@ public class Experiment {
 
         saveToggles(experiment);
 
-        JSONArray generalNotificationConfig = experiment.optJSONArray("general_notification_config");
-        new GeneralNotification(mContext).saveSettings(generalNotificationConfig);
-
-        JSONArray calendarConfig = experiment.optJSONArray("calendar_config");
-        new GoogleCalendar(mContext).saveSettings(calendarConfig);
-        Store.setBoolean(mContext, "calendar_config_is_active", calendarConfig.length() > 0);
-
-        JSONArray rescuetimeConfig = experiment.optJSONArray("rescuetime_config");
-        new Rescuetime(mContext).saveSettings(rescuetimeConfig);
-        Store.setBoolean(mContext, "rescuetime_config_is_active", rescuetimeConfig.length() > 0);
-
-        JSONArray screenUnlockConfig = experiment.optJSONArray("screen_unlock_config");
-        new ScreenUnlock(mContext).saveSettings(screenUnlockConfig);
-        if (screenUnlockConfig != null) {
-            Store.setBoolean(mContext, "screen_unlock_config_is_active", screenUnlockConfig.length() > 0);
-        } else {
-            Store.setBoolean(mContext, "screen_unlock_config_is_active", false);
-        }
-
-        JSONArray vibrationConfig = experiment.optJSONArray("vibration_config");
-        new Vibration(mContext).saveSettings(vibrationConfig);
-        if (vibrationConfig != null) {
-            Store.setBoolean(mContext, "vibration_config_is_active", vibrationConfig.length() > 0);
-        } else {
-            Store.setBoolean(mContext, "vibration_config_is_active", false);
-        }
+//        JSONArray calendarConfig = experiment.optJSONArray("calendar_config");
+//        new GoogleCalendar(mContext).saveSettings(calendarConfig);
+//        setConfigStatus(calendarConfig, "calendar_config_is_active");
+//
+//        JSONArray rescuetimeConfig = experiment.optJSONArray("rescuetime_config");
+//        new Rescuetime(mContext).saveSettings(rescuetimeConfig);
+//        setConfigStatus(rescuetimeConfig, "rescuetime_config_is_active");
+//
+//        JSONArray screenUnlockConfig = experiment.optJSONArray("screen_unlock_config");
+//        new ScreenUnlock(mContext).saveSettings(screenUnlockConfig);
+//        setConfigStatus(screenUnlockConfig, "screen_unlock_config_is_active");
+//
+//        JSONArray vibrationConfig = experiment.optJSONArray("vibration_config");
+//        new Vibration(mContext).saveSettings(vibrationConfig);
+//        setConfigStatus(vibrationConfig, "vibration_config_is_active");
 
         JSONArray interventions = experiment.optJSONArray("interventions");
         new Intervention(mContext).saveSettings(interventions);
@@ -124,5 +113,13 @@ public class Experiment {
 
     public String getInterventionReminderTime() {
         return Store.getString(mContext, Store.INTV_WHEN);
+    }
+
+    private void setConfigStatus(JSONArray config, String configName) {
+        if (config != null) {
+            Store.setBoolean(mContext, configName, config.length() > 0);
+        } else {
+            Store.setBoolean(mContext, configName, false);
+        }
     }
 }

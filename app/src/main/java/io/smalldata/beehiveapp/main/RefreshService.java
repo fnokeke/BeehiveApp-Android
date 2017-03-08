@@ -15,6 +15,7 @@ import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 public class RefreshService extends Service {
@@ -58,6 +59,7 @@ public class RefreshService extends Service {
             }
 
             serverHandler.postDelayed(this, 15 * 60 * 1000);
+            Helper.showInstantNotif(mContext, "15 mins restarted", Helper.getTimestamp(), "", 2002);
 
             Log.i("AlarmRefresh", "Now refreshing content.");
             JSONObject params = Experiment.getUserInfo(mContext);

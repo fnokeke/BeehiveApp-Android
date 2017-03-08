@@ -62,16 +62,14 @@ public class DailyReminder extends BaseConfig {
         cal.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
         cal.set(Calendar.SECOND, 0);
 
-        Calendar rightNow = Calendar.getInstance();
-        if (cal.getTimeInMillis() <= rightNow.getTimeInMillis()) return;
+//        Calendar rightNow = Calendar.getInstance();
+//        if (cal.getTimeInMillis() <= rightNow.getTimeInMillis()) return;
 
         String alarmTimeStr = Helper.getTimestamp(cal);
-        Helper.showInstantNotif(mContext, "Quick Reminder Tip", "Expect reminder at " + alarmTimeStr, "", 5555);
+//        Helper.showInstantNotif(mContext, "Upcoming Reminder Tip", "Expect reminder at " + alarmTimeStr, "", 5555);
 
-        GeneralNotification generalNotification = new GeneralNotification(mContext);
-        String title = generalNotification.getTitle().equals("") ? "1 new message." : generalNotification.getTitle();
-        String content = generalNotification.getContent().equals("") ? "Tap to view immediately." : generalNotification.getContent();
-        Helper.scheduleSingleAlarm(mContext, title, content, generalNotification.getAppId(), cal.getTimeInMillis());
+        JSONObject notif = Intervention.getNotifDetails(mContext);
+        Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), cal.getTimeInMillis());
     }
 
     void triggerSetReminder() {
@@ -100,9 +98,6 @@ public class DailyReminder extends BaseConfig {
         String alarmTimeStr = Helper.getTimestamp(futureAlarmMillis);
         Helper.showInstantNotif(mContext, "Reminder Tip", "Upcoming reminder at " + alarmTimeStr, "", 5555);
 
-        JSONObject notif = Intervention.getNotifDetails(mContext);
-        scheduleNotification(getNotification(notif.optString("content")), futureAlarmMillis, 15000, 6666);
-
 //        timeMillis = System.currentTimeMillis();
 //            Calendar rightNow = Calendar.getInstance();
 //            timeMillis = rightNow.getTimeInMillis();
@@ -115,27 +110,6 @@ public class DailyReminder extends BaseConfig {
 
     }
 
-
-    private void scheduleNotification(Notification notification, long actualTime, int delay, int id) {
-
-        Intent notificationIntent = new Intent(mContext, HomeFragment.class);
-        notificationIntent.putExtra("NOTIFICATION_ID", id);
-        notificationIntent.putExtra("NOTIFICATION", notification);
-
-        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-//                actualTime,
-                System.currentTimeMillis() + delay,
-                PendingIntent.getBroadcast(mContext, id, notificationIntent, PendingIntent.FLAG_ONE_SHOT));
-    }
-
-    private Notification getNotification(String content) {
-        Notification.Builder builder = new Notification.Builder(mContext);
-        builder.setContentText(content);
-        builder.setSmallIcon(R.drawable.ic_link);
-        return builder.getNotification();
-    }
 
     private int getRandomInt(int max) {
         return rand.nextInt(max);

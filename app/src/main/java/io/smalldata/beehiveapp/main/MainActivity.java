@@ -2,8 +2,10 @@ package io.smalldata.beehiveapp.main;
 
 //import android.support.v4.app.FragmentManager;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,10 +13,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fragment.AboutFragment;
@@ -22,6 +26,8 @@ import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
+import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,6 +39,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+
+        if (savedInstanceState == null) {
+            if(getIntent().getExtras()!=null){
+                String appIdToLaunch = getIntent().getExtras().getString("appId");
+                Toast.makeText(this, "Notification clicked at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
+                IntentLauncher.launchApp(mContext, appIdToLaunch);
+            }
+        }
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -53,6 +67,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        Log.i("IntentLauncher.class", intent.getExtras().toString());
+        if(!intent.getStringExtra("appId").equals("")){
+            Toast.makeText(getApplication(), "new phase works", Toast.LENGTH_SHORT).show();
+            Log.i("IntentLauncher.class", "appId worked");
+        } else {
+            Toast.makeText(getApplication(), "sorry dude", Toast.LENGTH_SHORT).show();
+            Log.i("IntentLauncher.class", "appId didn't work.");
+        }
+    }
 
     @Override
     public void onBackPressed() {

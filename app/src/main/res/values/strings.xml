@@ -69,13 +69,13 @@
     <string name="start_date_placeholder">when study starts...</string>
     <string name="info_calendar">googleCalendar events appear here.</string>
     <string name="info_rescuetime">rescuetime events appear here</string>
-    <string name="need_to_connect">Connect to an experiment by selecting \"connect app\" from the side menu.</string>
+    <string name="need_to_connect">Connect to an experiment by selecting <b>Connect App</b> from the <b>Side Menu</b>.</string>
     <string name="error_checking_conn_status">Error checking connectivity. Please contact researcher.</string>
     <string name="desc_today_text">Today text shows here.</string>
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
     <string name="home_details_desc">Your daily stats for all connected applications will appear here if the applications are enabled.
-        To enable a specific application, go to <em>Settings</em> from the <em>Side Menu</em> and select the application.
+        To enable a specific application, go to <b>Settings</b> from the <b>Side Menu</b> and select the application.
     </string>
     <string name="allSettingsPref">allSettingsPref</string>
     <string name="calendarPrefCategory">calendarPrefCategory</string>

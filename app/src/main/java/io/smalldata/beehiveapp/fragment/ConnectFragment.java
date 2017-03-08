@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -56,6 +57,7 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         populateConnectUI(Experiment.getUserInfo(mContext));
 
         Button submitBtn = (Button) mActivity.findViewById(R.id.btn_submit);

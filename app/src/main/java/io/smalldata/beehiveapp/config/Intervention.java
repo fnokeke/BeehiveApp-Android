@@ -88,7 +88,6 @@ public class Intervention extends BaseConfig {
                         Store.getString(context, Store.INTV_TREATMENT_TEXT),
                         Store.getString(context, Store.INTV_TREATMENT_IMAGE));
                 Log.e("BeehiveTreatment", msg);
-//                downloadImage(Store.getString(context, "iTreatmentImage"));
                 break;
             }
         }
