@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
@@ -30,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
@@ -72,7 +74,7 @@ public class Helper {
         }
     }
 
-    public static String getTodayDateStr() {
+    public static String getTodaysDateStr() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
@@ -96,19 +98,15 @@ public class Helper {
     }
 
 
-    public static Date getDatetime(String datetimeStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-05:00", Locale.US);
-        Date result = new Date();
-        try {
-            result = dateFormat.parse(datetimeStr);
-        } catch (ParseException pe) {
-            pe.printStackTrace();
-        }
-        return result;
+    public static Date getDatetimeGMT(String datetimeStr) {
+        String format = "yyyy-MM-dd'T'HH:mm:ss-05:00";
+        return getDatetimeGMT(datetimeStr, format);
     }
 
-    public static Date getDatetime(String datetimeStr, String format) {
+    public static Date getDatetimeGMT(String datetimeStr, String format) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.LOCALE);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
         Date result = new Date();
         try {
             result = dateFormat.parse(datetimeStr);
@@ -195,14 +193,29 @@ public class Helper {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(cal.getTime());
     }
 
-    public static void scheduleNotification(Context cxt, String title, String content, String appIdToLaunch, long alarmTime) {
-        Notification notification = createNotification(cxt, title, content, appIdToLaunch);
-        Intent notificationIntent = new Intent(cxt, NotificationPublisher.class);
+    public static String getTimestamp(long timeInMillis) {
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(timeInMillis);
+    }
+
+    public static void scheduleSingleAlarm(Context context, String title, String content, String appIdToLaunch, long alarmTime) {
+        Notification notification = createNotification(context, title, content, appIdToLaunch);
+        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(cxt, 0, notificationIntent, FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC, alarmTime, 60*60*1000, pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+    }
+
+    public static void scheduleRepeatingAlarm(Context context, String title, String content, String appIdToLaunch, long alarmTime) {
+        Notification notification = createNotification(context, title, content, appIdToLaunch);
+        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC, alarmTime, AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
     }
 
     private static Notification createNotification(Context context, String title, String content, String appIdToLaunch) {
@@ -219,19 +232,34 @@ public class Helper {
                 .setContentText(content)
                 .setShowWhen(true)
                 .setAutoCancel(true)
-                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
+                .setSound(getDefaultSound())
+//                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
+//                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
                 .setSmallIcon(android.R.drawable.ic_popup_reminder);
 
         return builder.build();
     }
 
-    public static void showInstantNotif(Context context, String title, String message) {
-        int NOTIF_ID = 4444;
+    private static Uri getDefaultSound() {
+        return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    }
+
+    public static void showInstantNotif(Context context, String title, String message, String appIdToLaunch, Integer NOTIF_ID) {
+        Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, appIdToLaunch);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        PendingIntent dismissIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(android.R.drawable.ic_notification_overlay)
+        mBuilder.setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setContentIntent(contentIntent)
+//                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
+//                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "No, thank you.", dismissIntent) // #2
                 .setAutoCancel(true)
                 .setContentTitle(title)
+                .setSound(getDefaultSound())
                 .setContentText(message);
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

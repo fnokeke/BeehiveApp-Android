@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/allSettingsPref">
 
-    <PreferenceCategory android:title="notifications">
+    <PreferenceCategory
+        android:key="@string/userTimeWindowCategory"
+        android:title="select 2 hr notification window">
+        <io.smalldata.beehiveapp.main.TimePreference
+            android:key="start_time_pref"
+            android:title="Start Time" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/calendarPrefCategory"
+        android:title="calendar">
         <CheckBoxPreference
-            android:key="parent_checkbox_preference"
-            android:summary="Displays daily notifications"
-            android:title="Enable notifications" />
+            android:key="show_calendar_pref"
+            android:summary="Displays calendar events on dashboard"
+            android:title="Show daily calendar events" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="reminders">
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/timeListArray"
-            android:entryValues="@array/timeListValues"
-            android:key="reminder_time"
-            android:summary="Set daily reminder time."
-            android:title="Set Reminder Interval" />
+    <PreferenceCategory
+        android:key="@string/rescuetimePrefCategory"
+        android:title="rescuetime">
+        <CheckBoxPreference
+            android:key="show_rescuetime_pref"
+            android:summary="Displays daily rescuetime stats on dashboard"
+            android:title="Show rescuetime stats" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="geofence">
+    <PreferenceCategory
+        android:key="@string/geofencePrefCategory"
+        android:title="geofence">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="geofence_notification"
+            android:key="geofence_pref_enable"
             android:summary="If enabled, app monitors when you enter or exit given location."
             android:title="Geofence Notification" />
 
         <EditTextPreference
-            android:dependency="geofence_notification"
-            android:key="geofence_address"
+            android:dependency="geofence_pref_enable"
+            android:key="geofence_pref_address"
             android:layout="?android:attr/preferenceLayoutChild"
             android:summary="Your full address to receive notification when you enter/exit location."
             android:title="Enter Address" />

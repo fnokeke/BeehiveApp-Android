@@ -5,15 +5,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
+
+import io.smalldata.beehiveapp.api.CallAPI;
+import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.utils.Store;
 
 public class RefreshService extends Service {
 
     private Handler serverHandler = new Handler();
     private Rescuetime rescueTime;
     private GoogleCalendar googleCalendar;
+    Context mContext;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -25,6 +34,7 @@ public class RefreshService extends Service {
         super.onCreate();
         rescueTime = new Rescuetime(this);
         googleCalendar = new GoogleCalendar(this);
+        mContext = this;
     }
 
     @Override
@@ -39,9 +49,41 @@ public class RefreshService extends Service {
 
     private Runnable serverUpdateTask = new Runnable() {
         public void run() {
-            rescueTime.refreshAndStoreStats();
-            googleCalendar.refreshAndStoreStats();
-            serverHandler.postDelayed(this, 30 * 60 * 1000);
+            if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE)) {
+                rescueTime.refreshAndStoreStats();
+            }
+
+            if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE)) {
+                googleCalendar.refreshAndStoreStats();
+            }
+
+            serverHandler.postDelayed(this, 15 * 60 * 1000);
+
+            Log.i("AlarmRefresh", "Now refreshing content.");
+            JSONObject params = Experiment.getUserInfo(mContext);
+            CallAPI.connectStudy(mContext, params, connectStudyResponseHandler);
+        }
+    };
+
+    VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
+        @Override
+        public void onConnectSuccess(JSONObject result) {
+            Store.reset(mContext);
+            Log.e("AlarmRefreshSuccess: ", result.toString());
+
+            Experiment experiment = new Experiment(mContext);
+            JSONObject experimentInfo = result.optJSONObject("experiment");
+            experiment.saveToggles(experimentInfo);
+            experiment.saveConfigs(experimentInfo);
+
+            JSONObject user = result.optJSONObject("user");
+            experiment.saveUserInfo(user);
+        }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {
+            Log.e("AlarmRefreshFailure: ", error.toString());
+            error.printStackTrace();
         }
     };
 

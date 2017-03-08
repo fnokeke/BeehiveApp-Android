@@ -19,10 +19,13 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Store;
+
+import static io.smalldata.beehiveapp.utils.Store.getString;
 
 /**
  * Rescuetime configurations set on Beehive Platform will be handled here.
@@ -63,21 +66,17 @@ public class Rescuetime extends BaseConfig {
         Store.setString(mContext, SHOW_STATS, lastItem.optString(SHOW_STATS));
     }
 
-
     public void refreshAndStoreStats() {
-
-        String email = Store.getString(mContext, "email");
+        String email = Experiment.getUserInfo(mContext).optString("email");
         if (email.equals("")) {
             return;
         }
 
         JSONObject params = new JSONObject();
         Helper.setJSONValue(params, "email", email);
-        Helper.setJSONValue(params, "date", Helper.getTodayDateStr());
-
+        Helper.setJSONValue(params, "date", Helper.getTodaysDateStr());
         CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
     }
-
 
     private VolleyJsonCallback getRTResponseHandler = new VolleyJsonCallback() {
         @Override
@@ -100,13 +99,13 @@ public class Rescuetime extends BaseConfig {
 
             String timeStamp = Helper.getTimestamp();
 
-            String statsRT = String.format(locale, "\n\nUPDATED RESCUETIME STATS (" + timeStamp + "): " +
+            String statsRT = String.format(locale, "Last Updated Rescuetime \n(" + timeStamp + "): " +
                     "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +
                     String.format(locale, "\n\nDistracted: %s hrs (%s%%)\n%s", dT, dP, dA) +
                     String.format(locale, "\n\nNeutral: %s hrs (%s%%)\n%s", nT, nP, nA);
             Store.setString(mContext, STATS_RT, statsRT);
 
-            String statusTitleRT = String.format("Updated stats (%s)", timeStamp);
+            String statusTitleRT = String.format("Last updated at %s", timeStamp);
             Store.setString(mContext, "statusTitleRT", statusTitleRT);
 
             String statusContentRT = String.format(locale,
@@ -206,7 +205,7 @@ public class Rescuetime extends BaseConfig {
         distrTotal /= 3600;
         neutralTotal /= 3600;
 
-        Double totalTime = focusedTotal + distrTotal + neutralTotal;
+        Double totalTime = focusedTotal + distrTotal + neutralTotal + 0.001; // add 0.001 to prevent 0/0 when total == 0
         String focusedPercent = String.format(locale, "%.1f", 100.0 * focusedTotal / totalTime);
         String distrPercent = String.format(locale, "%.1f", 100.0 * distrTotal / totalTime);
         String neutralPercent = String.format(locale, "%.1f", 100.0 * neutralTotal / totalTime);
@@ -232,6 +231,6 @@ public class Rescuetime extends BaseConfig {
     }
 
     public String getStoredStats() {
-        return Store.getString(mContext, STATS_RT);
+        return getString(mContext, STATS_RT);
     }
 }

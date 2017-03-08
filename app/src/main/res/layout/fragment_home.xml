@@ -15,6 +15,16 @@
             android:layout_height="wrap_content"
             android:text="@string/need_to_connect"
             android:textColor="@color/colorPrimary"
+            android:padding="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/tv_home_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/home_details_desc"
+            android:textColor="@color/colorPrimary"
+            android:padding="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
@@ -22,12 +32,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/info_calendar"
+            android:padding="5dp"
+            android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_rescuetime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:padding="5dp"
             android:text="@string/info_rescuetime"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -36,12 +50,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/desc_today_text"
+            android:padding="5dp"
+            android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <ImageView
             android:id="@+id/iv_today_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/desc_today_image"/>
 

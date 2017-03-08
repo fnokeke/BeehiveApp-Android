@@ -5,17 +5,24 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import io.smalldata.beehiveapp.config.DailyReminder;
 import io.smalldata.beehiveapp.config.GeneralNotification;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
 import io.smalldata.beehiveapp.config.ScreenUnlock;
 import io.smalldata.beehiveapp.config.Vibration;
+import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static io.smalldata.beehiveapp.utils.Store.CALENDAR_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.GEOFENCE_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.IMAGE_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.NOTIF_WINDOW_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.RESCUETIME_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.TEXT_FEATURE;
+
 /**
- *
+ * Save experiment details for offline access
  * Created by fnokeke on 2/21/17.
  */
 
@@ -27,34 +34,95 @@ public class Experiment {
         mContext = context;
     }
 
-    public void save(JSONObject experiment) {
-        if (experiment.optString("start").equals("")) return;
+    void saveToggles(JSONObject experiment) {
+        if (experiment == null) return;
+        Store.setBoolean(mContext, CALENDAR_FEATURE, experiment.optBoolean(CALENDAR_FEATURE));
+        Store.setBoolean(mContext, GEOFENCE_FEATURE, experiment.optBoolean(GEOFENCE_FEATURE));
+        Store.setBoolean(mContext, IMAGE_FEATURE, experiment.optBoolean(IMAGE_FEATURE));
+        Store.setBoolean(mContext, NOTIF_WINDOW_FEATURE, experiment.optBoolean(NOTIF_WINDOW_FEATURE));
+        Store.setBoolean(mContext, RESCUETIME_FEATURE, experiment.optBoolean(RESCUETIME_FEATURE));
+        Store.setBoolean(mContext, TEXT_FEATURE, experiment.optBoolean(TEXT_FEATURE));
+        Store.setString(mContext, "expTitle", experiment.optString("title", ""));
         Store.setString(mContext, "expStart", experiment.optString("start"));
         Store.setString(mContext, "expEnd", experiment.optString("end"));
-        Store.setString(mContext, "expTitle", experiment.optString("title"));
+    }
+
+    public static JSONObject getExperimentInfo(Context context) {
+        JSONObject experimentInfo = new JSONObject();
+        Helper.setJSONValue(experimentInfo, "start", Store.getString(context, "expStart"));
+        Helper.setJSONValue(experimentInfo, "end", Store.getString(context, "expEnd"));
+        Helper.setJSONValue(experimentInfo, "title", Store.getString(context, "expTitle"));
+        Helper.setJSONValue(experimentInfo, "code", Store.getString(context, "code"));
+        return experimentInfo;
+    }
+
+    public void saveConfigs(JSONObject experiment) {
+        if (experiment == null) return;
+
+        saveToggles(experiment);
 
         JSONArray generalNotificationConfig = experiment.optJSONArray("general_notification_config");
         new GeneralNotification(mContext).saveSettings(generalNotificationConfig);
 
-        JSONArray interventions = experiment.optJSONArray("interventions");
-        new Intervention(mContext).saveSettings(interventions);
-
         JSONArray calendarConfig = experiment.optJSONArray("calendar_config");
         new GoogleCalendar(mContext).saveSettings(calendarConfig);
-
-        JSONArray dailyReminderConfig = experiment.optJSONArray("daily_reminder_config");
-        new DailyReminder(mContext).saveSettings(dailyReminderConfig);
+        Store.setBoolean(mContext, "calendar_config_is_active", calendarConfig.length() > 0);
 
         JSONArray rescuetimeConfig = experiment.optJSONArray("rescuetime_config");
         new Rescuetime(mContext).saveSettings(rescuetimeConfig);
+        Store.setBoolean(mContext, "rescuetime_config_is_active", rescuetimeConfig.length() > 0);
 
         JSONArray screenUnlockConfig = experiment.optJSONArray("screen_unlock_config");
         new ScreenUnlock(mContext).saveSettings(screenUnlockConfig);
+        if (screenUnlockConfig != null) {
+            Store.setBoolean(mContext, "screen_unlock_config_is_active", screenUnlockConfig.length() > 0);
+        } else {
+            Store.setBoolean(mContext, "screen_unlock_config_is_active", false);
+        }
 
         JSONArray vibrationConfig = experiment.optJSONArray("vibration_config");
         new Vibration(mContext).saveSettings(vibrationConfig);
+        if (vibrationConfig != null) {
+            Store.setBoolean(mContext, "vibration_config_is_active", vibrationConfig.length() > 0);
+        } else {
+            Store.setBoolean(mContext, "vibration_config_is_active", false);
+        }
+
+        JSONArray interventions = experiment.optJSONArray("interventions");
+        new Intervention(mContext).saveSettings(interventions);
 
         Store.printAll(mContext);
     }
 
+    public void saveUserInfo(JSONObject user) {
+        if (user == null) return;
+        Store.setString(mContext, "code", user.optString("code"));
+        Store.setString(mContext, "firstname", user.optString("firstname"));
+        Store.setString(mContext, "lastname", user.optString("lastname"));
+        Store.setString(mContext, "gender", user.optString("gender"));
+        Store.setString(mContext, "email", user.optString("email"));
+        Store.setString(mContext, "condition", user.optString("condition"));
+    }
+
+    public static JSONObject getUserInfo(Context context) {
+        JSONObject userInfo = new JSONObject();
+        Helper.setJSONValue(userInfo, "firstname", Store.getString(context, "firstname"));
+        Helper.setJSONValue(userInfo, "lastname", Store.getString(context, "lastname"));
+        Helper.setJSONValue(userInfo, "email", Store.getString(context, "email"));
+        Helper.setJSONValue(userInfo, "gender", Store.getString(context, "gender"));
+        Helper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
+        return userInfo;
+    }
+
+    public boolean notif_window_enabled() {
+        return Store.getBoolean(mContext, Store.NOTIF_WINDOW_FEATURE);
+    }
+
+    public int getWindowMintues() {
+        return Store.getInt(mContext, Store.INTV_USER_WINDOW_MINS);
+    }
+
+    public String getInterventionReminderTime() {
+        return Store.getString(mContext, Store.INTV_WHEN);
+    }
 }

@@ -32,7 +32,7 @@ import io.smalldata.beehiveapp.utils.Store;
 
 
 /**
- *
+ * Connect user to Beehive experiment platform
  * Created by fnokeke on 1/20/17.
  */
 
@@ -48,17 +48,15 @@ public class ConnectFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mActivity = getActivity();
+        mContext = getActivity();
         mActivity.setTitle("Connect to Study");
-
         return inflater.inflate(R.layout.fragment_connect, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mContext = getActivity();
-
-        populateFieldsFromStore();
+        populateConnectUI(Experiment.getUserInfo(mContext));
 
         Button submitBtn = (Button) mActivity.findViewById(R.id.btn_submit);
         submitBtn.setOnClickListener(submitBtnHandler);
@@ -77,16 +75,6 @@ public class ConnectFragment extends Fragment {
         howToConnTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
     }
 
-    public void populateFieldsFromStore() {
-        JSONObject fields = new JSONObject();
-        Helper.setJSONValue(fields, "firstname", Store.getString(mContext, "firstname"));
-        Helper.setJSONValue(fields, "lastname", Store.getString(mContext, "lastname"));
-        Helper.setJSONValue(fields, "email", Store.getString(mContext, "email"));
-        Helper.setJSONValue(fields, "gender", Store.getString(mContext, "gender"));
-        Helper.setJSONValue(fields, "code", Store.getString(mContext, "code"));
-        populateConnectUI(fields);
-    }
-
     View.OnClickListener resetBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             resetFormInput();
@@ -100,8 +88,6 @@ public class ConnectFragment extends Fragment {
             JSONObject toParams = getFormInput();
             Helper.copy(fromPhoneDetails, toParams);
 
-            Helper.showInstantNotif(mContext, "One new message waiting for you.", "Tap to immediately see content.");
-
             Display.showBusy(mContext, "Transferring your bio...");
             CallAPI.connectStudy(mContext, toParams, connectStudyResponseHandler);
             Log.w("Connect study details: ", toParams.toString());
@@ -112,23 +98,21 @@ public class ConnectFragment extends Fragment {
     VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
+            Log.i("onConnectStudySuccess", result.toString());
             Store.reset(mContext);
 
-            Log.e("onConnectSuccess: ", result.toString());
-            JSONObject response = result.optJSONObject("response");
-
-            JSONObject experiment = result.optJSONObject("experiment");
-            new Experiment(mContext).save(experiment);
+            Experiment experiment = new Experiment(mContext);
+            JSONObject experimentInfo = result.optJSONObject("experiment");
+            experiment.saveConfigs(experimentInfo);
 
             JSONObject user = result.optJSONObject("user");
-            Store.save_user_features(mContext, response, user);
+            experiment.saveUserInfo(user);
 
-            updateFormInput(result);
+            JSONObject response = result.optJSONObject("response");
+            updateFormInput(response, user);
+
             Display.dismissBusy();
-
             RefreshService.start(mContext);
-//            JSONObject params = getInterventionParams();
-//            CallAPI.fetchIntervention(mContext, params, intvResponseHandler);
         }
 
         @Override
@@ -195,27 +179,6 @@ public class ConnectFragment extends Fragment {
         }
     };
 
-//    private JSONObject getInterventionParams() {
-//        JSONObject params = new JSONObject();
-//        Helper.setJSONValue(params, "code", Store.getString(mContext, "code"));
-//        return params;
-//    }
-
-
-//    VolleyJsonCallback intvResponseHandler = new VolleyJsonCallback() {
-//        @Override
-//        public void onConnectSuccess(JSONObject result) {
-//            Log.e("BeehiveIntvSuccess:", result.toString());
-//            JSONArray interventions = result.optJSONArray("intv_response");
-//            new Intervention(mContext).save(interventions);
-//        }
-//
-//        @Override
-//        public void onConnectFailure(VolleyError error) {
-//            Log.d("BeehiveIntvError:", error.toString());
-//            error.printStackTrace();
-//        }
-//    };
 
     public void handleConnSuccess(JSONObject result, String app) {
         Log.e(app + "ResponseHandler", result.toString());
@@ -249,40 +212,23 @@ public class ConnectFragment extends Fragment {
         EditText codeField = (EditText) getActivity().findViewById(R.id.et_code);
         Spinner genderField = (Spinner) getActivity().findViewById(R.id.spinner_gender);
 
-        JSONObject map = new JSONObject();
-        Helper.setJSONValue(map, "firstname", fnField.getText().toString());
-        Helper.setJSONValue(map, "lastname", lnField.getText().toString());
-        Helper.setJSONValue(map, "email", emailField.getText().toString());
-        Helper.setJSONValue(map, "code", codeField.getText().toString());
-        Helper.setJSONValue(map, "gender", genderField.getSelectedItem().toString());
-        return map;
+        JSONObject userInfo = new JSONObject();
+        Helper.setJSONValue(userInfo, "firstname", fnField.getText().toString());
+        Helper.setJSONValue(userInfo, "lastname", lnField.getText().toString());
+        Helper.setJSONValue(userInfo, "email", emailField.getText().toString());
+        Helper.setJSONValue(userInfo, "code", codeField.getText().toString());
+        Helper.setJSONValue(userInfo, "gender", genderField.getSelectedItem().toString());
+        return userInfo;
     }
 
-    public void updateFormInput(JSONObject result) {
-        Log.e("updateFormInput", result.toString());
-
-        if (result.optString("user").equals("")) {
+    public void updateFormInput(JSONObject response, JSONObject user) {
+        if (response.optString("user_response").equals("")) {
             Display.showError(connResponseTV, R.string.invalid_code);
             resetFormInput();
-            return;
-        }
-
-        JSONObject response = result.optJSONObject("response");
-        Display.showSuccess(connResponseTV, response.optString("user_response"));
-
-        try {
-
-            JSONObject user = new JSONObject(result.getString("user"));
+        } else {
+            Display.showSuccess(connResponseTV, response.optString("user_response"));
             populateConnectUI(user);
-            storeUser(user);
-
-            JSONObject experiment = new JSONObject(result.getString("experiment"));
-            storeExperiment(experiment);
-
-        } catch (JSONException je) {
-            je.printStackTrace();
         }
-
     }
 
     public void populateConnectUI(JSONObject user) {
@@ -297,31 +243,8 @@ public class ConnectFragment extends Fragment {
         codeField.setText(user.optString("code"));
     }
 
-    public void storeUser(JSONObject user) {
-        Log.e("storeUser: ", user.toString());
-        Store.setString(mContext, "firstname", user.optString("firstname"));
-        Store.setString(mContext, "lastname", user.optString("lastname"));
-        Store.setString(mContext, "email", user.optString("email"));
-        Store.setString(mContext, "gender", user.optString("gender"));
-        Store.setString(mContext, "code", user.optString("code"));
-        Store.setInt(mContext, "condition", user.optInt("condition", 1));
-    }
-
-    public void storeExperiment(JSONObject experiment) {
-        Store.setBoolean(mContext, "actuators", experiment.optBoolean("actuators"));
-        Store.setBoolean(mContext, "geofence", experiment.optBoolean("geofence"));
-        Store.setBoolean(mContext, "actuators", experiment.optBoolean("reminder"));
-        Store.setBoolean(mContext, "text", experiment.optBoolean("text"));
-        Store.setBoolean(mContext, "rescuetime", experiment.optBoolean("rescuetime"));
-        Store.setBoolean(mContext, "reminder", experiment.optBoolean("reminder"));
-        Store.setBoolean(mContext, "image", experiment.optBoolean("image"));
-        Store.setBoolean(mContext, "aware", experiment.optBoolean("aware"));
-        Store.setString(mContext, "title", experiment.optString("title", ""));
-        Store.setString(mContext, "start", experiment.optString("start"));
-        Store.setString(mContext, "end", experiment.optString("end"));
-    }
-
     public void resetFormInput() {
+        Store.reset(mContext);
 
         Display.hide(howToConnTV);
         Display.hide(calRTResponseTV);
@@ -338,5 +261,32 @@ public class ConnectFragment extends Fragment {
         codeField.setText("");
     }
 }
+
 // TODO: 2/21/17 change classes to singleton instances
 
+
+//            JSONObject params = getInterventionParams();
+//            CallAPI.fetchIntervention(mContext, params, intvResponseHandler);
+
+
+//    private JSONObject getInterventionParams() {
+//        JSONObject params = new JSONObject();
+//        Helper.setJSONValue(params, "code", Store.getString(mContext, "code"));
+//        return params;
+//    }
+
+
+//    VolleyJsonCallback intvResponseHandler = new VolleyJsonCallback() {
+//        @Override
+//        public void onConnectSuccess(JSONObject result) {
+//            Log.e("BeehiveIntvSuccess:", result.toString());
+//            JSONArray interventions = result.optJSONArray("intv_response");
+//            new Intervention(mContext).saveConfigs(interventions);
+//        }
+//
+//        @Override
+//        public void onConnectFailure(VolleyError error) {
+//            Log.d("BeehiveIntvError:", error.toString());
+//            error.printStackTrace();
+//        }
+//    };

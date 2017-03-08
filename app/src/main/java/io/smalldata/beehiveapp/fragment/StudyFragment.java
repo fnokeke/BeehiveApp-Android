@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,18 +20,24 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Store;
+
+import static io.smalldata.beehiveapp.R.id.studyCodeTV;
+import static io.smalldata.beehiveapp.R.id.studyTitleTV;
 
 //import android.support.v4.app.Fragment;
 
 /**
+ * Show details of connected experiment
  * Created by fnokeke on 1/20/17.
  */
 
 public class StudyFragment extends Fragment {
     Context mContext;
     Activity mActivity;
-    Locale locale = Locale.getDefault();
+    Locale locale = Constants.LOCALE;
 
     @Nullable
     @Override
@@ -44,16 +52,18 @@ public class StudyFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mContext = getActivity();
+        JSONObject experimentInfo = Experiment.getExperimentInfo(mContext);
 
         TextView studyCodeTV = (TextView) mActivity.findViewById(R.id.studyCodeTV);
-        studyCodeTV.setText(Store.getString(mContext, "code"));
+        studyCodeTV.setText(experimentInfo.optString("code"));
 
         TextView studyTitleTV = (TextView) mActivity.findViewById(R.id.studyTitleTV);
-        studyTitleTV.setText(Store.getString(mContext, "title"));
+        studyTitleTV.setText(experimentInfo.optString("title"));
 
-        String start = Store.getString(mContext, "start");
-        String end = Store.getString(mContext, "end");
+        String start = experimentInfo.optString("start");
+        String end = experimentInfo.optString("end");
 
         if (start.equals("") || end.equals("")) return;
 

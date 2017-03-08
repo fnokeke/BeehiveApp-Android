@@ -17,9 +17,12 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
+
+import static io.smalldata.beehiveapp.utils.Store.getString;
 
 /**
  * Google Calendar configurations set on Beehive Platform will be handled here.
@@ -30,8 +33,10 @@ public class GoogleCalendar extends BaseConfig {
     private Context mContext;
     private final static Locale locale = Constants.LOCALE;
     private final static String STATS_CAL = "statsCal";
-    private final static String EVENT_NUM_LIMIT = "event_num_limit";
+    private final static String EVENT_COUNT_LIMIT = "event_num_limit";
     private final static String EVENT_TIME_LIMIT = "event_time_limit";
+    private static final String CURRENT_EVENT_NUM = "current_event_num";
+    private static final String CURRENT_EVENT_HOURS = "current_event_hours";
 
     public GoogleCalendar(Context context) {
         mContext = context;
@@ -40,30 +45,37 @@ public class GoogleCalendar extends BaseConfig {
     public void saveSettings(JSONArray calendarConfig) {
         if (calendarConfig == null || calendarConfig.length() == 0) return;
         JSONObject lastItem = calendarConfig.optJSONObject(calendarConfig.length() - 1);
-        Store.setString(mContext, EVENT_NUM_LIMIT, lastItem.optString(EVENT_NUM_LIMIT));
+        Store.setString(mContext, EVENT_COUNT_LIMIT, lastItem.optString(EVENT_COUNT_LIMIT));
         Store.setString(mContext, EVENT_TIME_LIMIT, lastItem.optString(EVENT_TIME_LIMIT));
     }
 
     public String getStoredStats() {
-        return Store.getString(mContext, STATS_CAL);
+        return getString(mContext, STATS_CAL);
     }
 
-    public String getTimeLimit() {
-        return Store.getString(mContext, EVENT_TIME_LIMIT);
-
+    public void fireEventNotif() {
+        refreshAndStoreStats();
+        GeneralNotification generalNotification = new GeneralNotification(mContext);
+        String title = "Personal MoodSurfing Check-in";
+        String content = "Tap to begin your 5 minutes of stress relief.";
+        Helper.showInstantNotif(mContext, title, content, generalNotification.getAppId(), 4444);
     }
-    public String getNumLimit() {
-        return Store.getString(mContext, EVENT_NUM_LIMIT);
+
+    public boolean configIsActive() {
+        String eventCountLimit = Store.getString(mContext, EVENT_COUNT_LIMIT);
+        String eventTimeLimit = Store.getString(mContext, EVENT_TIME_LIMIT);
+        return !eventCountLimit.equals("") || !eventTimeLimit.equals("");
     }
 
     public void refreshAndStoreStats() {
-        String email = Store.getString(mContext, "email");
-        if (email.equals("")) { return; }
+        String email = Experiment.getUserInfo(mContext).optString("email");
+        if (email.equals("")) {
+            return;
+        }
 
         JSONObject params = new JSONObject();
         Helper.setJSONValue(params, "email", email);
-        Helper.setJSONValue(params, "date", Helper.getTodayDateStr());
-
+        Helper.setJSONValue(params, "date", Helper.getTodaysDateStr());
         CallAPI.getAllCalEvents(mContext, params, showCalResponseHandler);
     }
 
@@ -74,11 +86,12 @@ public class GoogleCalendar extends BaseConfig {
             Log.d("onConnectSuccess: ", resultStr);
             if (result.optInt("events") == -1) {
                 Store.setString(mContext, "errorCal", "There are no available calendar events.");
+                setCurrentEventCount(0);
+                setCurrentEventHours(0);
                 return;
             }
 
             JSONArray mJsonArray = result.optJSONArray("events");
-
             if (mJsonArray != null) {
                 String mJsonStr = getPrettyEvents(mJsonArray);
                 long busyTimeMs = computeBusyTimeMs(mJsonArray);
@@ -88,8 +101,10 @@ public class GoogleCalendar extends BaseConfig {
                 String statsCal = "No of events today: " + noOfTodayEvents.toString() + "\n\n" +
                         "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
                         "Today Events:\n" + mJsonStr +
-                        "Potential Notification Time:\n" + getFreeTime(mJsonArray) ;
+                        "Potential Notification Time:\n" + getFreeTime(mJsonArray);
                 Store.setString(mContext, STATS_CAL, statsCal);
+                setCurrentEventCount(noOfTodayEvents);
+                setCurrentEventHours(busyHours);
             }
         }
 
@@ -98,6 +113,34 @@ public class GoogleCalendar extends BaseConfig {
             handleVolleyError(error);
         }
     };
+
+    public float getEventHoursLimit() {
+        String hours = Store.getString(mContext, EVENT_TIME_LIMIT);
+        if (hours.equals("")) return 0;
+        return Float.parseFloat(hours);
+    }
+
+    public int getEventCountLimit() {
+        String limit = Store.getString(mContext, EVENT_COUNT_LIMIT);
+        if (limit.equals("")) return 0;
+        return Integer.parseInt(limit);
+    }
+
+    private void setCurrentEventCount(int num) {
+        Store.setInt(mContext, CURRENT_EVENT_NUM, num);
+    }
+
+    private int getCurrentEventCount() {
+        return Store.getInt(mContext, CURRENT_EVENT_NUM);
+    }
+
+    private void setCurrentEventHours(float num) {
+        Store.setFloat(mContext, CURRENT_EVENT_HOURS, num);
+    }
+
+    private float getCurrentEventHours() {
+        return Store.getFloat(mContext, CURRENT_EVENT_HOURS);
+    }
 
     private Integer countTodayEvents(JSONArray ja) {
         JSONObject jo;
@@ -126,10 +169,10 @@ public class GoogleCalendar extends BaseConfig {
             // use only events with specific begin/end time (not just begin/end date)
             if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
                 start = jo.optJSONObject("start").optString("dateTime");
-                startDT = Helper.getDatetime(start);
+                startDT = Helper.getDatetimeGMT(start);
 
                 end = jo.optJSONObject("end").optString("dateTime");
-                endDT = Helper.getDatetime(end);
+                endDT = Helper.getDatetimeGMT(end);
 
                 totalMs += endDT.getTime() - startDT.getTime();
             }
@@ -192,10 +235,10 @@ public class GoogleCalendar extends BaseConfig {
             // use only events with specific begin/end time (not just begin/end date)
             if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
                 start = jo.optJSONObject("start").optString("dateTime");
-                startDT = Helper.getDatetime(start);
+                startDT = Helper.getDatetimeGMT(start);
 
                 end = jo.optJSONObject("end").optString("dateTime");
-                endDT = Helper.getDatetime(end);
+                endDT = Helper.getDatetimeGMT(end);
 
                 removeBusyTime(freeHoursOfDay, startDT, endDT);
             }
@@ -206,7 +249,7 @@ public class GoogleCalendar extends BaseConfig {
 
     private static String prettyHours(SparseArray freeHoursOfDay) {
         String results = "";
-        for(int i = 0; i < freeHoursOfDay.size(); i++) {
+        for (int i = 0; i < freeHoursOfDay.size(); i++) {
             results += freeHoursOfDay.valueAt(i).toString() + " ";
         }
         return results;

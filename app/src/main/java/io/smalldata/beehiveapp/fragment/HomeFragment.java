@@ -20,11 +20,12 @@ import java.io.File;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
-import io.smalldata.beehiveapp.utils.Store;
 import io.smalldata.beehiveapp.config.Intervention;
+import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Fabian Okeke
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment {
     private TextView needToConnectTV;
     private TextView rescuetimeTV;
     private TextView calendarTV;
+    private TextView homeDetailsTV;
     private TextView todayTV;
     private ImageView todayImageView;
     private Intervention intervention;
@@ -56,42 +58,66 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Rescuetime rescuetime = new Rescuetime(mContext);
-        rescuetime.refreshAndStoreStats();
-        rescuetimeTV = (TextView) mActivity.findViewById(R.id.tv_rescuetime);
-        Display.showSuccess(rescuetimeTV, rescuetime.getStoredStats());
-
-        GoogleCalendar googleCalendar = new GoogleCalendar(mContext);
-        googleCalendar.refreshAndStoreStats();
-        calendarTV = (TextView) mActivity.findViewById(R.id.tv_calendar);
-        Display.showSuccess(calendarTV, googleCalendar.getStoredStats());
-
-        intervention = new Intervention(mContext);
-        needToConnectTV = (TextView) mActivity.findViewById(R.id.tv_need_to_connect);
-        todayTV = (TextView) mActivity.findViewById(R.id.tv_today_text);
-        todayImageView = (ImageView) mActivity.findViewById(R.id.iv_today_image);
-
-        String eventNumLimit = googleCalendar.getNumLimit();
-        String eventTimeLimit = googleCalendar.getTimeLimit();
-        String msg = String.format(Constants.LOCALE, "Updated: %s\n\nEvent daily busy limit: %s events" +
-                "\nEvent daily busy hours limit: %s hours\n\n %s",
-                Helper.getTimestamp(), eventNumLimit, eventTimeLimit, calendarTV.getText().toString());
-        calendarTV.setText(msg);
-
-        checkPromptToConnect();
-        setTodayTreatment();
+        setResources();
+        promptUserIfNotConnected();
+        displayTodayIntervention();
     }
 
-    private void setTodayTreatment() {
-        JSONObject todayIntervention = intervention.getTodayIntervention(mContext);
+    private void setResources() {
+        rescuetimeTV = (TextView) mActivity.findViewById(R.id.tv_rescuetime);
+        calendarTV = (TextView) mActivity.findViewById(R.id.tv_calendar);
+        needToConnectTV = (TextView) mActivity.findViewById(R.id.tv_need_to_connect);
+        homeDetailsTV = (TextView) mActivity.findViewById(R.id.tv_home_details);
+        todayTV = (TextView) mActivity.findViewById(R.id.tv_today_text);
+        todayImageView = (ImageView) mActivity.findViewById(R.id.iv_today_image);
+        intervention = new Intervention(mContext);
+    }
 
+    private void promptUserIfNotConnected() {
+        String email = Experiment.getUserInfo(mContext).optString("email");
+        if (email.equals("")) {
+            needToConnectTV.setVisibility(View.VISIBLE);
+            rescuetimeTV.setVisibility(View.GONE);
+            calendarTV.setVisibility(View.GONE);
+        } else {
+            needToConnectTV.setVisibility(View.GONE);
+        }
+    }
+
+    private void displayTodayIntervention() {
+
+        JSONObject todayIntervention = intervention.getTodayIntervention(mContext);
+        if (Store.getBoolean(mContext, Store.TEXT_FEATURE) || Store.getBoolean(mContext, Store.IMAGE_FEATURE)) {
+            showTextImageIntervention(todayIntervention);
+        }
+
+        homeDetailsTV.setVisibility(View.VISIBLE);
+        if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE) && SettingsFragment.canShowRescuetimeInfo(mContext)) {
+            Rescuetime rescuetime = new Rescuetime(mContext);
+            rescuetime.refreshAndStoreStats();
+            Display.showSuccess(rescuetimeTV, rescuetime.getStoredStats());
+            homeDetailsTV.setVisibility(View.GONE);
+        }
+
+        if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE) && SettingsFragment.canShowCalendarInfo(mContext)) {
+            GoogleCalendar googleCalendar = new GoogleCalendar(mContext);
+            googleCalendar.refreshAndStoreStats();
+            Display.showSuccess(calendarTV, googleCalendar.getStoredStats());
+
+            String msg = String.format(Constants.LOCALE, "Updated: %s\n\n %s", Helper.getTimestamp(), calendarTV.getText().toString());
+            calendarTV.setText(msg);
+            homeDetailsTV.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void showTextImageIntervention(JSONObject todayIntervention) {
         String todayText = todayIntervention.optString("treatment_text");
         String todayImage = todayIntervention.optString("treatment_image");
-//        todayImage = todayImage.replace("http://localhost:5000", CallAPI.BASE_URL);
 
+//        todayImage = todayImage.replace("http://localhost:5000", CallAPI.BASE_URL);
 //        Picasso.with(mContext).load(todayImage).into(todayImageView);
-        File imagePath = Intervention.getTodayImagePath(mContext);
+//        File imagePath = Intervention.getTodayImagePath(mContext);
 
         if (todayImage.equals("") && !todayText.equals("")) {
             todayTV.setText(todayText + ": " + todayImage);
@@ -101,21 +127,9 @@ public class HomeFragment extends Fragment {
             todayTV.setText(todayText + ": " + todayImage);
             Picasso.with(mContext).load(todayImage).into(todayImageView);
         }
-    }
 
-    private void checkPromptToConnect() {
-        String email = Store.getString(mContext, "email");
-        if (email.equals("")) {
-            needToConnectTV.setVisibility(View.VISIBLE);
-            rescuetimeTV.setVisibility(View.GONE);
-            calendarTV.setVisibility(View.GONE);
-        } else {
-            needToConnectTV.setVisibility(View.GONE);
-            rescuetimeTV.setVisibility(View.VISIBLE);
-            calendarTV.setVisibility(View.VISIBLE);
-        }
-    }
 
+    }
 
 }
 
