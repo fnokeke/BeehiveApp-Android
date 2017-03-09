@@ -66,10 +66,11 @@ public class DailyReminder extends BaseConfig {
 //        if (cal.getTimeInMillis() <= rightNow.getTimeInMillis()) return;
 
         String alarmTimeStr = Helper.getTimestamp(cal);
-//        Helper.showInstantNotif(mContext, "Upcoming Reminder Tip", "Expect reminder at " + alarmTimeStr, "", 5555);
+        Helper.showInstantNotif(mContext, "Upcoming Reminder Tip", "Expect reminder at " + alarmTimeStr, "", 5555);
 
         JSONObject notif = Intervention.getNotifDetails(mContext);
         Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), cal.getTimeInMillis());
+        Store.setString(mContext, Store.LAST_NOTIF_TIME, String.valueOf(cal.getTimeInMillis()));
     }
 
     void triggerSetReminder() {
@@ -97,17 +98,6 @@ public class DailyReminder extends BaseConfig {
         long futureAlarmMillis = startTimeFromSettings + 60000;
         String alarmTimeStr = Helper.getTimestamp(futureAlarmMillis);
         Helper.showInstantNotif(mContext, "Reminder Tip", "Upcoming reminder at " + alarmTimeStr, "", 5555);
-
-//        timeMillis = System.currentTimeMillis();
-//            Calendar rightNow = Calendar.getInstance();
-//            timeMillis = rightNow.getTimeInMillis();
-//        Calendar futureAlarmTime = Calendar.getInstance();
-
-//        futureAlarmTime.setTimeInMillis(timeMillis);
-//        futureAlarmTime.setTimeInMillis(futureAlarmTime.getTimeInMillis() + 60000);
-//        Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"),
-//                notif.optString("app_id"), futureAlarmTime.getTimeInMillis());
-
     }
 
 

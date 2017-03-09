@@ -1,31 +1,18 @@
 package io.smalldata.beehiveapp.utils;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.v4.app.AppLaunchChecker;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,9 +21,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.fragment.HomeFragment;
-import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
 
@@ -49,8 +33,6 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
  */
 
 public class Helper {
-
-    private static final String PREF_NAME = "beehivePrefs";
 
     public static void copy(JSONObject from, JSONObject to) {
         for (int i = 0; i < from.names().length(); i++) {
@@ -97,6 +79,10 @@ public class Helper {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(Calendar.getInstance().getTime());
     }
 
+    public static long getTimestampInMillis() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
+
     public static String getTimestamp(Calendar cal) {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(cal.getTime());
     }
@@ -120,8 +106,13 @@ public class Helper {
     private static Notification createNotification(Context context, String title, String content, String appIdToLaunch) {
         Intent appLauncherIntent = new Intent(context, MainActivity.class);
         appLauncherIntent.putExtra("appId", appIdToLaunch);
+        appLauncherIntent.putExtra("was_dismissed", false);
+
+        Intent deleteIntent = new Intent(context, MainActivity.class);
+        deleteIntent.putExtra("was_dismissed", true);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 1, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent deletePendingIntent = PendingIntent.getActivity(context, 99, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentIntent(contentIntent);
         builder.setContentTitle(title)
@@ -129,6 +120,7 @@ public class Helper {
                 .setShowWhen(true)
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
+                .setDeleteIntent(deletePendingIntent)
 //                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
 //                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
                 .setSmallIcon(android.R.drawable.ic_popup_reminder);

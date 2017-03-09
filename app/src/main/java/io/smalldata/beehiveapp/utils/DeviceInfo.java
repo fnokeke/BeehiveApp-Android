@@ -3,6 +3,7 @@ package io.smalldata.beehiveapp.utils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -67,6 +68,23 @@ public class DeviceInfo {
 
     private static String getDeviceID(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    public static String getRingerMode(Context context) {
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        String mode = "unknown";
+        switch (audio.getRingerMode()) {
+            case AudioManager.RINGER_MODE_NORMAL:
+                mode = "normal";
+                break;
+            case AudioManager.RINGER_MODE_SILENT:
+                mode = "silent";
+                break;
+            case AudioManager.RINGER_MODE_VIBRATE:
+                mode = "vibrate";
+                break;
+        }
+        return mode;
     }
 
 }

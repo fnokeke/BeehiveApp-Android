@@ -62,7 +62,6 @@ public class HomeFragment extends Fragment {
         setResources();
         promptUserIfNotConnected();
         displayTodayIntervention();
-
     }
 
     private void setResources() {

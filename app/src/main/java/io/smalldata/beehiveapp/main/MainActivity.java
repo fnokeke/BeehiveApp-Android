@@ -4,6 +4,8 @@ package io.smalldata.beehiveapp.main;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,20 +22,33 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
+
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.api.CallAPI;
+import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
+import io.smalldata.beehiveapp.utils.Store;
+
+import static android.R.attr.handle;
+import static io.smalldata.beehiveapp.config.Intervention.getNotifDetails;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     View mView;
     Context mContext;
     TextView mTV;
+    private static final String TAG = "MainActivity.class";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContext = this;
 
         if (savedInstanceState == null) {
-            if(getIntent().getExtras()!=null){
-                String appIdToLaunch = getIntent().getExtras().getString("appId");
-                Toast.makeText(this, "Notification clicked at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
-                IntentLauncher.launchApp(mContext, appIdToLaunch);
-            }
+            handleClickedNotification(getIntent().getExtras());
         }
 
         setContentView(R.layout.activity_main);
@@ -67,19 +78,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
+    private void handleClickedNotification(Bundle bundle) {
+        if(bundle != null){
+            String appIdToLaunch = bundle.getString("appId");
+            boolean was_dismissed = bundle.getBoolean("was_dismissed");
 
-        Log.i("IntentLauncher.class", intent.getExtras().toString());
-        if(!intent.getStringExtra("appId").equals("")){
-            Toast.makeText(getApplication(), "new phase works", Toast.LENGTH_SHORT).show();
-            Log.i("IntentLauncher.class", "appId worked");
-        } else {
-            Toast.makeText(getApplication(), "sorry dude", Toast.LENGTH_SHORT).show();
-            Log.i("IntentLauncher.class", "appId didn't work.");
+            if (was_dismissed) {
+                Toast.makeText(this, "Notification DISMISSED at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Notification clicked at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
+                IntentLauncher.launchApp(mContext, appIdToLaunch);
+            }
+
+            JSONObject params = Intervention.getNotifDetails(mContext);
+            Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
+            Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_NOTIF_TIME));
+            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getTimestampInMillis()));
+            Helper.setJSONValue(params, "was_dismissed", was_dismissed);
+            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
         }
     }
+
+    VolleyJsonCallback submitNotifClickHandler = new VolleyJsonCallback() {
+        @Override
+        public void onConnectSuccess(JSONObject result) {
+            Log.i("MainActivity.class", "submit_notif_stats success " + result.toString());
+        }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {
+            Log.e("MainActivity.class", "submit_notif_stats error " + error.toString());
+            error.printStackTrace();
+        }
+    };
 
     @Override
     public void onBackPressed() {

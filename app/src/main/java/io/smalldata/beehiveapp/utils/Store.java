@@ -37,6 +37,7 @@ public class Store {
     public static final String INTV_TREATMENT_IMAGE = "treatment_image";
     public static final String INTV_TYPE = "intv_type";
     public static final String INTV_NOTIF = "notif";
+    public static final String LAST_NOTIF_TIME = "lastNotifTime";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

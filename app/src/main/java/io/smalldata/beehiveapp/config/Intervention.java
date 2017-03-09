@@ -132,7 +132,7 @@ public class Intervention extends BaseConfig {
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    static JSONObject getNotifDetails(Context context) {
+    public static JSONObject getNotifDetails(Context context) {
         JSONObject info = new JSONObject();
         try {
             info = new JSONObject(Store.getString(context, Store.INTV_NOTIF));

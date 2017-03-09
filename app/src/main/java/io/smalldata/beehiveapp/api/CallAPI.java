@@ -26,10 +26,10 @@ public class CallAPI {
 //    final static private String BASE_URL = "http://10.144.46.211:5000";
 //    final static private String BASE_URL = "http://172.20.1.63:5000";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
-    final static private String INTERVENTION_URL = BASE_URL + "/mobile/interventions";
     final static private String CAL_CHECK_CONN_URL = BASE_URL + "/mobile/check/calendar";
     final static private String RT_CHECK_CONN_URL = BASE_URL + "/mobile/check/rescuetime";
     final static private String RT_ACTIVITY_URL = BASE_URL + "/rescuetime/realtime";
+    final static private String NOTIF_CLICKED_STATS = BASE_URL + "/mobile/add/notif-clicked-stats";
     final static private String CAL_EVENTS_URL = BASE_URL + "/mobile/calendar/events";
 
 
@@ -50,7 +50,6 @@ public class CallAPI {
                     }
                 }
         );
-
     }
 
     private static void addRequestToQueue(Context context, String url, final JSONObject params, final VolleyJsonCallback callback) {
@@ -62,8 +61,8 @@ public class CallAPI {
         addRequestToQueue(context, CONNECT_URL, params, callback);
     }
 
-    public static void fetchIntervention(final Context context, final JSONObject params, final VolleyJsonCallback callback) {
-        addRequestToQueue(context, INTERVENTION_URL, params, callback);
+    public static void addNotifClickedStats(final Context context, final JSONObject params, final VolleyJsonCallback callback) {
+        addRequestToQueue(context, NOTIF_CLICKED_STATS, params, callback);
     }
 
     public static void checkRTConn(final Context context, final JSONObject params, final VolleyJsonCallback callback) {
