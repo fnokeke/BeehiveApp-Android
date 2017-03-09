@@ -39,6 +39,7 @@
         <service
             android:name=".main.RefreshService"
             android:enabled="true"
+            android:process=":remote"
             android:exported="false" />
 
     </application>

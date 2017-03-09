@@ -13,18 +13,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.main.RefreshService;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.main.RefreshService;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
@@ -92,7 +90,7 @@ public class ConnectFragment extends Fragment {
 
             Display.showBusy(mContext, "Transferring your bio...");
             CallAPI.connectStudy(mContext, toParams, connectStudyResponseHandler);
-            Log.w("Connect study details: ", toParams.toString());
+            Log.i("Connect study details: ", toParams.toString());
         }
     };
 
@@ -114,7 +112,7 @@ public class ConnectFragment extends Fragment {
             updateFormInput(response, user);
 
             Display.dismissBusy();
-            RefreshService.start(mContext);
+            RefreshService.startRefreshInIntervals(mContext);
         }
 
         @Override

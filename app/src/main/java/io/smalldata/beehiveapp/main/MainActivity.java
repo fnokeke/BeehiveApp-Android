@@ -83,10 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String appIdToLaunch = bundle.getString("appId");
             boolean was_dismissed = bundle.getBoolean("was_dismissed");
 
-            if (was_dismissed) {
-                Toast.makeText(this, "Notification DISMISSED at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Notification clicked at: " + Helper.getTimestamp(), Toast.LENGTH_LONG).show();
+            if (!was_dismissed) {
                 IntentLauncher.launchApp(mContext, appIdToLaunch);
             }
 

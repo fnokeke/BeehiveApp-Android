@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
+import io.smalldata.beehiveapp.main.RefreshService;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
