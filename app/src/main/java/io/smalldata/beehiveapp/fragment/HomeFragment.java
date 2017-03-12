@@ -10,13 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
-
-import java.io.File;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
@@ -86,11 +83,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void displayTodayIntervention() {
-
-        JSONObject todayIntervention = intervention.getTodayIntervention(mContext);
-        if (Store.getBoolean(mContext, Store.TEXT_FEATURE) || Store.getBoolean(mContext, Store.IMAGE_FEATURE)) {
-            showTextImageIntervention(todayIntervention);
-        }
+        if (Experiment.getUserInfo(mContext).length() == 0) return;
 
         homeDetailsTV.setVisibility(View.VISIBLE);
         if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE) && SettingsFragment.canShowRescuetimeInfo(mContext)) {
@@ -105,31 +98,37 @@ public class HomeFragment extends Fragment {
             googleCalendar.refreshAndStoreStats();
             Display.showSuccess(calendarTV, googleCalendar.getStoredStats());
 
-            String msg = String.format(Constants.LOCALE, "Updated: %s\n\n %s", Helper.getTimestamp(), calendarTV.getText().toString());
+            String msg = String.format(Constants.LOCALE, "Updated: %s\n\n %s", Helper.getTimestamp(), Store.getString(mContext, Store.STATS_CAL));
             calendarTV.setText(msg);
             homeDetailsTV.setVisibility(View.GONE);
         }
 
+        if (Store.getBoolean(mContext, Store.TEXT_FEATURE) || Store.getBoolean(mContext, Store.IMAGE_FEATURE)) {
+            showTodayTextImageIntervention();
+        }
+
+
     }
 
-    private void showTextImageIntervention(JSONObject todayIntervention) {
-        String todayText = todayIntervention.optString("treatment_text");
-        String todayImage = todayIntervention.optString("treatment_image");
-
-//        todayImage = todayImage.replace("http://localhost:5000", CallAPI.BASE_URL);
-//        Picasso.with(mContext).load(todayImage).into(todayImageView);
-//        File imagePath = Intervention.getTodayImagePath(mContext);
+    private void showTodayTextImageIntervention() {
+        JSONObject textImage = Intervention.getTodayIntervention(mContext);
+        String todayText = textImage.optString("treatment_text");
+        String todayImage = textImage.optString("treatment_image");
+        if (!todayImage.contains("slm.smalldata.io")) {
+          todayImage = todayImage.replace("localhost:5000", "10.0.0.166:5000");
+        }
 
         if (todayImage.equals("") && !todayText.equals("")) {
             todayTV.setText(todayText + ": " + todayImage);
         } else if (todayText.equals("") && !todayImage.equals("")) {
             Picasso.with(mContext).load(todayImage).into(todayImageView);
         } else if (!todayImage.equals("") && !todayText.equals("")) {
-            todayTV.setText(todayText + ": " + todayImage);
+            todayTV.setText(todayText + "\n\n\n\n" + todayImage);
             Picasso.with(mContext).load(todayImage).into(todayImageView);
+            homeDetailsTV.setVisibility(View.GONE);
+            needToConnectTV.setVisibility(View.GONE);
+            todayTV.setVisibility(View.VISIBLE);
         }
-
-
     }
 
 }

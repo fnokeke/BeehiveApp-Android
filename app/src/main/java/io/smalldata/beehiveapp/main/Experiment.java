@@ -100,7 +100,12 @@ public class Experiment {
         Helper.setJSONValue(userInfo, "email", Store.getString(context, "email"));
         Helper.setJSONValue(userInfo, "gender", Store.getString(context, "gender"));
         Helper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
+        Helper.setJSONValue(userInfo, "condition", Store.getString(context, "condition"));
         return userInfo;
+    }
+
+    public static Integer getUserCondition(Context context) {
+        return getUserInfo(context).optInt("condition");
     }
 
     public boolean notif_window_enabled() {

@@ -2,12 +2,8 @@ package io.smalldata.beehiveapp.main;
 
 //import android.support.v4.app.FragmentManager;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -40,9 +35,6 @@ import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
-
-import static android.R.attr.handle;
-import static io.smalldata.beehiveapp.config.Intervention.getNotifDetails;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     View mView;
@@ -88,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             JSONObject params = Intervention.getNotifDetails(mContext);
+            JSONObject userInfo = Experiment.getUserInfo(mContext);
+            Helper.copy(userInfo, params);
             Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
             Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_NOTIF_TIME));
             Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getTimestampInMillis()));

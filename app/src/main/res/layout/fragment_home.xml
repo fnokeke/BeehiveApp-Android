@@ -45,15 +45,6 @@
             android:text="@string/info_rescuetime"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <TextView
-            android:id="@+id/tv_today_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/desc_today_text"
-            android:padding="5dp"
-            android:visibility="gone"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
         <ImageView
             android:id="@+id/iv_today_image"
             android:layout_width="match_parent"
@@ -61,6 +52,18 @@
             android:padding="5dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/desc_today_image"/>
+
+        <TextView
+            android:id="@+id/tv_today_text"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/desc_today_text"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:visibility="gone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     </TableLayout>
 
