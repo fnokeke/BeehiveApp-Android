@@ -86,8 +86,6 @@ public class GoogleCalendar extends BaseConfig {
             Log.d("onConnectSuccess: ", resultStr);
             if (result.optInt("events") == -1) {
                 Store.setString(mContext, "errorCal", "There are no available calendar events.");
-                setCurrentEventCount(0);
-                setCurrentEventHours(0);
                 return;
             }
 
@@ -98,13 +96,11 @@ public class GoogleCalendar extends BaseConfig {
                 Float busyHours = (float) busyTimeMs / 3600000;
                 Integer noOfTodayEvents = countTodayEvents(mJsonArray);
 
-                String statsCal = "No of events today: " + noOfTodayEvents.toString() + "\n\n" +
+                String statsCal = "Updated: " + Helper.getTimestamp() + "\nNo of events today: " + noOfTodayEvents.toString() + "\n\n" +
                         "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
                         "Today Events:\n" + mJsonStr +
                         "Potential Notification Time:\n" + getFreeTime(mJsonArray);
                 Store.setString(mContext, STATS_CAL, statsCal);
-                setCurrentEventCount(noOfTodayEvents);
-                setCurrentEventHours(busyHours);
             }
         }
 

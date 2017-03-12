@@ -18,13 +18,13 @@ import io.smalldata.beehiveapp.utils.Store;
  * Created by fnokeke on 2/21/17.
  */
 
-class DailyReminder extends BaseConfig {
+public class DailyReminder extends BaseConfig {
     private Context mContext;
     private final static String REMINDER_TIME = "reminder_time";
     private Experiment experiment;
     private Random rand = new Random();
 
-    DailyReminder(Context context) {
+    public DailyReminder(Context context) {
         mContext = context;
         experiment = new Experiment(mContext);
     }
@@ -51,7 +51,7 @@ class DailyReminder extends BaseConfig {
         setReminder(today.getTimeInMillis(), true);
     }
 
-    void triggerSetReminder() {
+    public void triggerSetReminder() {
         if (experiment.notif_window_enabled()) {
             extractWindowTimeThenSetReminder(experiment.getWindowMintues());
         } else {
@@ -96,18 +96,20 @@ class DailyReminder extends BaseConfig {
         if (cannotTriggerAlarm()) return;
         JSONObject notif = Intervention.getNotifDetails(mContext);
         Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
-
-        long rightNowMillis = Calendar.getInstance().getTimeInMillis();
-        long lastNotifTimeMillis = rightNowMillis > alarmMillis ? rightNowMillis : alarmMillis;
-        Store.setString(mContext, Store.LAST_NOTIF_TIME, String.valueOf(lastNotifTimeMillis));
+        saveLastDayAndTimeAlarmScheduled(mContext, alarmMillis);
     }
 
     private boolean cannotTriggerAlarm() {
-        return Intervention.todayAlreadyChecked(mContext);
+        return Intervention.alarmAlreadyScheduledToday(mContext);
     }
 
     private int getRandomInt(int max) {
         return rand.nextInt(max);
+    }
+
+    private void saveLastDayAndTimeAlarmScheduled(Context context, long alarmMillis) {
+        Store.setString(context, Store.LAST_CHECKED_INTV_DATE, Helper.getTodaysDateStr());
+        Store.setString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, String.valueOf(alarmMillis));
     }
 
 

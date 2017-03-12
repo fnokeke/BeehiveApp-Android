@@ -31,7 +31,6 @@ import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
  */
 
 public class Intervention extends BaseConfig {
-    private static final String LAST_CHECKED_DATE = "lastCheckedDate";
     private Context mContext;
 
     public Intervention(Context context) {
@@ -54,7 +53,6 @@ public class Intervention extends BaseConfig {
     private void prepareTodayIntervention(Context context) {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv = new JSONObject();
-        String todayIntvType = getTodayIntvType(context);
         for (Integer i = 0; i < interventions.length(); i++) {
 
             try {
@@ -64,7 +62,6 @@ public class Intervention extends BaseConfig {
             }
 
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
-                storeTodayAsCheckedDate(context);
 
                 Store.setString(context, INTV_START, intv.optString("start"));
                 Store.setString(context, INTV_END, intv.optString("end"));
@@ -83,11 +80,6 @@ public class Intervention extends BaseConfig {
                 }
 
                 new DailyReminder(context).triggerSetReminder();
-
-                String msg = String.format("Today treatment. text: %s / image: %s",
-                        Store.getString(context, Store.INTV_TREATMENT_TEXT),
-                        Store.getString(context, Store.INTV_TREATMENT_IMAGE));
-                Log.i("BeehiveTreatment", msg);
                 break;
             }
         }
@@ -117,14 +109,10 @@ public class Intervention extends BaseConfig {
         return intvType;
     }
 
-    public static boolean todayAlreadyChecked(Context context) {
-        String lastCheckedDate = Store.getString(context, LAST_CHECKED_DATE);
+    static boolean alarmAlreadyScheduledToday(Context context) {
+        String lastCheckedDate = Store.getString(context, Store.LAST_CHECKED_INTV_DATE);
         String today = getTodaysDateStr();
         return today.equals(lastCheckedDate);
-    }
-
-    private void storeTodayAsCheckedDate(Context context) {
-        Store.setString(context, LAST_CHECKED_DATE, Helper.getTodaysDateStr());
     }
 
     private static JSONArray getAllInterventions(Context context) {
@@ -169,8 +157,13 @@ public class Intervention extends BaseConfig {
         try {
             treatmentImageArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_IMAGE));
             treatmentTextArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_TEXT));
-            treatmentText = treatmentTextArr.getString(userCondition);
-            treatmentImage = treatmentImageArr.getString(userCondition);
+            if (treatmentTextArr.length() == 1 && treatmentImageArr.length() == 1) {
+                treatmentText = treatmentTextArr.getString(0);
+                treatmentImage = treatmentImageArr.getString(0);
+            } else {
+                treatmentText = treatmentTextArr.getString(userCondition);
+                treatmentImage = treatmentImageArr.getString(userCondition);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
