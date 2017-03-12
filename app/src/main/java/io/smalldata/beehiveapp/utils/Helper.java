@@ -109,7 +109,7 @@ public class Helper {
         appLauncherIntent.putExtra("appId", appIdToLaunch);
         appLauncherIntent.putExtra("was_dismissed", false);
 
-        Intent deleteIntent = new Intent(context, MainActivity.class);
+        Intent deleteIntent = new Intent();
         deleteIntent.putExtra("was_dismissed", true);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context, 1, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -151,6 +151,38 @@ public class Helper {
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIF_ID, mBuilder.build());
     }
+
+    public static String dateToStr(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
+        return sdf.format(date);
+    }
+
+    public static Date strToDate(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
+        Date formattedDate = new Date();
+        try {
+            formattedDate = sdf.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
+    }
+
+    public static Date addDays(Date date, int days)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        return cal.getTime();
+    }
+
+    public boolean isEqualOrGreater(String mainDateStr, String compareDateStr) {
+        Date mainDate = strToDate(mainDateStr);
+        Date compareDate = strToDate(compareDateStr);
+        return mainDate.getTime() >= compareDate.getTime();
+    }
+
+
 
 //    public static void scheduleRepeatingAlarm(Context context, String title, String content, String appIdToLaunch, long alarmTime) {
 //        Notification notification = createNotification(context, title, content, appIdToLaunch);

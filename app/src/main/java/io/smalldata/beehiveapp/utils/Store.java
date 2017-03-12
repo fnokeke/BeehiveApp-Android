@@ -38,6 +38,7 @@ public class Store {
     public static final String INTV_TYPE = "intv_type";
     public static final String INTV_NOTIF = "notif";
     public static final String LAST_NOTIF_TIME = "lastNotifTime";
+    public final static String STATS_CAL = "statsCal";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
