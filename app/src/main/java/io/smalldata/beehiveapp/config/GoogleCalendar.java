@@ -53,20 +53,6 @@ public class GoogleCalendar extends BaseConfig {
         return getString(mContext, STATS_CAL);
     }
 
-    public void fireEventNotif() {
-        refreshAndStoreStats();
-        GeneralNotification generalNotification = new GeneralNotification(mContext);
-        String title = "Personal MoodSurfing Check-in";
-        String content = "Tap to begin your 5 minutes of stress relief.";
-        Helper.showInstantNotif(mContext, title, content, generalNotification.getAppId(), 4444);
-    }
-
-    public boolean configIsActive() {
-        String eventCountLimit = Store.getString(mContext, EVENT_COUNT_LIMIT);
-        String eventTimeLimit = Store.getString(mContext, EVENT_TIME_LIMIT);
-        return !eventCountLimit.equals("") || !eventTimeLimit.equals("");
-    }
-
     public void refreshAndStoreStats() {
         String email = Experiment.getUserInfo(mContext).optString("email");
         if (email.equals("")) {

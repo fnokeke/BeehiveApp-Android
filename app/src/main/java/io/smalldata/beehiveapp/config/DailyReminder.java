@@ -64,7 +64,7 @@ public class DailyReminder extends BaseConfig {
         if (userTimeMillisFromSettings == 0) {
             String title = "Select your reminder window";
             String content = "Go to Beehive App >> Settings >> Start Time";
-            Helper.showInstantNotif(mContext, title, content, mContext.getPackageName(), 7777);
+            Helper.showInstantNotif(mContext, title, content, "", 5555);
             return;
         }
         userTimeMillisFromSettings = adjustMillisDateToToday(userTimeMillisFromSettings);

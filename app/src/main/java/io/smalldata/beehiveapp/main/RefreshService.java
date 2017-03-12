@@ -44,7 +44,6 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        serverHandler.postDelayed(serverUpdateTask, 0);
         Helper.showInstantNotif(this, "Refresh Performed", Helper.getTimestamp(), "", 1112);
         JSONObject params = Experiment.getUserInfo(mContext);
         CallAPI.connectStudy(mContext, params, connectStudyResponseHandler);
