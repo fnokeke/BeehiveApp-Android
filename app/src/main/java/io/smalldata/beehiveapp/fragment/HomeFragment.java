@@ -133,15 +133,19 @@ public class HomeFragment extends Fragment {
 
         if (todayImage.equals("") && !todayText.equals("")) {
             todayTV.setText(todayText + ": " + todayImage);
-        } else if (todayText.equals("") && !todayImage.equals("")) {
+            todayTV.setVisibility(View.VISIBLE);
+        } else if (todayText.equals("null") && !todayImage.equals("")) {
             Picasso.with(mContext).load(todayImage).into(todayImageView);
         } else if (!todayImage.equals("") && !todayText.equals("")) {
-            todayTV.setText(todayText + "\n\n\n\n" + todayImage);
+            todayTV.setText(todayText);
+            todayTV.setVisibility(View.VISIBLE);
             Picasso.with(mContext).load(todayImage).into(todayImageView);
+        }
+
+        if (!todayImage.equals("") && !todayText.equals("") && !todayText.equals("null")) {
+            usernameTV.setVisibility(View.GONE);
             homeDetailsTV.setVisibility(View.GONE);
             needToConnectTV.setVisibility(View.GONE);
-            todayTV.setVisibility(View.VISIBLE);
-            usernameTV.setVisibility(View.GONE);
         }
     }
 
