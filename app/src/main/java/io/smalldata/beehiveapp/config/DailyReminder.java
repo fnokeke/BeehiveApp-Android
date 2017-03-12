@@ -44,11 +44,11 @@ class DailyReminder extends BaseConfig {
         if (reminder.equals("")) return;
 
         String[] hrMin = reminder.split(":");
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hrMin[0]));
-        cal.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
-        cal.set(Calendar.SECOND, 0);
-        setReminder(cal.getTimeInMillis(), true);
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hrMin[0]));
+        today.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
+        today.set(Calendar.SECOND, 0);
+        setReminder(today.getTimeInMillis(), true);
     }
 
     void triggerSetReminder() {
@@ -60,29 +60,50 @@ class DailyReminder extends BaseConfig {
     }
 
     private void extractWindowTimeThenSetReminder(Integer windowMinutes) {
-        long startTimeFromSettings = SettingsFragment.getStartTimeFromSettings(mContext);
-        if (startTimeFromSettings == 0) {
+        long userTimeMillisFromSettings = SettingsFragment.getStartTimeFromSettings(mContext);
+        if (userTimeMillisFromSettings == 0) {
             String title = "Select your reminder window";
             String content = "Go to Beehive App >> Settings >> Start Time";
             Helper.showInstantNotif(mContext, title, content, mContext.getPackageName(), 7777);
             return;
         }
-        int minutesFromStart = getRandomInt(windowMinutes);
-        long millisFromStart = minutesFromStart * 60 * 1000;
-        long futureAlarmMillis = startTimeFromSettings + millisFromStart;
+        userTimeMillisFromSettings = adjustMillisDateToToday(userTimeMillisFromSettings);
+        long millisFromStart = getRandomInt(windowMinutes) * 60 * 1000;
+        long futureAlarmMillis = userTimeMillisFromSettings + millisFromStart;
         setReminder(futureAlarmMillis, true);
     }
 
+    private long adjustMillisDateToToday(long userTimeMillisFromSettings) {
+        Calendar newTime = Calendar.getInstance();
+        newTime.setTimeInMillis(userTimeMillisFromSettings);
+
+        Calendar today = Calendar.getInstance();
+        newTime.set(Calendar.YEAR, today.get(Calendar.YEAR));
+        newTime.set(Calendar.MONTH, today.get(Calendar.MONTH));
+        newTime.set(Calendar.DATE, today.get(Calendar.DATE));
+
+        return newTime.getTimeInMillis();
+    }
+
     private void setReminder(long alarmMillis, boolean shouldShowTip) {
-        JSONObject notif = Intervention.getNotifDetails(mContext);
-        Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
-        Store.setString(mContext, Store.LAST_NOTIF_TIME, String.valueOf(alarmMillis));
         if (shouldShowTip) {
             String alarmTimeStr = Helper.getTimestamp(alarmMillis);
-            Helper.showInstantNotif(mContext, "Reminder Tip", "Upcoming reminder at " + alarmTimeStr, "", 5555);
+            String title = cannotTriggerAlarm() ? "Reminder won't show" : "Upcoming Reminder Tip";
+            String content = "Reminder time: " + alarmTimeStr;
+            Helper.showInstantNotif(mContext, title, content, "", 5555);
         }
-//        Calendar rightNow = Calendar.getInstance();
-//        if (cal.getTimeInMillis() <= rightNow.getTimeInMillis()) return;
+
+        if (cannotTriggerAlarm()) return;
+        JSONObject notif = Intervention.getNotifDetails(mContext);
+        Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
+
+        long rightNowMillis = Calendar.getInstance().getTimeInMillis();
+        long lastNotifTimeMillis = rightNowMillis > alarmMillis ? rightNowMillis : alarmMillis;
+        Store.setString(mContext, Store.LAST_NOTIF_TIME, String.valueOf(lastNotifTimeMillis));
+    }
+
+    private boolean cannotTriggerAlarm() {
+        return Intervention.todayAlreadyChecked(mContext);
     }
 
     private int getRandomInt(int max) {

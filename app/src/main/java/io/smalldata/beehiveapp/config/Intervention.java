@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -31,7 +32,7 @@ import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
 
 public class Intervention extends BaseConfig {
     private static final String LAST_CHECKED_DATE = "lastCheckedDate";
-    private  Context mContext;
+    private Context mContext;
 
     public Intervention(Context context) {
         mContext = context;
@@ -51,10 +52,9 @@ public class Intervention extends BaseConfig {
     }
 
     private void prepareTodayIntervention(Context context) {
-//        if (todayAlreadyChecked(context)) return;
-
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv = new JSONObject();
+        String todayIntvType = getTodayIntvType(context);
         for (Integer i = 0; i < interventions.length(); i++) {
 
             try {
@@ -63,15 +63,15 @@ public class Intervention extends BaseConfig {
                 e.printStackTrace();
             }
 
-            if (isForToday(intv)) {
+            if (isForToday(intv) && isTodayInterventionType(context, intv)) {
                 storeTodayAsCheckedDate(context);
 
                 Store.setString(context, INTV_START, intv.optString("start"));
                 Store.setString(context, INTV_END, intv.optString("end"));
                 Store.setString(context, INTV_EVERY, intv.optString("every"));
                 Store.setString(context, INTV_REPEAT, intv.optString("repeat"));
-                Store.setString(context, INTV_TREATMENT_TEXT, intv.optString("treatment_text"));
-                Store.setString(context, INTV_TREATMENT_IMAGE, intv.optString("treatment_image"));
+                Store.setString(context, INTV_TREATMENT_TEXT, intv.optJSONArray("treatment_text").toString());
+                Store.setString(context, INTV_TREATMENT_IMAGE, intv.optJSONArray("treatment_image").toString());
                 Store.setString(context, INTV_WHEN, intv.optString("when"));
                 Store.setString(context, INTV_TYPE, intv.optString("intv_type"));
                 Store.setString(context, INTV_NOTIF, intv.optString("notif"));
@@ -87,7 +87,7 @@ public class Intervention extends BaseConfig {
                 String msg = String.format("Today treatment. text: %s / image: %s",
                         Store.getString(context, Store.INTV_TREATMENT_TEXT),
                         Store.getString(context, Store.INTV_TREATMENT_IMAGE));
-                Log.e("BeehiveTreatment", msg);
+                Log.i("BeehiveTreatment", msg);
                 break;
             }
         }
@@ -101,7 +101,23 @@ public class Intervention extends BaseConfig {
         }
     }
 
-    private boolean todayAlreadyChecked(Context context) {
+    private boolean isTodayInterventionType(Context context, JSONObject intv) {
+        return getTodayIntvType(context).equals(intv.optString("intv_type"));
+    }
+
+    private String getTodayIntvType(Context context) {
+        String intvType = "";
+        if (Store.getBoolean(context, Store.TEXT_FEATURE) || Store.getBoolean(context, Store.IMAGE_FEATURE)) {
+            intvType = "text_image";
+        } else if (Store.getBoolean(context, Store.RESCUETIME_FEATURE)) {
+            intvType = "rescuetime";
+        } else if (Store.getBoolean(context, Store.CALENDAR_FEATURE)) {
+            intvType = "calendar";
+        }
+        return intvType;
+    }
+
+    public static boolean todayAlreadyChecked(Context context) {
         String lastCheckedDate = Store.getString(context, LAST_CHECKED_DATE);
         String today = getTodaysDateStr();
         return today.equals(lastCheckedDate);
@@ -142,15 +158,29 @@ public class Intervention extends BaseConfig {
         return info;
     }
 
-    public JSONObject getTodayIntervention(Context context) {
+    public static JSONObject getTodayIntervention(Context context) {
         JSONObject todayIntervention = new JSONObject();
+        JSONArray treatmentImageArr;
+        JSONArray treatmentTextArr;
+        Integer userCondition = Experiment.getUserCondition(context);
+        String treatmentText = "";
+        String treatmentImage = "";
+
+        try {
+            treatmentImageArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_IMAGE));
+            treatmentTextArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_TEXT));
+            treatmentText = treatmentTextArr.getString(userCondition);
+            treatmentImage = treatmentImageArr.getString(userCondition);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Helper.setJSONValue(todayIntervention, "start", Store.getString(context, Store.INTV_START));
         Helper.setJSONValue(todayIntervention, "end", Store.getString(context, Store.INTV_END));
         Helper.setJSONValue(todayIntervention, "every", Store.getString(context, Store.INTV_EVERY));
         Helper.setJSONValue(todayIntervention, "when", Store.getString(context, Store.INTV_WHEN));
         Helper.setJSONValue(todayIntervention, "repeat", Store.getString(context, Store.INTV_REPEAT));
-        Helper.setJSONValue(todayIntervention, "treatment_text", Store.getString(context, Store.INTV_TREATMENT_TEXT));
-        Helper.setJSONValue(todayIntervention, "treatment_image", Store.getString(context, Store.INTV_TREATMENT_IMAGE));
+        Helper.setJSONValue(todayIntervention, "treatment_text", treatmentText);
+        Helper.setJSONValue(todayIntervention, "treatment_image", treatmentImage);
         return todayIntervention;
     }
 
