@@ -3,6 +3,17 @@
     android:key="@string/allSettingsPref">
 
     <PreferenceCategory
+        android:key="@string/userInfo"
+        android:title="User Information">
+
+        <EditTextPreference
+            android:key="username_pref"
+            android:summary="What would you like to be called?"
+            android:title="Enter Name" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="@string/userTimeWindowCategory"
         android:title="select 2 hr notification window">
         <io.smalldata.beehiveapp.main.TimePreference

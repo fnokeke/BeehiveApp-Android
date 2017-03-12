@@ -21,9 +21,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
-import io.smalldata.beehiveapp.main.RefreshService;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
@@ -99,7 +99,7 @@ public class Helper {
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
     }
@@ -141,7 +141,7 @@ public class Helper {
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(android.R.drawable.ic_notification_overlay)
+        mBuilder.setSmallIcon(R.drawable.info_tip)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
                 .setContentTitle(title)

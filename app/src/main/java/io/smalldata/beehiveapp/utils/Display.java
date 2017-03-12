@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
+ * Set UI display attributes for all screens
  * Created by fnokeke on 1/23/17.
  */
 
@@ -14,7 +15,7 @@ public class Display {
 
     private final static int SUCCESS = Color.BLUE;
     private final static int ERROR = Color.RED;
-    private final static int PLAIN = Color.BLACK;
+    private final static int PLAIN = Color.GRAY;
     private static ProgressDialog progressDialog;
 
     public static void showError(TextView tv, int msgRid) {
@@ -63,6 +64,11 @@ public class Display {
         tv.setTextColor(PLAIN);
     }
 
+    public static void showPlain(TextView tv, String msg) {
+        tv.setVisibility(View.VISIBLE);
+        tv.setText(msg);
+        tv.setTextColor(PLAIN);
+    }
     public static void clear(TextView tv) {
         tv.setVisibility(View.VISIBLE);
         tv.setText("");

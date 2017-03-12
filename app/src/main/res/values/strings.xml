@@ -47,7 +47,7 @@
         <item>female</item>
         <item>other</item>
     </string-array>
-    <string name="form_submit">Submit</string>
+    <string name="form_submit">Join Study</string>
     <string name="form_reset">Reset</string>
     <string name="desc_check_conn">Check Connection Status</string>
     <string name="check_rt_conn">Check Rescuetime Connection</string>
@@ -82,5 +82,7 @@
     <string name="rescuetimePrefCategory">rescuetimePrefCategory</string>
     <string name="geofencePrefCategory">geofencePrefCategory</string>
     <string name="userTimeWindowCategory">userWindowTimeCategory</string>
+    <string name="userInfo">pref_user_info</string>
+    <string name="default_user_msg">Hello,</string>
 
 </resources>

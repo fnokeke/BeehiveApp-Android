@@ -21,12 +21,14 @@ import static android.R.id.input;
 public class Store {
 
     private static final String PREF_NAME = "beehivePrefs";
+
     public static final String CALENDAR_FEATURE = "calendar";
     public static final String GEOFENCE_FEATURE = "geofence";
     public static final String NOTIF_WINDOW_FEATURE = "notif_window";
     public static final String RESCUETIME_FEATURE = "rescuetime";
     public static final String TEXT_FEATURE = "text";
     public static final String IMAGE_FEATURE = "image";
+
     public static final String INTV_START = "iStart";
     public static final String INTV_END = "iEnd";
     public static final String INTV_EVERY = "every";
@@ -37,8 +39,10 @@ public class Store {
     public static final String INTV_TREATMENT_IMAGE = "treatment_image";
     public static final String INTV_TYPE = "intv_type";
     public static final String INTV_NOTIF = "notif";
-    public static final String LAST_NOTIF_TIME = "lastNotifTime";
+
+    public static final String LAST_SCHEDULED_REMINDER_TIME = "lastNotifTime";
     public final static String STATS_CAL = "statsCal";
+    public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -76,7 +80,7 @@ public class Store {
         return getPrefs(context).getBoolean(key, false); // use false as default value
     }
 
-    public static void reset(Context context) {
+    public static void wipeAll(Context context) {
         getPrefs(context).edit().clear().apply();
     }
 
@@ -87,26 +91,25 @@ public class Store {
             Object pref = prefs.get(key);
             String printVal = "";
             if (pref instanceof Boolean) {
-                printVal = key + " : " + (Boolean) pref;
+                printVal = key + " : " + pref;
             }
             if (pref instanceof Float) {
-                printVal = key + " : " + (Float) pref;
+                printVal = key + " : " + pref;
             }
             if (pref instanceof Integer) {
-                printVal = key + " : " + (Integer) pref;
+                printVal = key + " : " + pref;
             }
             if (pref instanceof Long) {
-                printVal = key + " : " + (Long) pref;
+                printVal = key + " : " + pref;
             }
             if (pref instanceof String) {
-                printVal = key + " : " + (String) pref;
+                printVal = key + " : " + pref;
             }
             if (pref instanceof Set<?>) {
-                printVal = key + " : " + (Set<String>) pref;
+                printVal = key + " : " + pref;
             }
 
             Log.d("PrefValue", printVal);
-            // create a TextView with printVal as text and add to layout
         }
     }
 }

@@ -27,6 +27,7 @@ import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
 
 
@@ -83,6 +84,11 @@ public class ConnectFragment extends Fragment {
 
     View.OnClickListener submitBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
+            if (!Network.isDeviceOnline(mContext)) {
+                Display.showError(connResponseTV, "No network connection.");
+                return;
+            }
+
             Display.clear(howToConnTV);
             JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
             JSONObject toParams = getFormInput();
@@ -99,7 +105,8 @@ public class ConnectFragment extends Fragment {
         @Override
         public void onConnectSuccess(JSONObject result) {
             Log.i("onConnectStudySuccess", result.toString());
-            Store.reset(mContext);
+            Store.wipeAll(mContext);
+            SettingsFragment.wipeAll(mContext);
 
             Experiment experiment = new Experiment(mContext);
             JSONObject experimentInfo = result.optJSONObject("experiment");
@@ -244,8 +251,6 @@ public class ConnectFragment extends Fragment {
     }
 
     public void resetFormInput() {
-        Store.reset(mContext);
-
         Display.hide(howToConnTV);
         Display.hide(calRTResponseTV);
         Display.hide(connResponseTV);

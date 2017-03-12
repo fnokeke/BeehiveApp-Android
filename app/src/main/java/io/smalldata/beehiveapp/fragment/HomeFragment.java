@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment {
     private TextView needToConnectTV;
     private TextView rescuetimeTV;
     private TextView calendarTV;
+    private TextView usernameTV;
     private TextView homeDetailsTV;
     private TextView todayTV;
     private ImageView todayImageView;
@@ -57,11 +58,13 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setResources();
+        updateUsernameIfPresent();
         promptUserIfNotConnected();
         displayTodayIntervention();
     }
 
     private void setResources() {
+        usernameTV = (TextView) mActivity.findViewById(R.id.tv_username);
         rescuetimeTV = (TextView) mActivity.findViewById(R.id.tv_rescuetime);
         calendarTV = (TextView) mActivity.findViewById(R.id.tv_calendar);
         needToConnectTV = (TextView) mActivity.findViewById(R.id.tv_need_to_connect);
@@ -69,6 +72,15 @@ public class HomeFragment extends Fragment {
         todayTV = (TextView) mActivity.findViewById(R.id.tv_today_text);
         todayImageView = (ImageView) mActivity.findViewById(R.id.iv_today_image);
         intervention = new Intervention(mContext);
+    }
+
+    private void updateUsernameIfPresent() {
+        String userMsg = SettingsFragment.getUsername(mContext);
+        if (!userMsg.equals("")) {
+            userMsg = String.format("Hello %s,", userMsg);
+            usernameTV.setText(userMsg);
+            usernameTV.setVisibility(View.VISIBLE);
+        }
     }
 
     private void promptUserIfNotConnected() {
@@ -84,22 +96,23 @@ public class HomeFragment extends Fragment {
 
     private void displayTodayIntervention() {
         if (Experiment.getUserInfo(mContext).length() == 0) return;
+        String textUpdate;
 
         homeDetailsTV.setVisibility(View.VISIBLE);
         if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE) && SettingsFragment.canShowRescuetimeInfo(mContext)) {
             Rescuetime rescuetime = new Rescuetime(mContext);
-            rescuetime.refreshAndStoreStats();
-            Display.showSuccess(rescuetimeTV, rescuetime.getStoredStats());
+            textUpdate = rescuetime.getStoredStats();
+            textUpdate = textUpdate.equals("") ? "Rescuetime updates will appear here in a few minutes." : textUpdate;
+            Display.showPlain(rescuetimeTV, textUpdate);
             homeDetailsTV.setVisibility(View.GONE);
         }
 
         if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE) && SettingsFragment.canShowCalendarInfo(mContext)) {
             GoogleCalendar googleCalendar = new GoogleCalendar(mContext);
             googleCalendar.refreshAndStoreStats();
-            Display.showSuccess(calendarTV, googleCalendar.getStoredStats());
-
-            String msg = String.format(Constants.LOCALE, "Updated: %s\n\n %s", Helper.getTimestamp(), Store.getString(mContext, Store.STATS_CAL));
-            calendarTV.setText(msg);
+            textUpdate = googleCalendar.getStoredStats();
+            textUpdate = textUpdate.equals("") ? "Calendar updates will appear here in a few minutes." : textUpdate;
+            Display.showPlain(calendarTV, textUpdate);
             homeDetailsTV.setVisibility(View.GONE);
         }
 
@@ -128,6 +141,7 @@ public class HomeFragment extends Fragment {
             homeDetailsTV.setVisibility(View.GONE);
             needToConnectTV.setVisibility(View.GONE);
             todayTV.setVisibility(View.VISIBLE);
+            usernameTV.setVisibility(View.GONE);
         }
     }
 
