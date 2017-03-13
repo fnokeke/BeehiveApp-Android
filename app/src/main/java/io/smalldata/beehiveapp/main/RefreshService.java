@@ -86,7 +86,7 @@ public class RefreshService extends Service {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, getTimestampInMillis(), AlarmManager.INTERVAL_HALF_HOUR, pendingRefreshIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getTimestampInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingRefreshIntent);
     }
 
 }
