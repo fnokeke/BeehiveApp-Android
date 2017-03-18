@@ -56,11 +56,15 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals("start_time_pref")) {
             new DailyReminder(mContext).triggerSetReminder();
+
         } else if (key.equals("username_pref")) {
-            String msg = String.format("Welcome %s!", getUsername(mContext));
+            String username = getUsername(mContext);
+            String msg = String.format("Welcome %s!", username);
             Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+
             if (!getUsername(mContext).equals(""))  {
-//                update username
+                String summary = String.format("%s", username);
+                findPreference(key).setSummary(summary);
             }
         }
     }

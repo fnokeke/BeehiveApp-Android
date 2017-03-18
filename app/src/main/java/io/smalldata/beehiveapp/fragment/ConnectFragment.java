@@ -166,9 +166,6 @@ public class ConnectFragment extends Fragment {
             Store.wipeAll(mContext);
             SettingsFragment.wipeAll(mContext);
 
-            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, true);
-            shdDisableFormButtons(true);
-
             Experiment experiment = new Experiment(mContext);
             JSONObject experimentInfo = result.optJSONObject("experiment");
             experiment.saveConfigs(experimentInfo);
@@ -293,11 +290,13 @@ public class ConnectFragment extends Fragment {
 
     public void updateFormInput(JSONObject response, JSONObject user) {
         if (response.optString("user_response").equals("")) {
-            Display.showError(formTitleTV, R.string.invalid_code);
             resetFormInput();
+            Display.showError(formTitleTV, resources.getString(R.string.invalid_code));
         } else {
             Display.showSuccess(formTitleTV, response.optString("user_response"));
             populateConnectUI(user);
+            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, true);
+            shdDisableFormButtons(true);
         }
     }
 
