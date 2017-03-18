@@ -32,6 +32,7 @@ import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
 
 public class Intervention extends BaseConfig {
     private Context mContext;
+    private final static String TAG = "Intervention";
 
     public Intervention(Context context) {
         mContext = context;
@@ -50,7 +51,7 @@ public class Intervention extends BaseConfig {
         prepareTodayIntervention(mContext);
     }
 
-    private void prepareTodayIntervention(Context context) {
+    public static void prepareTodayIntervention(Context context) {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv = new JSONObject();
         for (Integer i = 0; i < interventions.length(); i++) {
@@ -62,6 +63,7 @@ public class Intervention extends BaseConfig {
             }
 
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
+                Log.i(TAG, "TodayIntv: " + intv.toString());
 
                 Store.setString(context, INTV_START, intv.optString("start"));
                 Store.setString(context, INTV_END, intv.optString("end"));
@@ -93,11 +95,11 @@ public class Intervention extends BaseConfig {
         }
     }
 
-    private boolean isTodayInterventionType(Context context, JSONObject intv) {
+    private static boolean isTodayInterventionType(Context context, JSONObject intv) {
         return getTodayIntvType(context).equals(intv.optString("intv_type"));
     }
 
-    private String getTodayIntvType(Context context) {
+    private static String getTodayIntvType(Context context) {
         String intvType = "";
         if (Store.getBoolean(context, Store.TEXT_FEATURE) || Store.getBoolean(context, Store.IMAGE_FEATURE)) {
             intvType = "text_image";

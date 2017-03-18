@@ -10,6 +10,7 @@
         android:orientation="vertical" >
 
         <TextView
+            android:id="@+id/tv_form_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.25"
@@ -61,7 +62,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.7"
             android:ems="10"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+            android:inputType="text" />
     </LinearLayout>
 
     <LinearLayout
@@ -79,10 +81,9 @@
         <Spinner
             android:id="@+id/spinner_gender"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.7"
-            android:entries="@array/form_gender_list"
-            android:ems="10" />
+            android:layout_height="35dp"
+            android:layout_weight="0.70"
+            android:entries="@array/form_gender_list" />
 
     </LinearLayout>
 
@@ -134,44 +135,17 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.25" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.75"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/btn_submit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="5"
-                android:text="@string/form_submit"
-                android:background="@android:color/holo_blue_dark"
-                style="@android:style/Widget.Holo.Button" />
-
-            <Button
-                android:id="@+id/btn_reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="5"
-                android:text="@string/form_reset"
-                android:background="@android:color/holo_red_dark"
-                style="@android:style/Widget.Holo.Button" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/join_study"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            />
 
         <TextView
             android:id="@+id/tv_connect_status"
@@ -180,9 +154,8 @@
             android:textAlignment="center"
             android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
     </LinearLayout>
-
-
 
     <LinearLayout
         android:orientation="vertical"
@@ -201,23 +174,34 @@
 
         <View style="@style/Divider"/>
 
-        <Button
-            android:id="@+id/btn_check_rt"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_check_rt"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:text="@string/check_rt_conn"
-            />
+            android:layout_margin="3dp"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            android:text="@string/check_rt_conn" />
 
         <Button
             android:id="@+id/btn_check_cal"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:text="@string/check_cal_conn"
-            />
+            android:layout_margin="3dp"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            android:text="@string/check_cal_conn" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_how_to_conn"

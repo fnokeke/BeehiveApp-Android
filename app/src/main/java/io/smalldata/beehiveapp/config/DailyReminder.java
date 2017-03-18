@@ -40,23 +40,22 @@ public class DailyReminder extends BaseConfig {
         return Store.getString(mContext, REMINDER_TIME);
     }
 
-     private void extractThenSetReminder(String reminder) {
-        if (reminder.equals("")) return;
-
-        String[] hrMin = reminder.split(":");
-        Calendar today = Calendar.getInstance();
-        today.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hrMin[0]));
-        today.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
-        today.set(Calendar.SECOND, 0);
-        setReminder(today.getTimeInMillis(), true);
-    }
-
     public void triggerSetReminder() {
+        if (cannotTriggerAlarm()) {
+            long alarmMillis = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
+            String alarmTimeStr = Helper.getTimestamp(alarmMillis);
+            String content = "Last reminder time: " + alarmTimeStr;
+            String title = "Reminder won't show: " + Helper.getTimestamp();
+            Helper.showInstantNotif(mContext, title, content, "", 5556);
+            return;
+        }
+
         if (experiment.notif_window_enabled()) {
             extractWindowTimeThenSetReminder(experiment.getWindowMintues());
         } else {
             extractThenSetReminder(experiment.getInterventionReminderTime());
         }
+
     }
 
     private void extractWindowTimeThenSetReminder(Integer windowMinutes) {
@@ -71,6 +70,17 @@ public class DailyReminder extends BaseConfig {
         long millisFromStart = getRandomInt(windowMinutes) * 60 * 1000;
         long futureAlarmMillis = userTimeMillisFromSettings + millisFromStart;
         setReminder(futureAlarmMillis, true);
+    }
+
+    private void extractThenSetReminder(String reminder) {
+        if (reminder.equals("")) return;
+
+        String[] hrMin = reminder.split(":");
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hrMin[0]));
+        today.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
+        today.set(Calendar.SECOND, 0);
+        setReminder(today.getTimeInMillis(), true);
     }
 
     private long adjustMillisDateToToday(long userTimeMillisFromSettings) {

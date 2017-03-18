@@ -59,6 +59,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         } else if (key.equals("username_pref")) {
             String msg = String.format("Welcome %s!", getUsername(mContext));
             Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
+            if (!getUsername(mContext).equals(""))  {
+//                update username
+            }
         }
     }
 

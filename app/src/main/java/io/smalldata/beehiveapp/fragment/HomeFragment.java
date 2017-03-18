@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment {
     private TextView homeDetailsTV;
     private TextView todayTV;
     private ImageView todayImageView;
-    private Intervention intervention;
 
     @Nullable
     @Override
@@ -71,7 +70,6 @@ public class HomeFragment extends Fragment {
         homeDetailsTV = (TextView) mActivity.findViewById(R.id.tv_home_details);
         todayTV = (TextView) mActivity.findViewById(R.id.tv_today_text);
         todayImageView = (ImageView) mActivity.findViewById(R.id.iv_today_image);
-        intervention = new Intervention(mContext);
     }
 
     private void updateUsernameIfPresent() {

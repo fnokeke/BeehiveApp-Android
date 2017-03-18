@@ -1,8 +1,11 @@
 package io.smalldata.beehiveapp.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -21,6 +25,7 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
+import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.main.RefreshService;
 import io.smalldata.beehiveapp.utils.Constants;
@@ -38,11 +43,21 @@ import io.smalldata.beehiveapp.utils.Store;
 
 public class ConnectFragment extends Fragment {
 
+    final static String TAG = "ConnectFragment";
     Context mContext;
     Activity mActivity;
     TextView connResponseTV;
     TextView calRTResponseTV;
     TextView howToConnTV;
+    TextView formTitleTV;
+    Button submitBtn;
+
+    EditText fnField;
+    EditText lnField;
+    EditText emailField;
+    EditText codeField;
+    Spinner genderField;
+    Resources resources;
 
     @Nullable
     @Override
@@ -56,14 +71,22 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        prepareDisplay();
         populateConnectUI(Experiment.getUserInfo(mContext));
+    }
 
-        Button submitBtn = (Button) mActivity.findViewById(R.id.btn_submit);
+    private void prepareDisplay() {
+        resources = getResources();
+
+        fnField = (EditText) getActivity().findViewById(R.id.et_fn);
+        lnField = (EditText) getActivity().findViewById(R.id.et_ln);
+        emailField = (EditText) getActivity().findViewById(R.id.et_email);
+        codeField = (EditText) getActivity().findViewById(R.id.et_code);
+        genderField = (Spinner) getActivity().findViewById(R.id.spinner_gender);
+
+        submitBtn = (Button) mActivity.findViewById(R.id.btn_submit);
         submitBtn.setOnClickListener(submitBtnHandler);
-
-        Button resetBtn = (Button) mActivity.findViewById(R.id.btn_reset);
-        resetBtn.setOnClickListener(resetBtnHandler);
+        shdDisableFormButtons(Store.getBoolean(mContext, Store.IS_EXIT_BUTTON));
 
         Button checkRTBtn = (Button) mActivity.findViewById(R.id.btn_check_rt);
         checkRTBtn.setOnClickListener(checkRTBtnHandler);
@@ -72,20 +95,21 @@ public class ConnectFragment extends Fragment {
         checkCalBtn.setOnClickListener(checkCalBtnHandler);
 
         connResponseTV = (TextView) getActivity().findViewById(R.id.tv_connect_status);
+        formTitleTV = (TextView) mActivity.findViewById(R.id.tv_form_title);
         calRTResponseTV = (TextView) mActivity.findViewById(R.id.tv_check_conn_status);
         howToConnTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
-    }
 
-    View.OnClickListener resetBtnHandler = new View.OnClickListener() {
-        public void onClick(View v) {
-            resetFormInput();
-        }
-    };
+    }
 
     View.OnClickListener submitBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             if (!Network.isDeviceOnline(mContext)) {
-                Display.showError(connResponseTV, "No network connection.");
+                Display.showError(formTitleTV, "No network connection.");
+                return;
+            }
+
+            if (Store.getBoolean(mContext, Store.IS_EXIT_BUTTON)) {
+                showExitDialog();
                 return;
             }
 
@@ -100,13 +124,50 @@ public class ConnectFragment extends Fragment {
         }
     };
 
+    private void showExitDialog() {
+        new AlertDialog.Builder(mContext)
+                .setTitle("Exit Research Experiment")
+                .setMessage("Leaving experiment will reset app. Are you sure you want to exit?")
+                .setIcon(R.drawable.ic_experiment)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
+                        shdDisableFormButtons(false);
+                        resetFormInput();
+                        Store.wipeAll(mContext);
+                        SettingsFragment.wipeAll(mContext);
+                        Toast.makeText(mContext, "All data wiped. You are no longer part of the study.", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
+    private void shdDisableFormButtons(boolean status) {
+        boolean enable = !status;
+        fnField.setEnabled(enable);
+        lnField.setEnabled(enable);
+        genderField.setEnabled(enable);
+        emailField.setEnabled(enable);
+        codeField.setEnabled(enable);
+
+        if (status) {
+            submitBtn.setText(getResources().getString(R.string.exit_study));
+            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        } else {
+            submitBtn.setText(getResources().getString(R.string.join_study));
+            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }
+    }
 
     VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject result) {
-            Log.i("onConnectStudySuccess", result.toString());
+            Log.i(TAG, "onConnectStudySuccess: " + result.toString());
             Store.wipeAll(mContext);
             SettingsFragment.wipeAll(mContext);
+
+            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, true);
+            shdDisableFormButtons(true);
 
             Experiment experiment = new Experiment(mContext);
             JSONObject experimentInfo = result.optJSONObject("experiment");
@@ -124,12 +185,14 @@ public class ConnectFragment extends Fragment {
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
             Log.e("onConnectFailure: ", error.toString());
+            Display.showError(formTitleTV, "Cannot submit your bio.");
             String msg = String.format(Constants.LOCALE, "Error submitting your bio. Please contact researcher. " +
                     "Error details: %s", error.toString());
             Display.showError(connResponseTV, msg);
-            error.printStackTrace();
             Display.dismissBusy();
+            error.printStackTrace();
         }
     };
 
@@ -230,20 +293,15 @@ public class ConnectFragment extends Fragment {
 
     public void updateFormInput(JSONObject response, JSONObject user) {
         if (response.optString("user_response").equals("")) {
-            Display.showError(connResponseTV, R.string.invalid_code);
+            Display.showError(formTitleTV, R.string.invalid_code);
             resetFormInput();
         } else {
-            Display.showSuccess(connResponseTV, response.optString("user_response"));
+            Display.showSuccess(formTitleTV, response.optString("user_response"));
             populateConnectUI(user);
         }
     }
 
     public void populateConnectUI(JSONObject user) {
-        EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
-        EditText lnField = (EditText) getActivity().findViewById(R.id.et_ln);
-        EditText emailField = (EditText) getActivity().findViewById(R.id.et_email);
-        EditText codeField = (EditText) getActivity().findViewById(R.id.et_code);
-
         fnField.setText(user.optString("firstname"));
         lnField.setText(user.optString("lastname"));
         emailField.setText(user.optString("email"));
@@ -254,11 +312,7 @@ public class ConnectFragment extends Fragment {
         Display.hide(howToConnTV);
         Display.hide(calRTResponseTV);
         Display.hide(connResponseTV);
-
-        final EditText fnField = (EditText) getActivity().findViewById(R.id.et_fn);
-        final EditText lnField = (EditText) getActivity().findViewById(R.id.et_ln);
-        final EditText emailField = (EditText) getActivity().findViewById(R.id.et_email);
-        final EditText codeField = (EditText) getActivity().findViewById(R.id.et_code);
+        Display.showPlain(formTitleTV, getResources().getString(R.string.desc_connect_status));
 
         fnField.setText("");
         lnField.setText("");
@@ -267,31 +321,3 @@ public class ConnectFragment extends Fragment {
     }
 }
 
-// TODO: 2/21/17 change classes to singleton instances
-
-
-//            JSONObject params = getInterventionParams();
-//            CallAPI.fetchIntervention(mContext, params, intvResponseHandler);
-
-
-//    private JSONObject getInterventionParams() {
-//        JSONObject params = new JSONObject();
-//        Helper.setJSONValue(params, "code", Store.getString(mContext, "code"));
-//        return params;
-//    }
-
-
-//    VolleyJsonCallback intvResponseHandler = new VolleyJsonCallback() {
-//        @Override
-//        public void onConnectSuccess(JSONObject result) {
-//            Log.e("BeehiveIntvSuccess:", result.toString());
-//            JSONArray interventions = result.optJSONArray("intv_response");
-//            new Intervention(mContext).saveConfigs(interventions);
-//        }
-//
-//        @Override
-//        public void onConnectFailure(VolleyError error) {
-//            Log.d("BeehiveIntvError:", error.toString());
-//            error.printStackTrace();
-//        }
-//    };

@@ -43,15 +43,18 @@
     <string name="form_code">Code</string>
     <string name="form_gender">Gender</string>
     <string-array name="form_gender_list">
-        <item>male</item>
-        <item>female</item>
-        <item>other</item>
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
     </string-array>
-    <string name="form_submit">Join Study</string>
+
+    <!-- connect fragment -->
+    <string name="join_study">Join Study</string>
+    <string name="exit_study">Exit Study</string>
     <string name="form_reset">Reset</string>
     <string name="desc_check_conn">Check Connection Status</string>
     <string name="check_rt_conn">Check Rescuetime Connection</string>
-    <string name="check_cal_conn">Check Google Calendar Connection</string>
+    <string name="check_cal_conn">Check Calendar Connection</string>
     <string name="invalid_code">Invalid code</string>
 
     <string name="rt_is_connected">Rescuetime is connected.</string>
@@ -84,5 +87,6 @@
     <string name="userTimeWindowCategory">userWindowTimeCategory</string>
     <string name="userInfo">pref_user_info</string>
     <string name="default_user_msg">Hello,</string>
+    <string name="yes">Yes</string>
 
 </resources>
