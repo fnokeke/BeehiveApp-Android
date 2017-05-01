@@ -1,6 +1,7 @@
 package io.smalldata.beehiveapp.config;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,6 +14,8 @@ import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Daily Reminders configured on Beehive Platform will be handled here
  * Created by fnokeke on 2/21/17.
@@ -22,7 +25,6 @@ public class DailyReminder extends BaseConfig {
     private Context mContext;
     private final static String REMINDER_TIME = "reminder_time";
     private Experiment experiment;
-    private Random rand = new Random();
 
     public DailyReminder(Context context) {
         mContext = context;
@@ -45,30 +47,30 @@ public class DailyReminder extends BaseConfig {
             long alarmMillis = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
             String alarmTimeStr = Helper.getTimestamp(alarmMillis);
             String content = "Last reminder time: " + alarmTimeStr;
-            String title = "Reminder won't show: " + Helper.getTimestamp();
+            String title = "Cannot trigger Alarm. At: " + Helper.getTimestamp();
+            Log.i(TAG, title + content);
             Helper.showInstantNotif(mContext, title, content, "", 5556);
             return;
         }
 
         if (experiment.notif_window_enabled()) {
-            extractWindowTimeThenSetReminder(experiment.getWindowMintues());
+            extractWindowTimeThenSetReminder();
         } else {
             extractThenSetReminder(experiment.getInterventionReminderTime());
         }
 
     }
 
-    private void extractWindowTimeThenSetReminder(Integer windowMinutes) {
-        long userTimeMillisFromSettings = SettingsFragment.getStartTimeFromSettings(mContext);
-        if (userTimeMillisFromSettings == 0) {
-            String title = "Select your reminder window";
-            String content = "Go to Beehive App >> Settings >> Start Time";
+    private void extractWindowTimeThenSetReminder() {
+        String selectedWindowTime = SettingsFragment.getSelectedWindowTime(mContext);
+        if (selectedWindowTime.equals("")) {
+            String title = "Select your time preferences";
+            String content = "Go to Beehive App >> Settings";
             Helper.showInstantNotif(mContext, title, content, "", 5555);
             return;
         }
-        userTimeMillisFromSettings = adjustMillisDateToToday(userTimeMillisFromSettings);
-        long millisFromStart = getRandomInt(windowMinutes) * 60 * 1000;
-        long futureAlarmMillis = userTimeMillisFromSettings + millisFromStart;
+        long millisFromStart = getRandomTimeInMillis(selectedWindowTime);
+        long futureAlarmMillis = Calendar.getInstance().getTimeInMillis() + millisFromStart;
         setReminder(futureAlarmMillis, true);
     }
 
@@ -83,23 +85,12 @@ public class DailyReminder extends BaseConfig {
         setReminder(today.getTimeInMillis(), true);
     }
 
-    private long adjustMillisDateToToday(long userTimeMillisFromSettings) {
-        Calendar newTime = Calendar.getInstance();
-        newTime.setTimeInMillis(userTimeMillisFromSettings);
-
-        Calendar today = Calendar.getInstance();
-        newTime.set(Calendar.YEAR, today.get(Calendar.YEAR));
-        newTime.set(Calendar.MONTH, today.get(Calendar.MONTH));
-        newTime.set(Calendar.DATE, today.get(Calendar.DATE));
-
-        return newTime.getTimeInMillis();
-    }
-
     private void setReminder(long alarmMillis, boolean shouldShowTip) {
         if (shouldShowTip) {
             String alarmTimeStr = Helper.getTimestamp(alarmMillis);
             String title = cannotTriggerAlarm() ? "Reminder won't show" : "Upcoming Reminder Tip";
             String content = "Reminder time: " + alarmTimeStr;
+            Log.i(TAG, title + content);
             Helper.showInstantNotif(mContext, title, content, "", 5555);
         }
 
@@ -113,8 +104,18 @@ public class DailyReminder extends BaseConfig {
         return Intervention.alarmAlreadyScheduledToday(mContext);
     }
 
-    private int getRandomInt(int max) {
-        return rand.nextInt(max);
+    private int getRandomTimeInMillis(String userWindowTime) {
+        String[] window = userWindowTime.split("-");
+        int millis = 60 * 60 * 1000;
+        int start = Integer.parseInt(window[0]) * millis;
+        int end = Integer.parseInt(window[1]) * millis;
+        return getRandomInt(start, end); 
+    }
+
+    private int getRandomInt(int max, int min) {
+        Random random = new Random();
+        int range = max - min + 1;
+        return random.nextInt(range) + min;
     }
 
     private void saveLastDayAndTimeAlarmScheduled(Context context, long alarmMillis) {

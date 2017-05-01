@@ -9,8 +9,7 @@ public class StartMyServiceAtBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            Intent startServiceIntent = new Intent(context, RefreshService.class);
-            context.startService(startServiceIntent);
+            RefreshService.startRefreshInIntervals(context);
         }
 
     }

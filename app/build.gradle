@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'deploygate'
 
 android {
     compileSdkVersion 25
@@ -9,7 +8,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
-        versionName "1.1"
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

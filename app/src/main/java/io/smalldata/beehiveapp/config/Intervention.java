@@ -22,7 +22,7 @@ import static io.smalldata.beehiveapp.utils.Store.INTV_START;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_IMAGE;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_TEXT;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TYPE;
-import static io.smalldata.beehiveapp.utils.Store.INTV_USER_WINDOW_MINS;
+import static io.smalldata.beehiveapp.utils.Store.INTV_ADMIN_HOUR_WINDOW;
 import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
 
 /**
@@ -78,7 +78,7 @@ public class Intervention extends BaseConfig {
                 if (Store.getBoolean(context, Store.NOTIF_WINDOW_FEATURE)) {
                     String user_window_mins = intv.optString("user_window_mins");
                     user_window_mins = user_window_mins.equals("") ? "120" : user_window_mins;
-                    Store.setInt(context, INTV_USER_WINDOW_MINS, Integer.parseInt(user_window_mins));
+                    Store.setInt(context, INTV_ADMIN_HOUR_WINDOW, Integer.parseInt(user_window_mins));
                 }
 
                 new DailyReminder(context).triggerSetReminder();

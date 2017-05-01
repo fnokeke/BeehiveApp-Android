@@ -34,7 +34,7 @@ public class Store {
     public static final String INTV_EVERY = "every";
     public static final String INTV_REPEAT = "repeat";
     public static final String INTV_WHEN = "when";
-    public static final String INTV_USER_WINDOW_MINS = "user_window_mins";
+    public static final String INTV_ADMIN_HOUR_WINDOW = "user_window_mins"; //// FIXME: 4/30/17 user_window_hours
     public static final String INTV_TREATMENT_TEXT = "treatment_text";
     public static final String INTV_TREATMENT_IMAGE = "treatment_image";
     public static final String INTV_TYPE = "intv_type";
@@ -44,6 +44,8 @@ public class Store {
     public final static String STATS_CAL = "statsCal";
     public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
     public static final String IS_EXIT_BUTTON = "isExitButton";
+
+    public static final String SETTINGS_ENABLED = "settingsEnabled";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

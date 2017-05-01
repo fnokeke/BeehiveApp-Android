@@ -164,6 +164,7 @@ public class ConnectFragment extends Fragment {
         public void onConnectSuccess(JSONObject result) {
             Log.i(TAG, "onConnectStudySuccess: " + result.toString());
             Store.wipeAll(mContext);
+            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, true);
             SettingsFragment.wipeAll(mContext);
 
             Experiment experiment = new Experiment(mContext);
@@ -182,6 +183,7 @@ public class ConnectFragment extends Fragment {
 
         @Override
         public void onConnectFailure(VolleyError error) {
+            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, false);
             Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
             Log.e("onConnectFailure: ", error.toString());
             Display.showError(formTitleTV, "Cannot submit your bio.");

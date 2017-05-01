@@ -1,29 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:enabled="false"
     android:key="@string/allSettingsPref">
 
     <PreferenceCategory
         android:key="@string/userInfo"
-        android:title="User Information">
+        android:title="Profile">
 
         <EditTextPreference
             android:key="username_pref"
             android:summary="What would you like to be called?"
             android:title="Enter Name" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="@string/userTimeWindowCategory"
-        android:title="select 2 hr notification window">
+        android:key="weekdaySchedule"
+        android:title="Weekday Schedule">
         <io.smalldata.beehiveapp.main.TimePreference
-            android:key="start_time_pref"
-            android:title="Start Time" />
+            android:key="weekday_wakeup_time_pref"
+            android:title="Wakeup Time" />
+
+        <io.smalldata.beehiveapp.main.TimePreference
+            android:key="weekday_sleep_time_pref"
+            android:title="Sleep Time" />
+
+        <ListPreference
+            android:key="@string/weekday_reminder_window"
+            android:title="Select Daily Window"
+            android:dialogTitle="Daily Reminder Window (Weekday)"
+            android:summary="%s"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="weekendSchedule"
+        android:title="Weekend Schedule">
+        <io.smalldata.beehiveapp.main.TimePreference
+            android:key="weekend_wakeup_time_pref"
+            android:title="Wakeup Time" />
+
+        <io.smalldata.beehiveapp.main.TimePreference
+            android:key="weekend_sleep_time_pref"
+            android:title="Sleep Time" />
+
+        <ListPreference
+            android:key="@string/weekend_reminder_window"
+            android:title="Select Daily Window"
+            android:dialogTitle="Daily Reminder Window (Weekend)"
+            android:summary="%s"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="@string/calendarPrefCategory"
-        android:title="calendar">
+        android:title="Calendar">
         <CheckBoxPreference
             android:key="show_calendar_pref"
             android:summary="Displays calendar events on dashboard"
@@ -32,7 +62,7 @@
 
     <PreferenceCategory
         android:key="@string/rescuetimePrefCategory"
-        android:title="rescuetime">
+        android:title="Rescuetime">
         <CheckBoxPreference
             android:key="show_rescuetime_pref"
             android:summary="Displays daily rescuetime stats on dashboard"
@@ -41,7 +71,7 @@
 
     <PreferenceCategory
         android:key="@string/geofencePrefCategory"
-        android:title="geofence">
+        android:title="Geofence">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="geofence_pref_enable"

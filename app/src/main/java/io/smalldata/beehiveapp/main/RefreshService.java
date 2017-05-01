@@ -44,7 +44,7 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Helper.showInstantNotif(this, "Refresh Performed at ", Helper.getTimestamp(), "", 1112);
+//        Helper.showInstantNotif(this, "Refresh Performed at ", Helper.getTimestamp(), "", 1112);
 //        JSONObject params = Experiment.getUserInfo(mContext);
 //        CallAPI.connectStudy(mContext, params, connectStudyResponseHandler);
         updateContents();
@@ -63,9 +63,9 @@ public class RefreshService extends Service {
         Intervention.prepareTodayIntervention(mContext);
     }
 
-    public static void start(Context context) {
-        context.startService(new Intent(context, RefreshService.class));
-    }
+//    public static void start(Context context) {
+//        context.startService(new Intent(context, RefreshService.class));
+//    }
 
 //    VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
 //        @Override
@@ -99,7 +99,7 @@ public class RefreshService extends Service {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getTimestampInMillis(), 3*AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getTimestampInMillis(), 6*AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
     }
 
 }

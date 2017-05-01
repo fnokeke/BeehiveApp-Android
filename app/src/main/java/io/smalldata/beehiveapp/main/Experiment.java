@@ -5,12 +5,7 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import io.smalldata.beehiveapp.config.GeneralNotification;
-import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
-import io.smalldata.beehiveapp.config.Rescuetime;
-import io.smalldata.beehiveapp.config.ScreenUnlock;
-import io.smalldata.beehiveapp.config.Vibration;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -90,7 +85,7 @@ public class Experiment {
         Store.setString(mContext, "lastname", user.optString("lastname"));
         Store.setString(mContext, "gender", user.optString("gender"));
         Store.setString(mContext, "email", user.optString("email"));
-        Store.setString(mContext, "condition", user.optString("condition"));
+        Store.setInt(mContext, "condition", user.optInt("condition"));
     }
 
     public static JSONObject getUserInfo(Context context) {
@@ -100,7 +95,7 @@ public class Experiment {
         Helper.setJSONValue(userInfo, "email", Store.getString(context, "email"));
         Helper.setJSONValue(userInfo, "gender", Store.getString(context, "gender"));
         Helper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
-        Helper.setJSONValue(userInfo, "condition", Store.getString(context, "condition"));
+        Helper.setJSONValue(userInfo, "condition", Store.getInt(context, "condition"));
         return userInfo;
     }
 
@@ -112,8 +107,10 @@ public class Experiment {
         return Store.getBoolean(mContext, Store.NOTIF_WINDOW_FEATURE);
     }
 
-    public int getWindowMintues() {
-        return Store.getInt(mContext, Store.INTV_USER_WINDOW_MINS);
+    public int getAdminHourWindow() {
+        int hours = Store.getInt(mContext, Store.INTV_ADMIN_HOUR_WINDOW);
+        hours = hours > 0 ? hours : 3;
+        return hours;
     }
 
     public String getInterventionReminderTime() {

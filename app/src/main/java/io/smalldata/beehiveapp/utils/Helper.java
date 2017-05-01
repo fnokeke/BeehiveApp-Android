@@ -91,6 +91,7 @@ public class Helper {
     }
 
     public static void scheduleSingleAlarm(Context context, String title, String content, String appIdToLaunch, long alarmTime) {
+//        Intent launchAppIntent = getLaunchIntent(getApplicationContext(), "io.smalldatalab.android.pam");
 
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
@@ -116,10 +117,10 @@ public class Helper {
         builder.setContentIntent(contentIntent);
         builder.setContentTitle(title)
                 .setContentText(content)
-                .setShowWhen(true)
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
+//                .setShowWhen(true)
 //                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
 //                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
                 .setSmallIcon(android.R.drawable.ic_popup_reminder);
