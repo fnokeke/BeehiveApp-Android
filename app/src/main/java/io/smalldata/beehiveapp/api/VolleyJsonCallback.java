@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 public interface VolleyJsonCallback {
     void onConnectSuccess(JSONObject result);
-
     void onConnectFailure(VolleyError error);
 }
 

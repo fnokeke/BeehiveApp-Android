@@ -36,6 +36,8 @@ import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static android.R.id.toggle;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     View mView;
     Context mContext;

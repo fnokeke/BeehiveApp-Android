@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.smalldata.beehiveapp" android:installLocation="internalOnly">
+    package="io.smalldata.beehiveapp"
+    android:installLocation="internalOnly">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".main.MainActivity"
+            android:name=".main.WelcomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,8 +28,15 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".main.NotificationPublisher" android:process=":remote"/>
+        <activity
+            android:name=".main.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
+        <receiver
+            android:name=".main.NotificationPublisher"
+            android:process=":remote" />
         <receiver android:name=".main.StartMyServiceAtBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -39,8 +47,8 @@
         <service
             android:name=".main.RefreshService"
             android:enabled="true"
-            android:process=":remote"
-            android:exported="false" />
+            android:exported="false"
+            android:process=":remote" />
 
     </application>
 

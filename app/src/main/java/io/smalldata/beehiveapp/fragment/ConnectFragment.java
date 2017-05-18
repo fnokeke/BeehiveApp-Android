@@ -25,15 +25,17 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.main.RefreshService;
+import io.smalldata.beehiveapp.utils.ConnectHelper;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
+
+import static io.smalldata.beehiveapp.R.string.userInfo;
 
 
 /**
@@ -58,6 +60,7 @@ public class ConnectFragment extends Fragment {
     EditText codeField;
     Spinner genderField;
     Resources resources;
+
 
     @Nullable
     @Override
@@ -103,26 +106,26 @@ public class ConnectFragment extends Fragment {
 
     View.OnClickListener submitBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            if (!Network.isDeviceOnline(mContext)) {
-                Display.showError(formTitleTV, "No network connection.");
-                return;
-            }
-
-            if (Store.getBoolean(mContext, Store.IS_EXIT_BUTTON)) {
-                showExitDialog();
-                return;
-            }
-
-            Display.clear(howToConnTV);
-            JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
-            JSONObject toParams = getFormInput();
-            Helper.copy(fromPhoneDetails, toParams);
-
-            Display.showBusy(mContext, "Transferring your bio...");
-            CallAPI.connectStudy(mContext, toParams, connectStudyResponseHandler);
-            Log.i("Connect study details: ", toParams.toString());
+            checkPhoneStateThenConnect();
         }
     };
+
+    private void checkPhoneStateThenConnect() {
+        if (!Network.isDeviceOnline(mContext)) {
+            Display.showError(formTitleTV, "No network connection.");
+            return;
+        }
+
+        if (Store.getBoolean(mContext, Store.IS_EXIT_BUTTON)) {
+            showExitDialog();
+            return;
+        }
+
+        Display.clear(howToConnTV);
+        JSONObject userInfo = getFormInput();
+        new ConnectHelper(mContext, connResponseTV).connectToBeehive(userInfo);
+    }
+
 
     private void showExitDialog() {
         new AlertDialog.Builder(mContext)
@@ -158,42 +161,6 @@ public class ConnectFragment extends Fragment {
             submitBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         }
     }
-
-    VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
-        @Override
-        public void onConnectSuccess(JSONObject result) {
-            Log.i(TAG, "onConnectStudySuccess: " + result.toString());
-            Store.wipeAll(mContext);
-            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, true);
-            SettingsFragment.wipeAll(mContext);
-
-            Experiment experiment = new Experiment(mContext);
-            JSONObject experimentInfo = result.optJSONObject("experiment");
-            experiment.saveConfigs(experimentInfo);
-
-            JSONObject user = result.optJSONObject("user");
-            experiment.saveUserInfo(user);
-
-            JSONObject response = result.optJSONObject("response");
-            updateFormInput(response, user);
-
-            Display.dismissBusy();
-            RefreshService.startRefreshInIntervals(mContext);
-        }
-
-        @Override
-        public void onConnectFailure(VolleyError error) {
-            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, false);
-            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
-            Log.e("onConnectFailure: ", error.toString());
-            Display.showError(formTitleTV, "Cannot submit your bio.");
-            String msg = String.format(Constants.LOCALE, "Error submitting your bio. Please contact researcher. " +
-                    "Error details: %s", error.toString());
-            Display.showError(connResponseTV, msg);
-            Display.dismissBusy();
-            error.printStackTrace();
-        }
-    };
 
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
