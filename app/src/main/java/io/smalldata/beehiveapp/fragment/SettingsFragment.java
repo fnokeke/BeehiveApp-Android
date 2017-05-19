@@ -84,21 +84,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             updateTimeWindowFromUserPrefs();
         }
 
-//        HashMap<String, Integer> tp = getAllTimePrefs();
-//        if (tp.get(WEEKDAY_WAKEUP) != null && tp.get(WEEKDAY_SLEEP) != null) {
-//            weekdayReminderWindow.setEnabled(true);
-//        }
-//
-//        if (tp.get(WEEKEND_WAKEUP) != null && tp.get(WEEKEND_SLEEP) != null) {
-//            weekendReminderWindow.setEnabled(true);
-//        }
-//
-//        if (tp.get(WEEKDAY_WAKEUP) != null &&
-//                tp.get(WEEKDAY_SLEEP) != null &&
-//                tp.get(WEEKEND_WAKEUP) != null &&
-//                tp.get(WEEKEND_SLEEP) != null) {
-//            dailyReminder.triggerSetReminder();
-//        }
     }
 
     private void updateUsernameFromPref() {
@@ -243,6 +228,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return map;
     }
 
+    /**
+     * Extend wakeup time by one hour if minutes not zero but leave sleep time hour the same.
+     * Example: wakeup time is 8am then hour is 8; wakeup time is 8:15am then hour is 9.
+     * Example: sleep time is 11pm then hour is 23; sleep time is 23:15pm, hour is still 23.
+     */
     private int getPreferenceHourValue(String key) {
         long timeInMillis = PreferenceManager.getDefaultSharedPreferences(mContext).getLong(key, 0);
         Calendar cal = Calendar.getInstance();
@@ -250,7 +240,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             cal.setTimeInMillis(timeInMillis);
         }
         int hour = cal.get(Calendar.HOUR_OF_DAY);
-        hour = cal.get(Calendar.MINUTE) > 0 ? hour + 1 : hour;
+        if (key.toLowerCase().contains("wakeup")) {
+            hour = cal.get(Calendar.MINUTE) > 0 ? hour + 1 : hour;
+        }
         return hour;
     }
 
