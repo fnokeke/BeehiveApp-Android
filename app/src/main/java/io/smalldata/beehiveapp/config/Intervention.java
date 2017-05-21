@@ -16,13 +16,14 @@ import io.smalldata.beehiveapp.utils.Store;
 import static io.smalldata.beehiveapp.utils.Helper.getTodaysDateStr;
 import static io.smalldata.beehiveapp.utils.Store.INTV_END;
 import static io.smalldata.beehiveapp.utils.Store.INTV_EVERY;
+import static io.smalldata.beehiveapp.utils.Store.INTV_FREE_HOURS_BEFORE_SLEEP;
 import static io.smalldata.beehiveapp.utils.Store.INTV_NOTIF;
 import static io.smalldata.beehiveapp.utils.Store.INTV_REPEAT;
 import static io.smalldata.beehiveapp.utils.Store.INTV_START;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_IMAGE;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_TEXT;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TYPE;
-import static io.smalldata.beehiveapp.utils.Store.INTV_ADMIN_HOUR_WINDOW;
+import static io.smalldata.beehiveapp.utils.Store.INTV_USER_WINDOW_HOURS;
 import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
 
 /**
@@ -55,7 +56,6 @@ public class Intervention extends BaseConfig {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv = new JSONObject();
         for (Integer i = 0; i < interventions.length(); i++) {
-
             try {
                 intv = new JSONObject(interventions.optString(i));
             } catch (JSONException e) {
@@ -74,12 +74,8 @@ public class Intervention extends BaseConfig {
                 Store.setString(context, INTV_WHEN, intv.optString("when"));
                 Store.setString(context, INTV_TYPE, intv.optString("intv_type"));
                 Store.setString(context, INTV_NOTIF, intv.optString("notif"));
-
-                if (Store.getBoolean(context, Store.NOTIF_WINDOW_FEATURE)) {
-                    String user_window_mins = intv.optString("user_window_mins");
-                    user_window_mins = user_window_mins.equals("") ? "120" : user_window_mins;
-                    Store.setInt(context, INTV_ADMIN_HOUR_WINDOW, Integer.parseInt(user_window_mins));
-                }
+                Store.setInt(context, INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours", -1));
+                Store.setInt(context, INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep", -1));
 
                 new DailyReminder(context).triggerSetReminder();
                 break;
@@ -101,11 +97,11 @@ public class Intervention extends BaseConfig {
 
     private static String getTodayIntvType(Context context) {
         String intvType = "";
-        if (Store.getBoolean(context, Store.TEXT_FEATURE) || Store.getBoolean(context, Store.IMAGE_FEATURE)) {
+        if (Store.getBoolean(context, Store.IS_DASHBOARD_TEXT_ENABLED) || Store.getBoolean(context, Store.IS_DASHBOARD_IMAGE_ENABLED)) {
             intvType = "text_image";
-        } else if (Store.getBoolean(context, Store.RESCUETIME_FEATURE)) {
+        } else if (Store.getBoolean(context, Store.IS_RESCUETIME_ENABLED)) {
             intvType = "rescuetime";
-        } else if (Store.getBoolean(context, Store.CALENDAR_FEATURE)) {
+        } else if (Store.getBoolean(context, Store.IS_CALENDAR_ENABLED)) {
             intvType = "calendar";
         }
         return intvType;

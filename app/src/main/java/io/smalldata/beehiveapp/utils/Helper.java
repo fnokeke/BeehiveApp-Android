@@ -19,11 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
+
+import static android.R.attr.max;
 
 /**
  * Helper.java
@@ -82,21 +85,21 @@ public class Helper {
         return Calendar.getInstance().getTimeInMillis();
     }
 
-    public static String getTimestamp(Calendar cal) {
+    public static String millisToDateFormat(Calendar cal) {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(cal.getTime());
     }
 
-    public static String getTimestamp(long timeInMillis) {
+    public static String millisToDateFormat(long timeInMillis) {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(timeInMillis);
     }
 
-    public static void scheduleSingleAlarm(Context context, String title, String content, String appIdToLaunch, long alarmTime) {
+    public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
 //        Intent launchAppIntent = getLaunchIntent(getApplicationContext(), "io.smalldatalab.android.pam");
 
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, alarmId);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -330,6 +333,12 @@ public class Helper {
 //        mgr.enqueue(request);
 //
 //    }
+
+    public static int getRandomInt(int min, int max) {
+        Random random = new Random();
+        int range = max - min + 1;
+        return random.nextInt(range) + min;
+    }
 
 }
 

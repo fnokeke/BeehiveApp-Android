@@ -41,11 +41,18 @@ public class ConnectHelper {
         public void onConnectSuccess(JSONObject result) {
             Log.i(TAG, "onConnectStudySuccess: " + result.toString());
             Store.wipeAll(mContext);
-            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, true);
             SettingsFragment.wipeAll(mContext);
 
-            Experiment experiment = new Experiment(mContext);
             JSONObject experimentInfo = result.optJSONObject("experiment");
+            Display.dismissBusy();
+            if (experimentInfo.length() == 0) {
+                Experiment.enableSettings(false);
+                Display.showError(tvFeedback, "Invalid code.");
+                return;
+            }
+            Experiment.enableSettings(true);
+            Display.showSuccess(tvFeedback, "Successfully connected!");
+            Experiment experiment = new Experiment(mContext);
             experiment.saveConfigs(experimentInfo);
 
             JSONObject user = result.optJSONObject("user");
@@ -60,13 +67,13 @@ public class ConnectHelper {
 
         @Override
         public void onConnectFailure(VolleyError error) {
-            Store.setBoolean(mContext, Store.SETTINGS_ENABLED, false);
+            Experiment.enableSettings(false);
             Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
             Log.e("onConnectFailure: ", error.toString());
 
             Display.showError(tvFeedback, "Cannot submit your bio.");
-            String msg = String.format(Constants.LOCALE, "Error submitting your bio. Please contact researcher. " +
-                    "Error details: %s", error.toString());
+            String msg = String.format(Constants.LOCALE, "Error, submitting info. " +
+                    "%s", error.toString());
             Display.showError(tvFeedback, msg);
             Display.dismissBusy();
             error.printStackTrace();

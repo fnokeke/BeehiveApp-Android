@@ -19,9 +19,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Rescuetime;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -97,7 +95,7 @@ public class HomeFragment extends Fragment {
         String textUpdate;
 
         homeDetailsTV.setVisibility(View.VISIBLE);
-        if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE) && SettingsFragment.canShowRescuetimeInfo(mContext)) {
+        if (Store.getBoolean(mContext, Store.IS_RESCUETIME_ENABLED) && SettingsFragment.canShowRescuetimeInfo(mContext)) {
             Rescuetime rescuetime = new Rescuetime(mContext);
             textUpdate = rescuetime.getStoredStats();
             textUpdate = textUpdate.equals("") ? "Rescuetime updates will appear here in a few minutes." : textUpdate;
@@ -105,7 +103,7 @@ public class HomeFragment extends Fragment {
             homeDetailsTV.setVisibility(View.GONE);
         }
 
-        if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE) && SettingsFragment.canShowCalendarInfo(mContext)) {
+        if (Store.getBoolean(mContext, Store.IS_CALENDAR_ENABLED) && SettingsFragment.canShowCalendarInfo(mContext)) {
             GoogleCalendar googleCalendar = new GoogleCalendar(mContext);
             googleCalendar.refreshAndStoreStats();
             textUpdate = googleCalendar.getStoredStats();
@@ -114,7 +112,7 @@ public class HomeFragment extends Fragment {
             homeDetailsTV.setVisibility(View.GONE);
         }
 
-        if (Store.getBoolean(mContext, Store.TEXT_FEATURE) || Store.getBoolean(mContext, Store.IMAGE_FEATURE)) {
+        if (Store.getBoolean(mContext, Store.IS_DASHBOARD_TEXT_ENABLED) || Store.getBoolean(mContext, Store.IS_DASHBOARD_IMAGE_ENABLED)) {
             showTodayTextImageIntervention();
         }
 

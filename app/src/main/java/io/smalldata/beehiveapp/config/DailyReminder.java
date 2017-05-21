@@ -22,6 +22,11 @@ import static android.content.ContentValues.TAG;
  */
 
 public class DailyReminder extends BaseConfig {
+    private final int BED_TIME_ALARM_ID = 3434;
+    private final int DAILY_INTV_ALARM_ID = 7878;
+    private final int INSTANT_NOTIF_ID = 5555;
+    private final int INSTANT_NOTIF_ID2 = 5556;
+
     private Context mContext;
     private final static String REMINDER_TIME = "reminder_time";
     private Experiment experiment;
@@ -42,26 +47,26 @@ public class DailyReminder extends BaseConfig {
         return Store.getString(mContext, REMINDER_TIME);
     }
 
-    public void triggerSetReminder() {
+    void triggerSetReminder() {
         if (cannotTriggerAlarm()) {
             long alarmMillis = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-            String alarmTimeStr = Helper.getTimestamp(alarmMillis);
+            String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
             String content = "Last reminder time: " + alarmTimeStr;
             String title = "Cannot trigger Alarm. At: " + Helper.getTimestamp();
             Log.i(TAG, title + content);
-            Helper.showInstantNotif(mContext, title, content, "", 5556);
+            Helper.showInstantNotif(mContext, title, content, "", INSTANT_NOTIF_ID2);
             return;
         }
 
-        if (experiment.notif_window_enabled()) {
+        if (Experiment.isNotifWindowEnabled(mContext)) {
             extractWindowTimeThenSetReminder();
         } else {
-            extractThenSetReminder(experiment.getInterventionReminderTime());
+            extractThenSetReminder(Experiment.getInterventionReminderTime(mContext));
         }
 
     }
 
-    private void extractWindowTimeThenSetReminder() {
+    public void extractWindowTimeThenSetReminder() {
         String selectedWindowTime = SettingsFragment.getSelectedWindowTime(mContext);
         if (selectedWindowTime.equals("")) {
             String title = "Select your time preferences";
@@ -69,9 +74,16 @@ public class DailyReminder extends BaseConfig {
             Helper.showInstantNotif(mContext, title, content, "", 5555);
             return;
         }
-        long millisFromStart = getRandomTimeInMillis(selectedWindowTime);
-        long futureAlarmMillis = Calendar.getInstance().getTimeInMillis() + millisFromStart;
-        setReminder(futureAlarmMillis, true);
+        long alarmTimeMillis = getAlarmTimeInMillis(selectedWindowTime);
+        setReminder(alarmTimeMillis, true, DAILY_INTV_ALARM_ID);
+    }
+
+    public void setReminderBeforeBedTime(long bedTimeInMillis) {
+        String title = "How was your day?";
+        String content = "Tap here to respond.";
+        String appId = "io.smalldatalab.android.pam";
+        Helper.showInstantNotif(mContext, "Last Reminder of Day", Helper.millisToDateFormat(bedTimeInMillis), "", INSTANT_NOTIF_ID);
+        Helper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis);
     }
 
     private void extractThenSetReminder(String reminder) {
@@ -82,21 +94,21 @@ public class DailyReminder extends BaseConfig {
         today.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hrMin[0]));
         today.set(Calendar.MINUTE, Integer.parseInt(hrMin[1]));
         today.set(Calendar.SECOND, 0);
-        setReminder(today.getTimeInMillis(), true);
+        setReminder(today.getTimeInMillis(), true, DAILY_INTV_ALARM_ID);
     }
 
-    private void setReminder(long alarmMillis, boolean shouldShowTip) {
+    private void setReminder(long alarmMillis, boolean shouldShowTip, int alarmId) {
         if (shouldShowTip) {
-            String alarmTimeStr = Helper.getTimestamp(alarmMillis);
+            String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
             String title = cannotTriggerAlarm() ? "Reminder won't show" : "Upcoming Reminder Tip";
             String content = "Reminder time: " + alarmTimeStr;
             Log.i(TAG, title + content);
-            Helper.showInstantNotif(mContext, title, content, "", 5555);
+            Helper.showInstantNotif(mContext, title, content, "", INSTANT_NOTIF_ID);
         }
 
         if (cannotTriggerAlarm()) return;
         JSONObject notif = Intervention.getNotifDetails(mContext);
-        Helper.scheduleSingleAlarm(mContext, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
+        Helper.scheduleSingleAlarm(mContext, alarmId, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         saveLastDayAndTimeAlarmScheduled(mContext, alarmMillis);
     }
 
@@ -104,18 +116,18 @@ public class DailyReminder extends BaseConfig {
         return Intervention.alarmAlreadyScheduledToday(mContext);
     }
 
-    private int getRandomTimeInMillis(String userWindowTime) {
+    private long getAlarmTimeInMillis(String userWindowTime) {
         String[] window = userWindowTime.split("-");
-        int millis = 60 * 60 * 1000;
-        int start = Integer.parseInt(window[0]) * millis;
-        int end = Integer.parseInt(window[1]) * millis;
-        return getRandomInt(start, end); 
-    }
+        int startHour = Integer.parseInt(window[0]);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, startHour);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
 
-    private int getRandomInt(int max, int min) {
-        Random random = new Random();
-        int range = max - min + 1;
-        return random.nextInt(range) + min;
+        int endHour = Integer.parseInt(window[1]);
+        int diffInMinutes = (endHour - startHour) * 60;
+        long millisFromStart = Helper.getRandomInt(0, diffInMinutes) * 60 * 1000;
+        return cal.getTimeInMillis() + millisFromStart;
     }
 
     private void saveLastDayAndTimeAlarmScheduled(Context context, long alarmMillis) {

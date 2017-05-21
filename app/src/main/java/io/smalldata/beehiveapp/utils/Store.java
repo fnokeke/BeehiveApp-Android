@@ -22,30 +22,27 @@ public class Store {
 
     private static final String PREF_NAME = "beehivePrefs";
 
-    public static final String CALENDAR_FEATURE = "calendar";
-    public static final String GEOFENCE_FEATURE = "geofence";
-    public static final String NOTIF_WINDOW_FEATURE = "notif_window";
-    public static final String RESCUETIME_FEATURE = "rescuetime";
-    public static final String TEXT_FEATURE = "text";
-    public static final String IMAGE_FEATURE = "image";
+    public static final String IS_CALENDAR_ENABLED = "calendar";
+    public static final String IS_GEOFENCE_ENABLED = "geofence";
+    public static final String IS_RESCUETIME_ENABLED = "rescuetime";
+    public static final String IS_DASHBOARD_TEXT_ENABLED = "text";
+    public static final String IS_DASHBOARD_IMAGE_ENABLED = "image";
 
     public static final String INTV_START = "iStart";
     public static final String INTV_END = "iEnd";
     public static final String INTV_EVERY = "every";
     public static final String INTV_REPEAT = "repeat";
     public static final String INTV_WHEN = "when";
-    public static final String INTV_ADMIN_HOUR_WINDOW = "user_window_mins"; //// FIXME: 4/30/17 user_window_hours
+    public static final String INTV_USER_WINDOW_HOURS = "user_window_hours";
+    public static final String INTV_FREE_HOURS_BEFORE_SLEEP = "free_hours_before_sleep";
     public static final String INTV_TREATMENT_TEXT = "treatment_text";
     public static final String INTV_TREATMENT_IMAGE = "treatment_image";
     public static final String INTV_TYPE = "intv_type";
     public static final String INTV_NOTIF = "notif";
 
     public static final String LAST_SCHEDULED_REMINDER_TIME = "lastNotifTime";
-    public final static String STATS_CAL = "statsCal";
     public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
     public static final String IS_EXIT_BUTTON = "isExitButton";
-
-    public static final String SETTINGS_ENABLED = "settingsEnabled";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

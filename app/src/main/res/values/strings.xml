@@ -85,8 +85,8 @@
     <string name="rescuetimePrefCategory">rescuetimePrefCategory</string>
     <string name="geofencePrefCategory">geofencePrefCategory</string>
     <string name="userTimeWindowCategory">userWindowTimeCategory</string>
-    <string name="weekday_reminder_window">weekday_reminder_window</string>
-    <string name="weekend_reminder_window">weekend_reminder_window</string>
+    <string name="weekday_reminder_window_pref">weekday_reminder_window_pref</string>
+    <string name="weekend_reminder_window_pref">weekend_reminder_window_pref</string>
     <string name="userInfo">pref_user_info</string>
     <string name="default_user_msg">Hello,</string>
     <string name="yes">Yes</string>

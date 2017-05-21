@@ -5,20 +5,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 
-import com.android.volley.VolleyError;
-
-import org.json.JSONObject;
-
-import io.smalldata.beehiveapp.api.CallAPI;
-import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 import static io.smalldata.beehiveapp.utils.Helper.getTimestampInMillis;
@@ -44,7 +35,7 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        Helper.showInstantNotif(this, "Refresh Performed at ", Helper.getTimestamp(), "", 1112);
+//        Helper.showInstantNotif(this, "Refresh Performed at ", Helper.millisToDateFormat(), "", 1112);
 //        JSONObject params = Experiment.getUserInfo(mContext);
 //        CallAPI.connectStudy(mContext, params, connectStudyResponseHandler);
         updateContents();
@@ -52,11 +43,11 @@ public class RefreshService extends Service {
     }
 
     private void updateContents() {
-        if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE)) {
+        if (Store.getBoolean(mContext, Store.IS_RESCUETIME_ENABLED)) {
             rescueTime.refreshAndStoreStats();
         }
 
-        if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE)) {
+        if (Store.getBoolean(mContext, Store.IS_CALENDAR_ENABLED)) {
             googleCalendar.refreshAndStoreStats();
         }
 
@@ -79,11 +70,11 @@ public class RefreshService extends Service {
 //            JSONObject user = result.optJSONObject("user");
 //            experiment.saveUserInfo(user);
 //
-//            if (Store.getBoolean(mContext, Store.RESCUETIME_FEATURE)) {
+//            if (Store.getBoolean(mContext, Store.IS_RESCUETIME_ENABLED)) {
 //                rescueTime.refreshAndStoreStats();
 //            }
 //
-//            if (Store.getBoolean(mContext, Store.CALENDAR_FEATURE)) {
+//            if (Store.getBoolean(mContext, Store.IS_CALENDAR_ENABLED)) {
 //                googleCalendar.refreshAndStoreStats();
 //            }
 //        }

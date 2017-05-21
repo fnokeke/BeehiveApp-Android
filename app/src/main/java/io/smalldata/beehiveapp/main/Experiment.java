@@ -9,12 +9,11 @@ import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static io.smalldata.beehiveapp.utils.Store.CALENDAR_FEATURE;
-import static io.smalldata.beehiveapp.utils.Store.GEOFENCE_FEATURE;
-import static io.smalldata.beehiveapp.utils.Store.IMAGE_FEATURE;
-import static io.smalldata.beehiveapp.utils.Store.NOTIF_WINDOW_FEATURE;
-import static io.smalldata.beehiveapp.utils.Store.RESCUETIME_FEATURE;
-import static io.smalldata.beehiveapp.utils.Store.TEXT_FEATURE;
+import static io.smalldata.beehiveapp.utils.Store.IS_CALENDAR_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_GEOFENCE_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_IMAGE_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_RESCUETIME_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_TEXT_ENABLED;
 
 /**
  * Save experiment details for offline access
@@ -23,23 +22,11 @@ import static io.smalldata.beehiveapp.utils.Store.TEXT_FEATURE;
 
 public class Experiment {
 
+    private static boolean showSettings;
     private Context mContext;
 
     public Experiment(Context context) {
         mContext = context;
-    }
-
-    void saveToggles(JSONObject experiment) {
-        if (experiment == null) return;
-        Store.setBoolean(mContext, CALENDAR_FEATURE, experiment.optBoolean(CALENDAR_FEATURE));
-        Store.setBoolean(mContext, GEOFENCE_FEATURE, experiment.optBoolean(GEOFENCE_FEATURE));
-        Store.setBoolean(mContext, IMAGE_FEATURE, experiment.optBoolean(IMAGE_FEATURE));
-        Store.setBoolean(mContext, NOTIF_WINDOW_FEATURE, experiment.optBoolean(NOTIF_WINDOW_FEATURE));
-        Store.setBoolean(mContext, RESCUETIME_FEATURE, experiment.optBoolean(RESCUETIME_FEATURE));
-        Store.setBoolean(mContext, TEXT_FEATURE, experiment.optBoolean(TEXT_FEATURE));
-        Store.setString(mContext, "expTitle", experiment.optString("title", ""));
-        Store.setString(mContext, "expStart", experiment.optString("start"));
-        Store.setString(mContext, "expEnd", experiment.optString("end"));
     }
 
     public static JSONObject getExperimentInfo(Context context) {
@@ -52,30 +39,25 @@ public class Experiment {
     }
 
     public void saveConfigs(JSONObject experiment) {
-        if (experiment == null) return;
+        if (experiment.length() == 0) return;
 
         saveToggles(experiment);
-
-//        JSONArray calendarConfig = experiment.optJSONArray("calendar_config");
-//        new GoogleCalendar(mContext).saveSettings(calendarConfig);
-//        setConfigStatus(calendarConfig, "calendar_config_is_active");
-//
-//        JSONArray rescuetimeConfig = experiment.optJSONArray("rescuetime_config");
-//        new Rescuetime(mContext).saveSettings(rescuetimeConfig);
-//        setConfigStatus(rescuetimeConfig, "rescuetime_config_is_active");
-//
-//        JSONArray screenUnlockConfig = experiment.optJSONArray("screen_unlock_config");
-//        new ScreenUnlock(mContext).saveSettings(screenUnlockConfig);
-//        setConfigStatus(screenUnlockConfig, "screen_unlock_config_is_active");
-//
-//        JSONArray vibrationConfig = experiment.optJSONArray("vibration_config");
-//        new Vibration(mContext).saveSettings(vibrationConfig);
-//        setConfigStatus(vibrationConfig, "vibration_config_is_active");
-
-        JSONArray interventions = experiment.optJSONArray("interventions");
-        new Intervention(mContext).saveSettings(interventions);
-
+        new Intervention(mContext).saveSettings(experiment.optJSONArray("interventions"));
         Store.printAll(mContext);
+    }
+
+    private void saveToggles(JSONObject experiment) {
+        if (experiment.length() == 0) return;
+
+        Experiment.enableSettings(true);
+        Store.setBoolean(mContext, IS_CALENDAR_ENABLED, experiment.optBoolean(IS_CALENDAR_ENABLED));
+        Store.setBoolean(mContext, IS_GEOFENCE_ENABLED, experiment.optBoolean(IS_GEOFENCE_ENABLED));
+        Store.setBoolean(mContext, IS_DASHBOARD_IMAGE_ENABLED, experiment.optBoolean(IS_DASHBOARD_IMAGE_ENABLED));
+        Store.setBoolean(mContext, IS_RESCUETIME_ENABLED, experiment.optBoolean(IS_RESCUETIME_ENABLED));
+        Store.setBoolean(mContext, IS_DASHBOARD_TEXT_ENABLED, experiment.optBoolean(IS_DASHBOARD_TEXT_ENABLED));
+        Store.setString(mContext, "expTitle", experiment.optString("title", ""));
+        Store.setString(mContext, "expStart", experiment.optString("start"));
+        Store.setString(mContext, "expEnd", experiment.optString("end"));
     }
 
     public void saveUserInfo(JSONObject user) {
@@ -103,18 +85,23 @@ public class Experiment {
         return getUserInfo(context).optInt("condition");
     }
 
-    public boolean notif_window_enabled() {
-        return Store.getBoolean(mContext, Store.NOTIF_WINDOW_FEATURE);
+    public static boolean isNotifWindowEnabled(Context context) {
+        return Store.getInt(context, Store.INTV_USER_WINDOW_HOURS) > 0;
     }
 
-    public int getAdminHourWindow() {
-        int hours = Store.getInt(mContext, Store.INTV_ADMIN_HOUR_WINDOW);
-        hours = hours > 0 ? hours : 3;
+    public int getIntvUserWindowHours() {
+        int hours = Store.getInt(mContext, Store.INTV_USER_WINDOW_HOURS);
+        hours = hours > 0 ? hours : 1;
         return hours;
     }
 
-    public String getInterventionReminderTime() {
-        return Store.getString(mContext, Store.INTV_WHEN);
+    public int getFreeHoursBeforeSleep() {
+        int hours = Store.getInt(mContext, Store.INTV_FREE_HOURS_BEFORE_SLEEP);
+        hours = hours > 0 ? hours : 1;
+        return hours;
+    }
+    public static String getInterventionReminderTime(Context context) {
+        return Store.getString(context, Store.INTV_WHEN);
     }
 
     private void setConfigStatus(JSONArray config, String configName) {
@@ -123,5 +110,14 @@ public class Experiment {
         } else {
             Store.setBoolean(mContext, configName, false);
         }
+    }
+
+    public static boolean canShowUserSettings() {
+//        return !getUserInfo(context).equals("");
+        return showSettings;
+    }
+
+    public static void enableSettings(boolean status) {
+        showSettings = status;
     }
 }

@@ -26,16 +26,12 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.main.RefreshService;
 import io.smalldata.beehiveapp.utils.ConnectHelper;
 import io.smalldata.beehiveapp.utils.Constants;
-import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
-
-import static io.smalldata.beehiveapp.R.string.userInfo;
 
 
 /**
@@ -74,11 +70,11 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        prepareDisplay();
+        initView();
         populateConnectUI(Experiment.getUserInfo(mContext));
     }
 
-    private void prepareDisplay() {
+    private void initView() {
         resources = getResources();
 
         fnField = (EditText) getActivity().findViewById(R.id.et_fn);
@@ -101,7 +97,6 @@ public class ConnectFragment extends Fragment {
         formTitleTV = (TextView) mActivity.findViewById(R.id.tv_form_title);
         calRTResponseTV = (TextView) mActivity.findViewById(R.id.tv_check_conn_status);
         howToConnTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
-
     }
 
     View.OnClickListener submitBtnHandler = new View.OnClickListener() {
@@ -123,7 +118,7 @@ public class ConnectFragment extends Fragment {
 
         Display.clear(howToConnTV);
         JSONObject userInfo = getFormInput();
-        new ConnectHelper(mContext, connResponseTV).connectToBeehive(userInfo);
+        new ConnectHelper(mContext, formTitleTV).connectToBeehive(userInfo);
     }
 
 
@@ -249,10 +244,10 @@ public class ConnectFragment extends Fragment {
         Spinner genderField = (Spinner) getActivity().findViewById(R.id.spinner_gender);
 
         JSONObject userInfo = new JSONObject();
-        Helper.setJSONValue(userInfo, "firstname", fnField.getText().toString());
-        Helper.setJSONValue(userInfo, "lastname", lnField.getText().toString());
-        Helper.setJSONValue(userInfo, "email", emailField.getText().toString());
-        Helper.setJSONValue(userInfo, "code", codeField.getText().toString());
+        Helper.setJSONValue(userInfo, "firstname", fnField.getText().toString().trim().toLowerCase());
+        Helper.setJSONValue(userInfo, "lastname", lnField.getText().toString().trim().toLowerCase());
+        Helper.setJSONValue(userInfo, "email", emailField.getText().toString().trim().toLowerCase());
+        Helper.setJSONValue(userInfo, "code", codeField.getText().toString().trim().toLowerCase());
         Helper.setJSONValue(userInfo, "gender", genderField.getSelectedItem().toString());
         return userInfo;
     }
