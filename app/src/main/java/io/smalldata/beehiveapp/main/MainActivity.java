@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        FirebaseMessaging.getInstance().subscribeToTopic("news");
+
 
         if (savedInstanceState == null) {
             handleClickedNotification(getIntent().getExtras());
