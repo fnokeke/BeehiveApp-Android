@@ -1,6 +1,8 @@
 package io.smalldata.beehiveapp.utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.main.RefreshService;
 
+
 /**
  * Help connect user to Beehive Researcher Study
  * Created by fnokeke on 5/18/17.
@@ -23,10 +26,12 @@ public class ConnectHelper {
     private final static String TAG = "ConnectHelper";
     private Context mContext;
     private TextView tvFeedback;
+    private Experiment experiment;
 
     public ConnectHelper(Context context, TextView feedback) {
         mContext = context;
         tvFeedback = feedback;
+        experiment = new Experiment(context);
     }
 
     public void connectToBeehive(JSONObject userInfo) {
@@ -46,11 +51,11 @@ public class ConnectHelper {
             JSONObject experimentInfo = result.optJSONObject("experiment");
             Display.dismissBusy();
             if (experimentInfo.length() == 0) {
-                Experiment.enableSettings(false);
+                experiment.enableSettings(false);
                 Display.showError(tvFeedback, "Invalid code.");
                 return;
             }
-            Experiment.enableSettings(true);
+            experiment.enableSettings(true);
             Display.showSuccess(tvFeedback, "Successfully connected!");
             Experiment experiment = new Experiment(mContext);
             experiment.saveConfigs(experimentInfo);
@@ -58,8 +63,14 @@ public class ConnectHelper {
             JSONObject user = result.optJSONObject("user");
             experiment.saveUserInfo(user);
 
-//            JSONObject response = result.optJSONObject("response");
-//            updateFormInput(response, user);
+            JSONObject response = result.optJSONObject("response");
+            Store.setString(mContext, "formInputResponse", response.toString());
+            Store.setString(mContext, "formInputUser", user.toString());
+
+            Intent intent = new Intent("ui-form-update");
+            intent.putExtra("formInputResponse", response.toString());
+            intent.putExtra("formInputUser", user.toString());
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
 
             Display.dismissBusy();
             RefreshService.startRefreshInIntervals(mContext);
@@ -67,13 +78,12 @@ public class ConnectHelper {
 
         @Override
         public void onConnectFailure(VolleyError error) {
-            Experiment.enableSettings(false);
+            experiment.enableSettings(false);
             Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
             Log.e("onConnectFailure: ", error.toString());
 
             Display.showError(tvFeedback, "Cannot submit your bio.");
-            String msg = String.format(Constants.LOCALE, "Error, submitting info. " +
-                    "%s", error.toString());
+            String msg = String.format(Constants.LOCALE, "Error, submitting info. %s", error.toString());
             Display.showError(tvFeedback, msg);
             Display.dismissBusy();
             error.printStackTrace();

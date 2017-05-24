@@ -22,7 +22,6 @@ import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_TEXT_ENABLED;
 
 public class Experiment {
 
-    private static boolean showSettings;
     private Context mContext;
 
     public Experiment(Context context) {
@@ -49,7 +48,6 @@ public class Experiment {
     private void saveToggles(JSONObject experiment) {
         if (experiment.length() == 0) return;
 
-        Experiment.enableSettings(true);
         Store.setBoolean(mContext, IS_CALENDAR_ENABLED, experiment.optBoolean(IS_CALENDAR_ENABLED));
         Store.setBoolean(mContext, IS_GEOFENCE_ENABLED, experiment.optBoolean(IS_GEOFENCE_ENABLED));
         Store.setBoolean(mContext, IS_DASHBOARD_IMAGE_ENABLED, experiment.optBoolean(IS_DASHBOARD_IMAGE_ENABLED));
@@ -104,20 +102,11 @@ public class Experiment {
         return Store.getString(context, Store.INTV_WHEN);
     }
 
-    private void setConfigStatus(JSONArray config, String configName) {
-        if (config != null) {
-            Store.setBoolean(mContext, configName, config.length() > 0);
-        } else {
-            Store.setBoolean(mContext, configName, false);
-        }
+    public boolean canShowSettings() {
+        return Store.getBoolean(mContext, Store.CAN_SHOW_SETTINGS);
     }
 
-    public static boolean canShowUserSettings() {
-//        return !getUserInfo(context).equals("");
-        return showSettings;
-    }
-
-    public static void enableSettings(boolean status) {
-        showSettings = status;
+    public void enableSettings(boolean status) {
+        Store.setBoolean(mContext, Store.CAN_SHOW_SETTINGS, status);
     }
 }

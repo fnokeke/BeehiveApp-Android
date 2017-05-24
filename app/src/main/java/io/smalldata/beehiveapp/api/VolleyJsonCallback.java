@@ -6,6 +6,7 @@ import com.android.volley.VolleyError;
 import org.json.JSONObject;
 
 /**
+ * Callback for REST API requests
  * Created by fnokeke on 1/22/17.
  */
 

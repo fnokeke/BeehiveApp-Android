@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -77,7 +78,13 @@ public class Intervention extends BaseConfig {
                 Store.setInt(context, INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours", -1));
                 Store.setInt(context, INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep", -1));
 
-                new DailyReminder(context).triggerSetReminder();
+                DailyReminder dailyReminder = new DailyReminder(context);
+                dailyReminder.triggerSetReminder();
+
+                SettingsFragment settingsFragment = new SettingsFragment();
+                long bedTimeInMillis = settingsFragment.getTodayBedTimeInMillis();
+                dailyReminder.setReminderBeforeBedTime(bedTimeInMillis);
+
                 break;
             }
         }

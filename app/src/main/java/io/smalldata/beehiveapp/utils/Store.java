@@ -43,6 +43,7 @@ public class Store {
     public static final String LAST_SCHEDULED_REMINDER_TIME = "lastNotifTime";
     public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
     public static final String IS_EXIT_BUTTON = "isExitButton";
+    public static String CAN_SHOW_SETTINGS = "canShowSettings";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

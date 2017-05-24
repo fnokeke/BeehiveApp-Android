@@ -3,11 +3,15 @@ package io.smalldata.beehiveapp.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +24,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
@@ -55,8 +60,6 @@ public class ConnectFragment extends Fragment {
     EditText emailField;
     EditText codeField;
     Spinner genderField;
-    Resources resources;
-
 
     @Nullable
     @Override
@@ -71,11 +74,31 @@ public class ConnectFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(uiBroadcastReceiver, new IntentFilter("ui-form-update"));
         populateConnectUI(Experiment.getUserInfo(mContext));
     }
 
+    private BroadcastReceiver uiBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String connResponse = intent.getStringExtra("formInputResponse");
+            String connUser = intent.getStringExtra("formInputUser");
+            updateFormInput(connResponse, connUser);
+        }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(uiBroadcastReceiver);
+    }
+
     private void initView() {
-        resources = getResources();
 
         fnField = (EditText) getActivity().findViewById(R.id.et_fn);
         lnField = (EditText) getActivity().findViewById(R.id.et_ln);
@@ -138,23 +161,6 @@ public class ConnectFragment extends Fragment {
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
-    }
-
-    private void shdDisableFormButtons(boolean status) {
-        boolean enable = !status;
-        fnField.setEnabled(enable);
-        lnField.setEnabled(enable);
-        genderField.setEnabled(enable);
-        emailField.setEnabled(enable);
-        codeField.setEnabled(enable);
-
-        if (status) {
-            submitBtn.setText(getResources().getString(R.string.exit_study));
-            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        } else {
-            submitBtn.setText(getResources().getString(R.string.join_study));
-            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        }
     }
 
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
@@ -252,14 +258,26 @@ public class ConnectFragment extends Fragment {
         return userInfo;
     }
 
-    public void updateFormInput(JSONObject response, JSONObject user) {
+    public void updateFormInput(String responseStr, String userStr) {
+        if (formTitleTV == null) return;
+
+        JSONObject response = new JSONObject();
+        JSONObject user = new JSONObject();
+
+        try {
+            response = new JSONObject(responseStr);
+            user = new JSONObject(userStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         if (response.optString("user_response").equals("")) {
             resetFormInput();
-            Display.showError(formTitleTV, resources.getString(R.string.invalid_code));
+            Display.showError(formTitleTV, getString(R.string.invalid_code));
         } else {
             Display.showSuccess(formTitleTV, response.optString("user_response"));
-            populateConnectUI(user);
             Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, true);
+            populateConnectUI(user);
             shdDisableFormButtons(true);
         }
     }
@@ -269,6 +287,23 @@ public class ConnectFragment extends Fragment {
         lnField.setText(user.optString("lastname"));
         emailField.setText(user.optString("email"));
         codeField.setText(user.optString("code"));
+    }
+
+    private void shdDisableFormButtons(boolean status) {
+        boolean enable = !status;
+        fnField.setEnabled(enable);
+        lnField.setEnabled(enable);
+        genderField.setEnabled(enable);
+        emailField.setEnabled(enable);
+        codeField.setEnabled(enable);
+
+        if (status) {
+            submitBtn.setText(getResources().getString(R.string.exit_study));
+            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        } else {
+            submitBtn.setText(getResources().getString(R.string.join_study));
+            submitBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }
     }
 
     public void resetFormInput() {
@@ -282,5 +317,6 @@ public class ConnectFragment extends Fragment {
         emailField.setText("");
         codeField.setText("");
     }
+
 }
 

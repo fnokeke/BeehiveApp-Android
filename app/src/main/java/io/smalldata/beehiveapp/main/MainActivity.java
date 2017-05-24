@@ -183,24 +183,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void stupidErrorPrompt(Boolean shouldDisplay) {
-        if (shouldDisplay) {
-            mTV.setVisibility(View.VISIBLE);
-        } else {
-            mTV.setVisibility(View.INVISIBLE);
-        }
-    }
-
-//    public TextView getTVTimeout() {
-//       return (TextView)findViewById(R.id.tv_timeout_prompt);
-//    }
-
-//    public void (Boolean isTimeoutError) {
-//        if (isTimeoutError) {
-//            findViewById(R.id.tv_timeout_prompt).setVisibility(View.VISIBLE);
-//        } else {
-//            findViewById(R.id.tv_timeout_prompt).setVisibility(View.INVISIBLE);
-//        }
-//
-//    }
 }

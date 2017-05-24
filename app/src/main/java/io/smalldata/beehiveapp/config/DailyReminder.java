@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Random;
 
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
@@ -29,11 +28,9 @@ public class DailyReminder extends BaseConfig {
 
     private Context mContext;
     private final static String REMINDER_TIME = "reminder_time";
-    private Experiment experiment;
 
     public DailyReminder(Context context) {
         mContext = context;
-        experiment = new Experiment(mContext);
     }
 
     public void saveSettings(JSONArray reminderConfig) {
@@ -67,7 +64,8 @@ public class DailyReminder extends BaseConfig {
     }
 
     public void extractWindowTimeThenSetReminder() {
-        String selectedWindowTime = SettingsFragment.getSelectedWindowTime(mContext);
+        SettingsFragment settingsFragment = new SettingsFragment();
+        String selectedWindowTime = settingsFragment.getSelectedWindowTime();
         if (selectedWindowTime.equals("")) {
             String title = "Select your time preferences";
             String content = "Go to Beehive App >> Settings";

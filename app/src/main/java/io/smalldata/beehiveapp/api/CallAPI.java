@@ -1,12 +1,9 @@
 package io.smalldata.beehiveapp.api;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;

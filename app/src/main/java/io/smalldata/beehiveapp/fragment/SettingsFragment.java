@@ -33,12 +33,11 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-    Context mContext;
-    Experiment experiment;
-    PreferenceScreen preferenceScreen;
-    PreferenceCategory calendarCategory, geofenceCategory, rescuetimeCategory;
-    Resources resources;
-    DailyReminder dailyReminder;
+    private Experiment experiment;
+    private DailyReminder dailyReminder;
+
+    private PreferenceScreen preferenceScreen;
+    private PreferenceCategory calendarCategory, geofenceCategory, rescuetimeCategory;
 
     private ListPreference weekdayReminderWindow;
     private ListPreference weekendReminderWindow;
@@ -49,14 +48,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private final String WEEKEND_WAKEUP = "weekend_wakeup_time_pref";
     private final String WEEKDAY_SLEEP = "weekday_sleep_time_pref";
     private final String WEEKEND_SLEEP = "weekend_sleep_time_pref";
-    private Resources mResources;
+    private Context mContext;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity();
-        mResources = getResources();
         addPreferencesFromResource(R.xml.preferences);
 
         initView();
@@ -85,8 +84,17 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     private void updateDailyReminders() {
         dailyReminder.extractWindowTimeThenSetReminder();
-        long bedTimeInMillis = getTodayBedTimeInMillis(getHoursBeforeSleep());
+        long bedTimeInMillis = this.getTodayBedTimeInMillis();
         dailyReminder.setReminderBeforeBedTime(bedTimeInMillis);
+    }
+
+    public long getTodayBedTimeInMillis() {
+        int hoursBeforeSleep = this.getHoursBeforeSleep();
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        String key = (dayOfWeek == 1 || dayOfWeek == 7) ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
+        TimePreference sleepTime = (TimePreference) findPreference(key);
+        long millisBeforeSleep = Helper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
+        return sleepTime.getTimeInMillis() - millisBeforeSleep;
     }
 
     private int getHoursBeforeSleep() {
@@ -95,7 +103,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     private void initView() {
         getActivity().setTitle("Settings");
-        resources = getResources();
         experiment = new Experiment(mContext);
         dailyReminder = new DailyReminder(mContext);
 
@@ -104,17 +111,17 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             findPreference(USERNAME_PREF).setSummary(username);
         }
 
-        preferenceScreen = (PreferenceScreen) findPreference(resources.getString(R.string.allSettingsPref));
-        calendarCategory = (PreferenceCategory) findPreference(resources.getString(R.string.calendarPrefCategory));
-        geofenceCategory = (PreferenceCategory) findPreference(resources.getString(R.string.geofencePrefCategory));
-        rescuetimeCategory = (PreferenceCategory) findPreference(resources.getString(R.string.rescuetimePrefCategory));
-        weekdayReminderWindow = (ListPreference) findPreference(mResources.getString(R.string.weekday_reminder_window_pref));
-        weekendReminderWindow = (ListPreference) findPreference(mResources.getString(R.string.weekend_reminder_window_pref));
+        preferenceScreen = (PreferenceScreen) findPreference(getString(R.string.allSettingsPref));
+        calendarCategory = (PreferenceCategory) findPreference(getString(R.string.calendarPrefCategory));
+        geofenceCategory = (PreferenceCategory) findPreference(getString(R.string.geofencePrefCategory));
+        rescuetimeCategory = (PreferenceCategory) findPreference(getString(R.string.rescuetimePrefCategory));
+        weekdayReminderWindow = (ListPreference) findPreference(getString(R.string.weekday_reminder_window_pref));
+        weekendReminderWindow = (ListPreference) findPreference(getString(R.string.weekend_reminder_window_pref));
     }
 
 
     private void displayEnabledPref() {
-        if (Experiment.canShowUserSettings()) {
+        if (experiment.canShowSettings()) {
             preferenceScreen.setEnabled(true);
             updateTimeWindowView();
             updateAppFeaturesFromUserPrefs();
@@ -215,18 +222,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return getDefaultSharedPreferences(context).getBoolean("show_calendar_pref", false);
     }
 
-    public long getTodayBedTimeInMillis(int hoursBeforeSleep) {
-        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        String key = (dayOfWeek == 1 || dayOfWeek == 7) ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
-        TimePreference sleepTime = (TimePreference) findPreference(key);
-        long millisBeforeSleep = Helper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
-        return sleepTime.getTimeInMillis() - millisBeforeSleep;
-    }
-
-    public static String getSelectedWindowTime(Context context) {
+    public String getSelectedWindowTime() {
         int currentDayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         String key = (currentDayOfWeek == 1 || currentDayOfWeek == 7) ? "weekend_reminder_window_pref" : "weekday_reminder_window_pref";
-        return getDefaultSharedPreferences(context).getString(key, "");
+        return getDefaultSharedPreferences(mContext).getString(key, "");
     }
 
     public HashMap<String, Integer> getAllTimePrefs() {
@@ -264,10 +263,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public static String getUsername(Context context) {
         return getDefaultSharedPreferences(context).getString("username_pref", "");
     }
-
-//    public String getPrefString(String key) {
-//        return getDefaultSharedPreferences(mContext).getString(key, "");
-//    }
 
     public static void wipeAll(Context context) {
         getDefaultSharedPreferences(context).edit().clear().apply();
