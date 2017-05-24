@@ -75,8 +75,8 @@ public class Intervention extends BaseConfig {
                 Store.setString(context, INTV_WHEN, intv.optString("when"));
                 Store.setString(context, INTV_TYPE, intv.optString("intv_type"));
                 Store.setString(context, INTV_NOTIF, intv.optString("notif"));
-                Store.setInt(context, INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours", -1));
-                Store.setInt(context, INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep", -1));
+                Store.setInt(context, INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours"));
+                Store.setInt(context, INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep"));
 
                 DailyReminder dailyReminder = new DailyReminder(context);
                 dailyReminder.triggerSetReminder();

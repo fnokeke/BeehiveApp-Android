@@ -14,7 +14,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="weekdaySchedule"
+        android:key="weekday_schedule"
         android:title="Weekday Schedule">
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekday_wakeup_time_pref"
@@ -33,7 +33,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="weekendSchedule"
+        android:key="weekend_schedule"
         android:title="Weekend Schedule">
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekend_wakeup_time_pref"

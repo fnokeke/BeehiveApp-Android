@@ -2,9 +2,9 @@ package io.smalldata.beehiveapp.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -37,7 +37,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private DailyReminder dailyReminder;
 
     private PreferenceScreen preferenceScreen;
-    private PreferenceCategory calendarCategory, geofenceCategory, rescuetimeCategory;
+    private PreferenceCategory calendarCategory, geofenceCategory, rescuetimeCategory, weekdayScheduleCategory, weekendScheduleCategory;
 
     private ListPreference weekdayReminderWindow;
     private ListPreference weekendReminderWindow;
@@ -82,6 +82,12 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (key.contains("reminder_window_pref")) updateDailyReminders();
     }
 
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+        Log.i(TAG, "onPreferenceTreeClick: " + preference.toString());
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+
     private void updateDailyReminders() {
         dailyReminder.extractWindowTimeThenSetReminder();
         long bedTimeInMillis = this.getTodayBedTimeInMillis();
@@ -115,16 +121,24 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         calendarCategory = (PreferenceCategory) findPreference(getString(R.string.calendarPrefCategory));
         geofenceCategory = (PreferenceCategory) findPreference(getString(R.string.geofencePrefCategory));
         rescuetimeCategory = (PreferenceCategory) findPreference(getString(R.string.rescuetimePrefCategory));
-        weekdayReminderWindow = (ListPreference) findPreference(getString(R.string.weekday_reminder_window_pref));
-        weekendReminderWindow = (ListPreference) findPreference(getString(R.string.weekend_reminder_window_pref));
+        weekdayScheduleCategory = (PreferenceCategory) findPreference("weekday_schedule");
+        weekendScheduleCategory = (PreferenceCategory) findPreference("weekend_schedule");
+//        weekdayReminderWindow = (ListPreference) findPreference(getResources().getString(R.string.weekday_reminder_window_pref));
+//        weekendReminderWindow = (ListPreference) findPreference(getResources().getString(R.string.weekend_reminder_window_pref));
+        weekdayReminderWindow = (ListPreference) findPreference("weekday_reminder_window_pref");
+        weekendReminderWindow = (ListPreference) findPreference("weekend_reminder_window_pref");
     }
-
 
     private void displayEnabledPref() {
         if (experiment.canShowSettings()) {
             preferenceScreen.setEnabled(true);
             updateTimeWindowView();
             updateAppFeaturesFromUserPrefs();
+        }
+
+        if (!Experiment.isNotifWindowEnabled(mContext)) {
+            weekdayScheduleCategory.setEnabled(false);
+            weekendScheduleCategory.setEnabled(false);
         }
     }
 
