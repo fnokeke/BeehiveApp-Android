@@ -4,13 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,7 +20,6 @@ import java.util.HashMap;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.DailyReminder;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.main.TimePreference;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -50,7 +50,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private final String WEEKEND_SLEEP = "weekend_sleep_time_pref";
     private Context mContext;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +58,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
 
         initView();
-        displayEnabledPref();
+        displayEnabledPrefCategories();
+        removeOtherPrefCategories();
     }
 
     @Override
@@ -79,32 +79,65 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         Log.i(TAG, "onSharedPreferenceChanged: " + key);
         if (key.equals(USERNAME_PREF)) updateUsernameFromPref();
         if (key.contains("time_pref")) updateTimeWindowView();
-        if (key.contains("reminder_window_pref")) updateDailyReminders();
+        if (key.contains("reminder_window_pref")) applyGeneratedReminders(mContext);
     }
 
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        Log.i(TAG, "onPreferenceTreeClick: " + preference.toString());
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    private void applyGeneratedReminders(Context context) {
+        JSONObject allReminders = generateAllReminders(context);
+        long bedTimeAlarmMillis = allReminders.optLong("bedtime_reminder");
+        long dailyAlarmMillis = allReminders.optLong("daily_reminder");
+        dailyReminder.setReminderBeforeBedTime(bedTimeAlarmMillis, true);
+        dailyReminder.setTodayReminder(dailyAlarmMillis, true);
+        Store.setLong(context, Store.DAILY_ALARM_MILLIS, bedTimeAlarmMillis);
+        Store.setLong(context, Store.BEDTIME_ALARM_MILLIS, dailyAlarmMillis);
     }
 
-    private void updateDailyReminders() {
-        dailyReminder.extractWindowTimeThenSetReminder();
-        long bedTimeInMillis = this.getTodayBedTimeInMillis();
-        dailyReminder.setReminderBeforeBedTime(bedTimeInMillis);
+    public static JSONObject generateAllReminders(Context context) {
+        JSONObject alarms = new JSONObject();
+        Helper.setJSONValue(alarms, context.getString(R.string.daily_reminder), generateDailyReminder(context));
+        Helper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), generateBedTimeReminder(context));
+        return alarms;
     }
 
-    public long getTodayBedTimeInMillis() {
-        int hoursBeforeSleep = this.getHoursBeforeSleep();
+    private static long generateDailyReminder(Context context) {
+        String userWindowTime = getSelectedWindowTime(context);
+        String[] window = userWindowTime.split("-");
+        int startHour = Integer.parseInt(window[0]);
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, startHour);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+
+        int endHour = Integer.parseInt(window[1]);
+        int diffInMinutes = (endHour - startHour) * 60;
+        long millisFromStart = Helper.getRandomInt(0, diffInMinutes) * 60 * 1000;
+        return cal.getTimeInMillis() + millisFromStart;
+    }
+
+    public static long generateBedTimeReminder(Context context) {
+        int hoursBeforeSleep = getHoursBeforeSleep(context);
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         String key = (dayOfWeek == 1 || dayOfWeek == 7) ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
-        TimePreference sleepTime = (TimePreference) findPreference(key);
+        long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
         long millisBeforeSleep = Helper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
-        return sleepTime.getTimeInMillis() - millisBeforeSleep;
+        return sleepTimeInMillis - millisBeforeSleep;
     }
 
-    private int getHoursBeforeSleep() {
-        return Store.getInt(mContext, Store.INTV_FREE_HOURS_BEFORE_SLEEP);
+    private static int getHoursBeforeSleep(Context context) {
+        return Store.getInt(context, Store.INTV_FREE_HOURS_BEFORE_SLEEP);
+    }
+
+    public static String getSelectedWindowTime(Context context) {
+        int currentDayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        String key = (currentDayOfWeek == 1 || currentDayOfWeek == 7) ? "weekend_reminder_window_pref" : "weekday_reminder_window_pref";
+        return getDefaultSharedPreferences(context).getString(key, "");
+    }
+
+    public static JSONObject getCurrentReminders(Context context) {
+        JSONObject alarms = new JSONObject();
+        Helper.setJSONValue(alarms, context.getString(R.string.daily_reminder), Store.getLong(context, Store.DAILY_ALARM_MILLIS));
+        Helper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), Store.getLong(context, Store.BEDTIME_ALARM_MILLIS));
+        return alarms;
     }
 
     private void initView() {
@@ -123,17 +156,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         rescuetimeCategory = (PreferenceCategory) findPreference(getString(R.string.rescuetimePrefCategory));
         weekdayScheduleCategory = (PreferenceCategory) findPreference("weekday_schedule");
         weekendScheduleCategory = (PreferenceCategory) findPreference("weekend_schedule");
-//        weekdayReminderWindow = (ListPreference) findPreference(getResources().getString(R.string.weekday_reminder_window_pref));
-//        weekendReminderWindow = (ListPreference) findPreference(getResources().getString(R.string.weekend_reminder_window_pref));
-        weekdayReminderWindow = (ListPreference) findPreference("weekday_reminder_window_pref");
-        weekendReminderWindow = (ListPreference) findPreference("weekend_reminder_window_pref");
+        weekdayReminderWindow = (ListPreference) findPreference(getString(R.string.weekday_reminder_window_pref));
+        weekendReminderWindow = (ListPreference) findPreference(getString(R.string.weekend_reminder_window_pref));
     }
 
-    private void displayEnabledPref() {
+    private void displayEnabledPrefCategories() {
         if (experiment.canShowSettings()) {
             preferenceScreen.setEnabled(true);
             updateTimeWindowView();
-            updateAppFeaturesFromUserPrefs();
         }
 
         if (!Experiment.isNotifWindowEnabled(mContext)) {
@@ -214,18 +244,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return result;
     }
 
-    private void updateAppFeaturesFromUserPrefs() {
-        if (!Store.getBoolean(mContext, Store.IS_CALENDAR_ENABLED)) {
-            preferenceScreen.removePreference(calendarCategory);
-        }
-
-        if (!Store.getBoolean(mContext, Store.IS_RESCUETIME_ENABLED)) {
-            preferenceScreen.removePreference(rescuetimeCategory);
-        }
-
-        if (!Store.getBoolean(mContext, Store.IS_GEOFENCE_ENABLED)) {
-            preferenceScreen.removePreference(geofenceCategory);
-        }
+    private void removeOtherPrefCategories() {
+        preferenceScreen.removePreference(calendarCategory);
+        preferenceScreen.removePreference(rescuetimeCategory);
+        preferenceScreen.removePreference(geofenceCategory);
     }
 
     public static boolean canShowRescuetimeInfo(Context context) {
@@ -234,12 +256,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     public static boolean canShowCalendarInfo(Context context) {
         return getDefaultSharedPreferences(context).getBoolean("show_calendar_pref", false);
-    }
-
-    public String getSelectedWindowTime() {
-        int currentDayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        String key = (currentDayOfWeek == 1 || currentDayOfWeek == 7) ? "weekend_reminder_window_pref" : "weekday_reminder_window_pref";
-        return getDefaultSharedPreferences(mContext).getString(key, "");
     }
 
     public HashMap<String, Integer> getAllTimePrefs() {

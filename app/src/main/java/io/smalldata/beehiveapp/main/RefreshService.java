@@ -7,12 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import java.util.Calendar;
+
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
 import io.smalldata.beehiveapp.utils.Store;
-
-import static io.smalldata.beehiveapp.utils.Helper.getTimestampInMillis;
 
 public class RefreshService extends Service {
 
@@ -35,9 +35,6 @@ public class RefreshService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        Helper.showInstantNotif(this, "Refresh Performed at ", Helper.millisToDateFormat(), "", 1112);
-//        JSONObject params = Experiment.getUserInfo(mContext);
-//        CallAPI.connectStudy(mContext, params, connectStudyResponseHandler);
         updateContents();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -54,43 +51,21 @@ public class RefreshService extends Service {
         Intervention.prepareTodayIntervention(mContext);
     }
 
-//    public static void start(Context context) {
-//        context.startService(new Intent(context, RefreshService.class));
-//    }
-
-//    VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
-//        @Override
-//        public void onConnectSuccess(JSONObject result) {
-//            Log.i("AlarmRefreshSuccess: ", result.toString());
-//
-//            Experiment experiment = new Experiment(mContext);
-//            JSONObject experimentInfo = result.optJSONObject("experiment");
-//            experiment.saveConfigs(experimentInfo);
-//
-//            JSONObject user = result.optJSONObject("user");
-//            experiment.saveUserInfo(user);
-//
-//            if (Store.getBoolean(mContext, Store.IS_RESCUETIME_ENABLED)) {
-//                rescueTime.refreshAndStoreStats();
-//            }
-//
-//            if (Store.getBoolean(mContext, Store.IS_CALENDAR_ENABLED)) {
-//                googleCalendar.refreshAndStoreStats();
-//            }
-//        }
-//
-//        @Override
-//        public void onConnectFailure(VolleyError error) {
-//            Log.e("AlarmRefreshFailure: ", error.toString());
-//            error.printStackTrace();
-//        }
-//    };
-
     public static void startRefreshInIntervals(Context context) {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getTimestampInMillis(), 6*AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(0), 12 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+    }
+
+    public static long getMillisUntilTriggerTime(int hourOf24HourDay) {
+        Calendar triggerAt = Calendar.getInstance();
+        triggerAt.set(Calendar.HOUR_OF_DAY, hourOf24HourDay);
+        triggerAt.set(Calendar.MINUTE, 0);
+        triggerAt.set(Calendar.SECOND, 0);
+        Calendar now = Calendar.getInstance();
+        if (triggerAt.before(now)) triggerAt.add(Calendar.DAY_OF_MONTH, 1);
+        return triggerAt.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
     }
 
 }

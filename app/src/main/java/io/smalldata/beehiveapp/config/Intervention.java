@@ -9,23 +9,21 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static io.smalldata.beehiveapp.utils.Helper.getTodaysDateStr;
 import static io.smalldata.beehiveapp.utils.Store.INTV_END;
 import static io.smalldata.beehiveapp.utils.Store.INTV_EVERY;
-import static io.smalldata.beehiveapp.utils.Store.INTV_FREE_HOURS_BEFORE_SLEEP;
 import static io.smalldata.beehiveapp.utils.Store.INTV_NOTIF;
 import static io.smalldata.beehiveapp.utils.Store.INTV_REPEAT;
 import static io.smalldata.beehiveapp.utils.Store.INTV_START;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_IMAGE;
 import static io.smalldata.beehiveapp.utils.Store.INTV_TREATMENT_TEXT;
-import static io.smalldata.beehiveapp.utils.Store.INTV_TYPE;
-import static io.smalldata.beehiveapp.utils.Store.INTV_USER_WINDOW_HOURS;
 import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
+
 
 /**
  * All daily interventions assigned through Beehive Platform will be handled here.
@@ -46,44 +44,50 @@ public class Intervention extends BaseConfig {
             interventions = new JSONArray();
         }
         storeAllInterventions(interventions);
+        prepareTodayIntervention(mContext);
     }
 
     private void storeAllInterventions(JSONArray interventions) {
         Store.setString(mContext, "interventions", interventions.toString());
-        prepareTodayIntervention(mContext);
+    }
+
+    private static JSONObject strToJsonObject(String jsonStr) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = new JSONObject(jsonStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 
     public static void prepareTodayIntervention(Context context) {
         JSONArray interventions = getAllInterventions(context);
-        JSONObject intv = new JSONObject();
+        JSONObject intv;
         for (Integer i = 0; i < interventions.length(); i++) {
-            try {
-                intv = new JSONObject(interventions.optString(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+            intv = strToJsonObject(interventions.optString(i));
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
                 Log.i(TAG, "TodayIntv: " + intv.toString());
 
-                Store.setString(context, INTV_START, intv.optString("start"));
-                Store.setString(context, INTV_END, intv.optString("end"));
-                Store.setString(context, INTV_EVERY, intv.optString("every"));
-                Store.setString(context, INTV_REPEAT, intv.optString("repeat"));
-                Store.setString(context, INTV_TREATMENT_TEXT, intv.optJSONArray("treatment_text").toString());
-                Store.setString(context, INTV_TREATMENT_IMAGE, intv.optJSONArray("treatment_image").toString());
-                Store.setString(context, INTV_WHEN, intv.optString("when"));
-                Store.setString(context, INTV_TYPE, intv.optString("intv_type"));
-                Store.setString(context, INTV_NOTIF, intv.optString("notif"));
-                Store.setInt(context, INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours"));
-                Store.setInt(context, INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep"));
+                Store.setString(context, Store.INTV_START, intv.optString("start"));
+                Store.setString(context, Store.INTV_END, intv.optString("end"));
+                Store.setString(context, Store.INTV_EVERY, intv.optString("every"));
+                Store.setString(context, Store.INTV_REPEAT, intv.optString("repeat"));
+                Store.setString(context, Store.INTV_TREATMENT_TEXT, intv.optJSONArray("treatment_text").toString());
+                Store.setString(context, Store.INTV_TREATMENT_IMAGE, intv.optJSONArray("treatment_image").toString());
+                Store.setString(context, Store.INTV_WHEN, intv.optString("when"));
+                Store.setString(context, Store.INTV_TYPE, intv.optString("intv_type"));
+                Store.setString(context, Store.INTV_NOTIF, intv.optString("notif"));
+                Store.setInt(context, Store.INTV_USER_WINDOW_HOURS, intv.optInt("user_window_hours"));
+                Store.setInt(context, Store.INTV_FREE_HOURS_BEFORE_SLEEP, intv.optInt("free_hours_before_sleep"));
+                Store.setBoolean(context, Store.INTV_DAILY_NOTIF_DISABLED, intv.optBoolean("intv_daily_notif_disabled"));
 
-                DailyReminder dailyReminder = new DailyReminder(context);
-                dailyReminder.triggerSetReminder();
-
-                SettingsFragment settingsFragment = new SettingsFragment();
-                long bedTimeInMillis = settingsFragment.getTodayBedTimeInMillis();
-                dailyReminder.setReminderBeforeBedTime(bedTimeInMillis);
+                if (!intv.optBoolean("intv_daily_notif_disabled")) {
+                    JSONObject currentReminders = SettingsFragment.getCurrentReminders(context);
+                    DailyReminder dr = new DailyReminder(context);
+                    dr.setReminderBeforeBedTime(currentReminders.optLong(context.getString(R.string.bedtime_reminder)), true);
+                    dr.setTodayReminder(currentReminders.optLong(context.getString(R.string.daily_reminder)), true);
+                }
 
                 break;
             }
@@ -114,9 +118,9 @@ public class Intervention extends BaseConfig {
         return intvType;
     }
 
-    static boolean alarmAlreadyScheduledToday(Context context) {
+    static boolean alarmSawTodayAlarm(Context context) {
         String lastCheckedDate = Store.getString(context, Store.LAST_CHECKED_INTV_DATE);
-        String today = getTodaysDateStr();
+        String today = Helper.getTodaysDateStr();
         return today.equals(lastCheckedDate);
     }
 
@@ -142,9 +146,9 @@ public class Intervention extends BaseConfig {
     }
 
     public static JSONObject getNotifDetails(Context context) {
-        JSONObject info = new JSONObject();
+        JSONObject info = null;
         try {
-            info = new JSONObject(Store.getString(context, Store.INTV_NOTIF));
+            info = new JSONObject(Store.getString(context, INTV_NOTIF));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -160,8 +164,8 @@ public class Intervention extends BaseConfig {
         String treatmentImage = "";
 
         try {
-            treatmentImageArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_IMAGE));
-            treatmentTextArr = new JSONArray(Store.getString(context, Store.INTV_TREATMENT_TEXT));
+            treatmentImageArr = new JSONArray(Store.getString(context, INTV_TREATMENT_IMAGE));
+            treatmentTextArr = new JSONArray(Store.getString(context, INTV_TREATMENT_TEXT));
             if (treatmentTextArr.length() == 1 && treatmentImageArr.length() == 1) {
                 treatmentText = treatmentTextArr.getString(0);
                 treatmentImage = treatmentImageArr.getString(0);
@@ -172,11 +176,11 @@ public class Intervention extends BaseConfig {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Helper.setJSONValue(todayIntervention, "start", Store.getString(context, Store.INTV_START));
-        Helper.setJSONValue(todayIntervention, "end", Store.getString(context, Store.INTV_END));
-        Helper.setJSONValue(todayIntervention, "every", Store.getString(context, Store.INTV_EVERY));
-        Helper.setJSONValue(todayIntervention, "when", Store.getString(context, Store.INTV_WHEN));
-        Helper.setJSONValue(todayIntervention, "repeat", Store.getString(context, Store.INTV_REPEAT));
+        Helper.setJSONValue(todayIntervention, "start", Store.getString(context, INTV_START));
+        Helper.setJSONValue(todayIntervention, "end", Store.getString(context, INTV_END));
+        Helper.setJSONValue(todayIntervention, "every", Store.getString(context, INTV_EVERY));
+        Helper.setJSONValue(todayIntervention, "when", Store.getString(context, INTV_WHEN));
+        Helper.setJSONValue(todayIntervention, "repeat", Store.getString(context, INTV_REPEAT));
         Helper.setJSONValue(todayIntervention, "treatment_text", treatmentText);
         Helper.setJSONValue(todayIntervention, "treatment_image", treatmentImage);
         return todayIntervention;

@@ -39,11 +39,15 @@ public class Store {
     public static final String INTV_TREATMENT_IMAGE = "treatment_image";
     public static final String INTV_TYPE = "intv_type";
     public static final String INTV_NOTIF = "notif";
+    public static final String INTV_DAILY_NOTIF_DISABLED = "intv_daily_notif_disabled";
 
-    public static final String LAST_SCHEDULED_REMINDER_TIME = "lastNotifTime";
+    public static final String LAST_SCHEDULED_REMINDER_TIME = "lastDailyReminder";
     public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
     public static final String IS_EXIT_BUTTON = "isExitButton";
     public static String CAN_SHOW_SETTINGS = "canShowSettings";
+    public static String LAST_SCHEDULED_BEDTIME_REMINDER = "lastBedTimeReminder";
+    public static String DAILY_ALARM_MILLIS = "dailyAlarmMillis";
+    public static String BEDTIME_ALARM_MILLIS = "bedTimeAlarmMillis";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -57,6 +61,13 @@ public class Store {
         return getPrefs(context).getString(key, "");
     }
 
+    public static void setLong(Context context, String key, Long input) {
+        getPrefs(context).edit().putLong(key, input).apply();
+    }
+
+    public static Long getLong(Context context, String key) {
+        return getPrefs(context).getLong(key, 0);
+    }
     public static void setInt(Context context, String key, Integer input) {
         getPrefs(context).edit().putInt(key, input).apply();
     }

@@ -99,7 +99,4 @@ public class TimePreference extends DialogPreference {
         return DateFormat.getTimeFormat(getContext()).format(new Date(calendar.getTimeInMillis()));
     }
 
-    public long getTimeInMillis() {
-        return calendar.getTimeInMillis();
-    }
 }

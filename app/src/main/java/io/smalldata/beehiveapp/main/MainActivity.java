@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -79,14 +80,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 IntentLauncher.launchApp(mContext, appIdToLaunch);
             }
 
-            JSONObject params = Intervention.getNotifDetails(mContext);
-            JSONObject userInfo = Experiment.getUserInfo(mContext);
-            Helper.copy(userInfo, params);
-            Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
-            Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
-            Helper.setJSONValue(params, "was_dismissed", was_dismissed);
-            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
+            boolean openSettingsFragment = bundle.getBoolean("isSettingsFragment");
+            if (openSettingsFragment) {
+                Toast.makeText(mContext, "bout to open Settings...", Toast.LENGTH_SHORT).show();
+            }
+
+//            JSONObject params = Intervention.getNotifDetails(mContext);
+//            JSONObject userInfo = Experiment.getUserInfo(mContext);
+//            Helper.copy(userInfo, params);
+//            Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
+//            Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
+//            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
+//            Helper.setJSONValue(params, "was_dismissed", was_dismissed);
+//            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
         }
     }
 

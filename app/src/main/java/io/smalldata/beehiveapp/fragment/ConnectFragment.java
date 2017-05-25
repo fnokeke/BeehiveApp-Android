@@ -46,7 +46,6 @@ import io.smalldata.beehiveapp.utils.Store;
 
 public class ConnectFragment extends Fragment {
 
-    final static String TAG = "ConnectFragment";
     Context mContext;
     Activity mActivity;
     TextView connResponseTV;
@@ -157,7 +156,7 @@ public class ConnectFragment extends Fragment {
                         resetFormInput();
                         Store.wipeAll(mContext);
                         SettingsFragment.wipeAll(mContext);
-                        Toast.makeText(mContext, "All data wiped. You are no longer part of the study.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, "Study data wiped from phone. You are no longer enrolled in study.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();

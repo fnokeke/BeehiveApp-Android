@@ -44,7 +44,7 @@ public class DailyReminder extends BaseConfig {
         return Store.getString(mContext, REMINDER_TIME);
     }
 
-    void oldSetTodayReminder() {
+    void oldsetTodayReminder() {
         long alarmMillis = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
         if (alreadySeenAlarm(alarmMillis)) {
             String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
@@ -96,38 +96,44 @@ public class DailyReminder extends BaseConfig {
         oldSetDailyReminder(today.getTimeInMillis(), true, DAILY_INTV_ALARM_ID, true);
     }
 
-    private void showAlarmTip(long alarmMillis, long lastSetAlarm, int notifId) {
+    private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
         String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
-        String title = alreadySeenAlarm(lastSetAlarm) ? "Already seen daily reminder" : "Upcoming Daily Reminder";
+        String title = alreadySeenAlarm(lastSetAlarm) ? "HelperTip: Ignored because already seen reminder" : "Upcoming Reminder";
         String content = "Alarm time set at: " + alarmTimeStr;
+        title = String.format("*%s* - %s", notifType, title);
+        int notifId = notifType.equals("daily") ? INSTANT_NOTIF_ID_DAILY : INSTANT_NOTIF_ID_SLEEP;
         Helper.showInstantNotif(mContext, title, content, "", notifId);
     }
 
     public void setReminderBeforeBedTime(long bedTimeInMillis, boolean shouldShowTip) {
-        long lastSetAlarm = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER));
-        if (shouldShowTip) showAlarmTip(bedTimeInMillis, lastSetAlarm, INSTANT_NOTIF_ID_SLEEP);
+        if (bedTimeInMillis <= 0) return;
+        long lastSetAlarm = Store.getLong(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER);
+        if (shouldShowTip) showAlarmTip(bedTimeInMillis, lastSetAlarm, "bedtime");
+        if (alreadySeenAlarm(lastSetAlarm)) return;
 
         String title = "BedTime Survey: How was your day?";
         String content = "Tap here to respond.";
         String appId = "io.smalldatalab.android.pam";
         Helper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis);
-        Store.setString(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER, String.valueOf(bedTimeInMillis));
+        Store.setLong(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER, bedTimeInMillis);
     }
 
     public void setTodayReminder(long alarmMillis, boolean shouldShowTip) {
-        long lastSetAlarm = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-        if (shouldShowTip) showAlarmTip(alarmMillis, lastSetAlarm, INSTANT_NOTIF_ID_DAILY);
+        if (alarmMillis <= 0) return;
+        long lastSetAlarm = Store.getLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME);
+        if (shouldShowTip) showAlarmTip(alarmMillis, lastSetAlarm, "daily");
+        if (alreadySeenAlarm(lastSetAlarm)) return;
 
         JSONObject notif = Intervention.getNotifDetails(mContext);
         Helper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
-        Store.setString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, String.valueOf(alarmMillis));
+        Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
     }
 
     private void oldSetDailyReminder(long alarmMillis, boolean shouldShowTip, int alarmId, boolean ignorePastAlarm) {
         long lastSetAlarm = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
         if (shouldShowTip) {
             String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
-            String title = alreadySeenAlarm(lastSetAlarm) ? "Already seen daily reminder" : "Upcoming Daily Reminder";
+            String title = alreadySeenAlarm(lastSetAlarm) ? "Remove!!: Already seen reminder" : "Upcoming Daily Reminder";
             String content = "Alarm time set at: " + alarmTimeStr;
             Log.i(TAG, title + content);
             Helper.showInstantNotif(mContext, title, content, "", INSTANT_NOTIF_ID_DAILY);
@@ -145,7 +151,7 @@ public class DailyReminder extends BaseConfig {
 
     private boolean alreadySeenAlarm(long alarmMillis) {
         long rightNow = Calendar.getInstance().getTimeInMillis();
-        return rightNow > alarmMillis;
+        return rightNow > alarmMillis && alarmMillis > 0;
     }
 
     private long getAlarmTimeInMillis(String userWindowTime) {

@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
+import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
@@ -74,6 +75,8 @@ public class ConnectHelper {
 
             Display.dismissBusy();
             RefreshService.startRefreshInIntervals(mContext);
+
+            showSettingsTip();
         }
 
         @Override
@@ -89,5 +92,12 @@ public class ConnectHelper {
             error.printStackTrace();
         }
     };
+
+    private void showSettingsTip() {
+        String title = "Select your reminder preferences";
+        String content = "Go to Beehive App >> Settings";
+        Helper.showInstantNotif(mContext, title, content, "", 7777);
+    }
+
 
 }

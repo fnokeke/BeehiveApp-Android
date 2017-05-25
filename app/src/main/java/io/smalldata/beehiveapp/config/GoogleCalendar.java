@@ -22,6 +22,7 @@ import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static android.content.ContentValues.TAG;
 import static io.smalldata.beehiveapp.utils.Store.getString;
 
 /**
@@ -164,6 +165,8 @@ public class GoogleCalendar extends BaseConfig {
     }
 
     private void handleVolleyError(VolleyError error) {
+        Log.d(TAG, "handleVolleyError: " + error.toString());
+        Log.d(TAG, "handleVolleyCause: " + error.getCause());
         error.printStackTrace();
         if (error instanceof TimeoutError) {
             Log.d("**TimeoutError**", "Check that your server is up and running");
