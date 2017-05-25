@@ -180,6 +180,7 @@
             android:orientation="horizontal">
 
         <Button
+            android:visibility="gone"
             android:id="@+id/btn_check_rt"
             android:layout_width="0dp"
             android:layout_weight="0.5"

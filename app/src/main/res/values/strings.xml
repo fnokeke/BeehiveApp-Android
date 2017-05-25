@@ -20,16 +20,20 @@
     <!-- experiment details view -->
     <string name="study_code">Experiment Code</string>
     <string name="study_title">Title</string>
-    <string name="study_code_placeholder">study code</string>
+    <string name="study_start">Start Date</string>
+    <string name="study_end">End Date</string>
+    <string name="study_code_placeholder">study code given by researcher</string>
     <string name="study_title_placeholder">study title</string>
+    <string name="end_date_placeholder">start date of study will appear here.</string>
+    <string name="start_date_placeholder">end date of study will appear here.</string>
 
-    <string name="desc_about">Beehive App is the mobile app companion to Beehive research platform, a framework for
-        running behavioral field experiments that involve participants\' small data.
+    <string name="desc_about">Beehive Android is the mobile app companion to Beehive platform, a web system for researchers to
+        design behavioral experiments on mobile and desktop devices.
         For more details, visit <a href="https://slm.smalldata.io">Beehive Web Platform</a>.
-
         \n\nDeveloped by:
         \nSmall Data Lab
         \nCornell Tech, NY USA.
+        \n\n Beehive Android v1.5
 
     </string>
     <string name="desc_today_image">Image for today</string>
@@ -66,10 +70,6 @@
         to automatically connect your accounts.</string>
     <string name="no_network_prompt">No network connection detected.</string>
     <string name="timeout_error_prompt">Experiment is unavailable. Contact Researcher.</string>
-    <string name="study_start">Start Date</string>
-    <string name="study_end">End Date</string>
-    <string name="end_date_placeholder">when study ends...</string>
-    <string name="start_date_placeholder">when study starts...</string>
     <string name="info_calendar">googleCalendar events appear here.</string>
     <string name="info_rescuetime">rescuetime events appear here</string>
     <string name="need_to_connect">Connect to an experiment by selecting <b>Connect App</b> from the <b>Side Menu</b>.</string>
@@ -85,11 +85,15 @@
     <string name="rescuetimePrefCategory">rescuetimePrefCategory</string>
     <string name="geofencePrefCategory">geofencePrefCategory</string>
     <string name="userTimeWindowCategory">userWindowTimeCategory</string>
-    <string name="weekday_reminder_window_pref">weekday_reminder_window_pref</string>
-    <string name="weekend_reminder_window_pref">weekend_reminder_window_pref</string>
     <string name="userInfo">pref_user_info</string>
     <string name="default_user_msg">Hello,</string>
     <string name="yes">Yes</string>
     <string name="title_activity_welcome">welcome</string>
+
+    <!-- strings in code -->
+    <string name="bedtime_reminder">bedtime_reminder</string>
+    <string name="daily_reminder">daily_reminder</string>
+    <string name="weekday_reminder_window_pref">weekday_reminder_window_pref</string>
+    <string name="weekend_reminder_window_pref">weekend_reminder_window_pref</string>
 
 </resources>
