@@ -12,6 +12,7 @@ import java.util.Calendar;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 public class RefreshService extends Service {
@@ -55,7 +56,8 @@ public class RefreshService extends Service {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(0), 12 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(0), 12 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Helper.getTimestampInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingRefreshIntent);
     }
 
     public static long getMillisUntilTriggerTime(int hourOf24HourDay) {

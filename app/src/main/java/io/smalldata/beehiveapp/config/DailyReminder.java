@@ -97,9 +97,8 @@ public class DailyReminder extends BaseConfig {
     }
 
     private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
-        String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
-        String title = alreadySeenAlarm(lastSetAlarm) ? "HelperTip: Ignored because already seen reminder" : "Upcoming Reminder";
-        String content = "Alarm time set at: " + alarmTimeStr;
+        String title = alreadySeenAlarm(lastSetAlarm) ? "HelperTip: Ignored because already seen. " : "Upcoming Reminder";
+        String content = String.format("last(%s)/todo(%s)", Helper.millisToDateFormat(lastSetAlarm), Helper.millisToDateFormat(alarmMillis));
         title = String.format("*%s* - %s", notifType, title);
         int notifId = notifType.equals("daily") ? INSTANT_NOTIF_ID_DAILY : INSTANT_NOTIF_ID_SLEEP;
         Helper.showInstantNotif(mContext, title, content, "", notifId);
