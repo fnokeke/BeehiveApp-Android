@@ -37,19 +37,15 @@ import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static android.R.id.toggle;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context mContext;
     TextView mTV;
-    private static final String TAG = "MainActivity.class";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
         FirebaseMessaging.getInstance().subscribeToTopic("news");
-
 
         if (savedInstanceState == null) {
             handleClickedNotification(getIntent().getExtras());
@@ -68,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame, new HomeFragment()).commit();
+        transaction.replace(R.id.content_frame, new ConnectFragment()).commit();
 
         mTV = (TextView) findViewById(R.id.tv_timeout_prompt);
 
@@ -88,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Helper.copy(userInfo, params);
             Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
             Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getTimestampInMillis()));
+            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
             Helper.setJSONValue(params, "was_dismissed", was_dismissed);
             CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
         }
@@ -149,25 +145,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        if (id == R.id.nav_dashboard) {
-
-            transaction.replace(R.id.content_frame, new HomeFragment()).commit();
-
-        } else if (id == R.id.nav_study) {
-
-            transaction.replace(R.id.content_frame, new StudyFragment()).commit();
-
-        } else if (id == R.id.nav_connect) {
-
-            transaction.replace(R.id.content_frame, new ConnectFragment()).commit();
-
-        } else if (id == R.id.nav_settings) {
-
-            transaction.replace(R.id.content_frame, new SettingsFragment()).commit();
-
-        } else if (id == R.id.nav_about) {
-
-            transaction.replace(R.id.content_frame, new AboutFragment()).commit();
+        switch (id) {
+            case (R.id.nav_study):
+                transaction.replace(R.id.content_frame, new StudyFragment()).commit();
+                break;
+            case (R.id.nav_connect):
+                transaction.replace(R.id.content_frame, new ConnectFragment()).commit();
+                break;
+            case (R.id.nav_settings):
+                transaction.replace(R.id.content_frame, new SettingsFragment()).commit();
+                break;
+            case (R.id.nav_about):
+                transaction.replace(R.id.content_frame, new AboutFragment()).commit();
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -184,3 +174,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 }
+
+// TODO: 5/25/17 fix the if-else here to just switch statements
+// TODO: 5/25/17 move all raw strings to strings.xml 
+// TODO: 5/25/17 click on notif to go to settings 
+// // TODO: 5/25/17 do not disable widow time in order to accomodate for days where researcher does not want to fire any alarm 
