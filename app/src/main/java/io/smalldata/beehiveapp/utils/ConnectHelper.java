@@ -56,27 +56,26 @@ public class ConnectHelper {
 
     private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override
-        public void onConnectSuccess(JSONObject result) {
-            Log.i(TAG, "onConnectStudySuccess: " + result.toString());
+        public void onConnectSuccess(JSONObject jsonResult) {
+            Log.i(TAG, "onConnectStudySuccess: " + jsonResult.toString());
             Store.wipeAll(mContext);
             SettingsFragment.wipeAll(mContext);
 
-            JSONObject experimentInfo = result.optJSONObject("experiment");
+            JSONObject jsonExperimentInfo = jsonResult.optJSONObject("experiment");
             Display.dismissBusy();
-            if (experimentInfo.length() == 0) {
+            if (jsonExperimentInfo.length() == 0) {
                 experiment.enableSettings(false);
                 Display.showError(tvFeedback, "Invalid code.");
                 return;
             }
             experiment.enableSettings(true);
             Display.showSuccess(tvFeedback, "Successfully connected!");
-            Experiment experiment = new Experiment(mContext);
-            experiment.saveConfigs(experimentInfo);
+            experiment.saveConfigs(jsonExperimentInfo);
 
-            JSONObject user = result.optJSONObject("user");
+            JSONObject user = jsonResult.optJSONObject("user");
             experiment.saveUserInfo(user);
 
-            JSONObject response = result.optJSONObject("response");
+            JSONObject response = jsonResult.optJSONObject("response");
             Store.setString(mContext, "formInputResponse", response.toString());
             Store.setString(mContext, "formInputUser", user.toString());
 

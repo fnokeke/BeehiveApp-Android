@@ -49,6 +49,7 @@ public class RefreshService extends Service {
             googleCalendar.refreshAndStoreStats();
         }
 
+        Helper.showInstantNotif(mContext, "Background Refresh Service.", "Done at: " + Helper.getTimestamp(), "", 3434);
         Intervention.prepareTodayIntervention(mContext);
     }
 
@@ -56,8 +57,8 @@ public class RefreshService extends Service {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 5 * 60000, pendingRefreshIntent);
 //        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(0), 12 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Helper.getTimestampInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingRefreshIntent);
     }
 
     public static long getMillisUntilTriggerTime(int hourOf24HourDay) {

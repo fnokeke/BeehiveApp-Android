@@ -39,6 +39,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.utils.ConnectHelper;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.SilentRefresh;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -71,15 +72,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             Map<String, String> data = remoteMessage.getData();
             String msg = data.get("msg");
-            sendNotification("Server msg: " + msg);
-
-            if (/* Check if data needs to be processed by long running job */ false) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
+            if (msg.equals("server_sync")) {
+                new SilentRefresh(getApplication()).syncExperiment();
             }
+
+//            if (/* Check if data needs to be processed by long running job */ false) {
+//                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
+//                scheduleJob();
+//            } else {
+//                // Handle message within 10 seconds
+//                handleNow();
+//            }
 
         }
 
@@ -112,7 +115,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void handleNow() {
         Log.d(TAG, "Short lived task is done.");
-        new ConnectHelper(getApplication()).syncExperiment();
     }
 
     /**

@@ -39,11 +39,11 @@ public class Experiment {
         return experimentInfo;
     }
 
-    public void saveConfigs(JSONObject experiment) {
-        if (experiment.length() == 0) return;
+    public void saveConfigs(JSONObject jsonExperimentInfo) {
+        if (jsonExperimentInfo.length() == 0) return;
 
-        saveToggles(experiment);
-        new Intervention(mContext).saveSettings(experiment.optJSONArray("interventions"));
+        saveToggles(jsonExperimentInfo);
+        new Intervention(mContext).saveSettings(jsonExperimentInfo.optJSONArray("interventions"));
         Store.printAll(mContext);
     }
 
