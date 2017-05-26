@@ -126,6 +126,7 @@ public class DailyReminder extends BaseConfig {
         JSONObject notif = Intervention.getNotifDetails(mContext);
         Helper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
+        Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, Helper.getTodaysDateStr());
     }
 
     private void oldSetDailyReminder(long alarmMillis, boolean shouldShowTip, int alarmId, boolean ignorePastAlarm) {
@@ -150,8 +151,15 @@ public class DailyReminder extends BaseConfig {
 
     private boolean alreadySeenAlarm(long alarmMillis) {
         long rightNow = Calendar.getInstance().getTimeInMillis();
-        return rightNow > alarmMillis && alarmMillis > 0;
+        return intvAlreadySetForToday() && (rightNow > alarmMillis) && (alarmMillis > 0);
     }
+
+    private boolean intvAlreadySetForToday() {
+        String lastCheckedDate = Store.getString(mContext, Store.LAST_CHECKED_INTV_DATE);
+        String today = Helper.getTodaysDateStr();
+        return today.equals(lastCheckedDate);
+    }
+
 
     private long getAlarmTimeInMillis(String userWindowTime) {
         String[] window = userWindowTime.split("-");

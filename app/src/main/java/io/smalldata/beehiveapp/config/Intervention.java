@@ -118,12 +118,6 @@ public class Intervention extends BaseConfig {
         return intvType;
     }
 
-    static boolean alarmSawTodayAlarm(Context context) {
-        String lastCheckedDate = Store.getString(context, Store.LAST_CHECKED_INTV_DATE);
-        String today = Helper.getTodaysDateStr();
-        return today.equals(lastCheckedDate);
-    }
-
     private static JSONArray getAllInterventions(Context context) {
         String interventionsStr = Store.getString(context, "interventions");
         JSONArray interventions = new JSONArray();

@@ -27,7 +27,7 @@ import io.smalldata.beehiveapp.utils.SilentRefresh;
 
 public class BeehiveFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
+    private static final String TAG = "BeehiveFirebaseMsg";
 
     /**
      * Called when message is received.
