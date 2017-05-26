@@ -24,6 +24,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 //import com.firebase.jobdispatcher.Constraint;
 //import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -32,8 +33,11 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
+import io.smalldata.beehiveapp.utils.Helper;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -64,6 +68,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Map<String, String> data = remoteMessage.getData();
+            String msg = data.get("msg");
+            sendNotification("Server msg: " + msg);
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
