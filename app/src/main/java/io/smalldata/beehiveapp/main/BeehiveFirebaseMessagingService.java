@@ -25,7 +25,7 @@ import java.util.Map;
 
 import io.smalldata.beehiveapp.utils.SilentRefresh;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class BeehiveFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
 

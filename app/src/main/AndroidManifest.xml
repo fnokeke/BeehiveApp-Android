@@ -51,14 +51,14 @@
             android:process=":remote" />
 
         <service
-            android:name=".main.MyFirebaseMessagingService">
+            android:name=".main.BeehiveFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name=".main.MyFirebaseInstanceIDService">
+            android:name=".main.BeehiveFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
