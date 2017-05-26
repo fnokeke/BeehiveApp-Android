@@ -37,45 +37,49 @@ public class Display {
     }
 
     public static void hide(TextView tv) {
+        if (tv == null) return;
         tv.setVisibility(View.GONE);
     }
 
     public static void showError(TextView tv, String msg) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText(msg);
         tv.setTextColor(ERROR);
     }
 
     public static void showSuccess(TextView tv, int msgRid) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText(msgRid);
         tv.setTextColor(SUCCESS);
     }
 
     public static void showSuccess(TextView tv, String msg) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText(msg);
         tv.setTextColor(SUCCESS);
     }
 
     public static void showPlain(TextView tv, int msgRid) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText(msgRid);
         tv.setTextColor(PLAIN);
     }
 
     public static void showPlain(TextView tv, String msg) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText(msg);
         tv.setTextColor(PLAIN);
     }
     public static void clear(TextView tv) {
+        if (tv == null) return;
         tv.setVisibility(View.VISIBLE);
         tv.setText("");
         tv.setTextColor(PLAIN);
     }
 
-    public static void showTimeoutPrompt() {
-
-    }
 }

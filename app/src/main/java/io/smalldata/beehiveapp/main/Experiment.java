@@ -6,9 +6,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.config.Intervention;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static io.smalldata.beehiveapp.utils.Helper.copy;
 import static io.smalldata.beehiveapp.utils.Store.IS_CALENDAR_ENABLED;
 import static io.smalldata.beehiveapp.utils.Store.IS_GEOFENCE_ENABLED;
 import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_IMAGE_ENABLED;
@@ -77,6 +79,13 @@ public class Experiment {
         Helper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
         Helper.setJSONValue(userInfo, "condition", Store.getInt(context, "condition"));
         return userInfo;
+    }
+
+    public static JSONObject getFullUserDetails(Context context) {
+        JSONObject fullUserDetails = Experiment.getUserInfo(context);
+        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(context);
+        Helper.copy(fromPhoneDetails, fullUserDetails);
+        return fullUserDetails;
     }
 
     public static Integer getUserCondition(Context context) {
