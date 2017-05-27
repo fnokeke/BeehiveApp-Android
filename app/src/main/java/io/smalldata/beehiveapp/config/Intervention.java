@@ -51,21 +51,11 @@ public class Intervention extends BaseConfig {
         Store.setString(mContext, "interventions", interventions.toString());
     }
 
-    private static JSONObject strToJsonObject(String jsonStr) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject = new JSONObject(jsonStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
     public static void prepareTodayIntervention(Context context) {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv;
         for (Integer i = 0; i < interventions.length(); i++) {
-            intv = strToJsonObject(interventions.optString(i));
+            intv = Helper.strToJsonObject(interventions.optString(i));
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
                 Log.i(TAG, "TodayIntv: " + intv.toString());
 

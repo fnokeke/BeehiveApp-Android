@@ -341,6 +341,16 @@ public class Helper {
         return random.nextInt(range) + min;
     }
 
+    public static JSONObject strToJsonObject(String jsonStr) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = new JSONObject(jsonStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
 }
 
 
