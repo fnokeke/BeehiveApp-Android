@@ -16,7 +16,7 @@ import java.util.Date;
 
 import io.smalldata.beehiveapp.BuildConfig;
 
-import static io.smalldata.beehiveapp.utils.Helper.setJSONValue;
+import static io.smalldata.beehiveapp.utils.JsonHelper.setJSONValue;
 
 /**
  * DeviceInfo provides detailed information about each device where app is installed

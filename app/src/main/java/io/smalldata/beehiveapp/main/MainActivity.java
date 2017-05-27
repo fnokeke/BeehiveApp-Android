@@ -88,10 +88,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            JSONObject params = Intervention.getNotifDetails(mContext);
 //            JSONObject userInfo = Experiment.getUserInfo(mContext);
 //            Helper.copy(userInfo, params);
-//            Helper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
-//            Helper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-//            Helper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
-//            Helper.setJSONValue(params, "was_dismissed", was_dismissed);
+//            JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
+//            JsonHelper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
+//            JsonHelper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
+//            JsonHelper.setJSONValue(params, "was_dismissed", was_dismissed);
 //            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
         }
     }

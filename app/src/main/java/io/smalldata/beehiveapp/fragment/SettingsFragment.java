@@ -99,8 +99,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     public static JSONObject generateAllReminders(Context context) {
         JSONObject alarms = new JSONObject();
-        Helper.setJSONValue(alarms, context.getString(R.string.daily_reminder), generateDailyReminder(context));
-        Helper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), generateBedTimeReminder(context));
+        JsonHelper.setJSONValue(alarms, context.getString(R.string.daily_reminder), generateDailyReminder(context));
+        JsonHelper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), generateBedTimeReminder(context));
         return alarms;
     }
 
@@ -148,8 +148,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     public static JSONObject getCurrentReminders(Context context) {
         JSONObject alarms = new JSONObject();
-        Helper.setJSONValue(alarms, context.getString(R.string.daily_reminder), Store.getLong(context, Store.DAILY_ALARM_MILLIS));
-        Helper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), Store.getLong(context, Store.BEDTIME_ALARM_MILLIS));
+        JsonHelper.setJSONValue(alarms, context.getString(R.string.daily_reminder), Store.getLong(context, Store.DAILY_ALARM_MILLIS));
+        JsonHelper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), Store.getLong(context, Store.BEDTIME_ALARM_MILLIS));
         return alarms;
     }
 

@@ -73,8 +73,8 @@ public class Rescuetime extends BaseConfig {
         }
 
         JSONObject params = new JSONObject();
-        Helper.setJSONValue(params, "email", email);
-        Helper.setJSONValue(params, "date", Helper.getTodaysDateStr());
+        JsonJsonHelper.setJSONValue(params, "email", email);
+        JsonJsonHelper.setJSONValue(params, "date", Helper.getTodayDateStr());
         CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
     }
 
@@ -215,17 +215,17 @@ public class Rescuetime extends BaseConfig {
         String neutralActivity = activityArr[2].toString();
 
         JSONObject results = new JSONObject();
-        Helper.setJSONValue(results, "focusedActivity", focusedActivity);
-        Helper.setJSONValue(results, "focusedTotal", String.format(locale, "%.1f", focusedTotal));
-        Helper.setJSONValue(results, "focusedPercent", focusedPercent);
+        JsonJsonHelper.setJSONValue(results, "focusedActivity", focusedActivity);
+        JsonJsonHelper.setJSONValue(results, "focusedTotal", String.format(locale, "%.1f", focusedTotal));
+        JsonJsonHelper.setJSONValue(results, "focusedPercent", focusedPercent);
 
-        Helper.setJSONValue(results, "distrActivity", distrActivity);
-        Helper.setJSONValue(results, "distrTotal", String.format(locale, "%.1f", distrTotal));
-        Helper.setJSONValue(results, "distrPercent", distrPercent);
+        JsonJsonHelper.setJSONValue(results, "distrActivity", distrActivity);
+        JsonJsonHelper.setJSONValue(results, "distrTotal", String.format(locale, "%.1f", distrTotal));
+        JsonJsonHelper.setJSONValue(results, "distrPercent", distrPercent);
 
-        Helper.setJSONValue(results, "neutralActivity", neutralActivity);
-        Helper.setJSONValue(results, "neutralTotal", String.format(locale, "%.1f", neutralTotal));
-        Helper.setJSONValue(results, "neutralPercent", neutralPercent);
+        JsonJsonHelper.setJSONValue(results, "neutralActivity", neutralActivity);
+        JsonJsonHelper.setJSONValue(results, "neutralTotal", String.format(locale, "%.1f", neutralTotal));
+        JsonJsonHelper.setJSONValue(results, "neutralPercent", neutralPercent);
 
         return results;
     }

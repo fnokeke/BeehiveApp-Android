@@ -3,13 +3,10 @@ package io.smalldata.beehiveapp.config;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
 
-import io.smalldata.beehiveapp.fragment.SettingsFragment;
-import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -62,7 +59,7 @@ public class DailyReminder {
         final int DAILY_INTV_ALARM_ID = 7700;
         Helper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
-        Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, Helper.getTodaysDateStr());
+        Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, Helper.getTodayDateStr());
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {
@@ -72,7 +69,7 @@ public class DailyReminder {
 
     private boolean intvAlreadySetForToday() {
         String lastCheckedDate = Store.getString(mContext, Store.LAST_CHECKED_INTV_DATE);
-        String today = Helper.getTodaysDateStr();
+        String today = Helper.getTodayDateStr();
         return today.equals(lastCheckedDate);
     }
 

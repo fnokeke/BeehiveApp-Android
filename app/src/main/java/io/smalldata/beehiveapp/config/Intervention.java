@@ -12,6 +12,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
 import static io.smalldata.beehiveapp.utils.Store.INTV_END;
@@ -54,7 +55,7 @@ public class Intervention extends BaseConfig {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv;
         for (Integer i = 0; i < interventions.length(); i++) {
-            intv = Helper.strToJsonObject(interventions.optString(i));
+            intv = JsonHelper.strToJsonObject(interventions.optString(i));
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
                 Log.i(TAG, "TodayIntv: " + intv.toString());
 
@@ -108,7 +109,7 @@ public class Intervention extends BaseConfig {
     }
 
     private static JSONArray getAllInterventions(Context context) {
-        return Helper.strToJsonArray(Store.getString(context, "interventions"));
+        return JsonHelper.strToJsonArray(Store.getString(context, "interventions"));
     }
 
     private static Boolean isForToday(JSONObject jo) {
@@ -120,15 +121,15 @@ public class Intervention extends BaseConfig {
     }
 
     static JSONObject getNotifDetails(Context context) {
-        return Helper.strToJsonObject(Store.getString(context, INTV_NOTIF));
+        return JsonHelper.strToJsonObject(Store.getString(context, INTV_NOTIF));
     }
 
     public static JSONObject getTodayIntervention(Context context) {
         String treatmentText;
         String treatmentImage;
 
-        JSONArray treatmentImageArr = Helper.strToJsonArray(Store.getString(context, INTV_TREATMENT_IMAGE));
-        JSONArray treatmentTextArr = Helper.strToJsonArray(Store.getString(context, INTV_TREATMENT_TEXT));
+        JSONArray treatmentImageArr = JsonHelper.strToJsonArray(Store.getString(context, INTV_TREATMENT_IMAGE));
+        JSONArray treatmentTextArr = JsonHelper.strToJsonArray(Store.getString(context, INTV_TREATMENT_TEXT));
         if (treatmentTextArr.length() == 1 && treatmentImageArr.length() == 1) {
             treatmentText = treatmentTextArr.optString(0);
             treatmentImage = treatmentImageArr.optString(0);
@@ -139,13 +140,13 @@ public class Intervention extends BaseConfig {
         }
 
         JSONObject todayIntervention = new JSONObject();
-        Helper.setJSONValue(todayIntervention, "start", Store.getString(context, INTV_START));
-        Helper.setJSONValue(todayIntervention, "end", Store.getString(context, INTV_END));
-        Helper.setJSONValue(todayIntervention, "every", Store.getString(context, INTV_EVERY));
-        Helper.setJSONValue(todayIntervention, "when", Store.getString(context, INTV_WHEN));
-        Helper.setJSONValue(todayIntervention, "repeat", Store.getString(context, INTV_REPEAT));
-        Helper.setJSONValue(todayIntervention, "treatment_text", treatmentText);
-        Helper.setJSONValue(todayIntervention, "treatment_image", treatmentImage);
+        JsonHelper.setJSONValue(todayIntervention, "start", Store.getString(context, INTV_START));
+        JsonHelper.setJSONValue(todayIntervention, "end", Store.getString(context, INTV_END));
+        JsonHelper.setJSONValue(todayIntervention, "every", Store.getString(context, INTV_EVERY));
+        JsonHelper.setJSONValue(todayIntervention, "when", Store.getString(context, INTV_WHEN));
+        JsonHelper.setJSONValue(todayIntervention, "repeat", Store.getString(context, INTV_REPEAT));
+        JsonHelper.setJSONValue(todayIntervention, "treatment_text", treatmentText);
+        JsonHelper.setJSONValue(todayIntervention, "treatment_image", treatmentImage);
         return todayIntervention;
     }
 

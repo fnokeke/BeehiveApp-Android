@@ -43,15 +43,9 @@ public class ConnectHelper {
 
     public void connectToBeehive(JSONObject userInfo) {
         JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
-        Helper.copy(fromPhoneDetails, userInfo);
+        JsonHelper.copy(fromPhoneDetails, userInfo);
         Display.showBusy(mContext, "Transferring your bio...");
         CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
-    }
-
-    public void syncExperiment() {
-        JSONObject fullUserDetails = Experiment.getFullUserDetails(mContext);
-        Helper.showInstantNotif(mContext, "Beehive Sync", Helper.getTimestamp(), "", 7778);
-        CallAPI.connectStudy(mContext, fullUserDetails, connectStudyResponseHandler);
     }
 
     private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
