@@ -17,6 +17,8 @@ import io.smalldata.beehiveapp.utils.ConnectBeehiveHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 
+import static com.android.volley.Request.Method.HEAD;
+
 public class WelcomeActivity extends AppCompatActivity {
     Context mContext;
     Button btnContinue;
