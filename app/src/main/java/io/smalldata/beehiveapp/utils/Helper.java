@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -351,6 +352,15 @@ public class Helper {
         return jsonObject;
     }
 
+    public static JSONArray strToJsonArray(String jsonStr) {
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray = new JSONArray(jsonStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonArray;
+    }
 }
 
 

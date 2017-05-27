@@ -83,7 +83,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     }
 
     private void applyGeneratedReminders(Context context, String prefKey) {
-        if (!isForToday(prefKey)) return;
+        if (!isTodayPrefUpdate(prefKey)) return;
         JSONObject allReminders = generateAllReminders(context);
         long bedTimeAlarmMillis = allReminders.optLong("bedtime_reminder");
         long dailyAlarmMillis = allReminders.optLong("daily_reminder");
@@ -93,7 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         Store.setLong(context, Store.DAILY_ALARM_MILLIS, dailyAlarmMillis);
     }
 
-    private boolean isForToday(String prefKey) {
+    private boolean isTodayPrefUpdate(String prefKey) {
         return todayIsWeekend() ? prefKey.contains("weekend") : prefKey.contains("weekday");
     }
 

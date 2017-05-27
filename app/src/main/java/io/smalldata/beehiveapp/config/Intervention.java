@@ -32,7 +32,7 @@ import static io.smalldata.beehiveapp.utils.Store.INTV_WHEN;
 
 public class Intervention extends BaseConfig {
     private Context mContext;
-    private final static String TAG = "Intervention";
+    private static final String TAG = "Intervention";
 
     public Intervention(Context context) {
         mContext = context;
@@ -84,11 +84,11 @@ public class Intervention extends BaseConfig {
         }
 
         if (Store.getString(context, "iTreatmentImage").equals("")) {
-            Log.e("BeehiveTreatment", "No treatment image for today");
+            Log.d(TAG, "prepareTodayIntervention: BeehiveTreatment: No treatment image for today");
         }
 
         if (Store.getString(context, "iTreatmentText").equals("")) {
-            Log.e("BeehiveTreatment", "No treatment text for today");
+            Log.d(TAG, "prepareTodayIntervention: BeehiveTreatment: No treatment text for today");
         }
     }
 
@@ -109,57 +109,37 @@ public class Intervention extends BaseConfig {
     }
 
     private static JSONArray getAllInterventions(Context context) {
-        String interventionsStr = Store.getString(context, "interventions");
-        JSONArray interventions = new JSONArray();
-        try {
-            interventions = new JSONArray(interventionsStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return interventions;
+        return Helper.strToJsonArray(Store.getString(context, "interventions"));
     }
 
     private static Boolean isForToday(JSONObject jo) {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
         Date startDate = Helper.getDatetimeGMT(jo.optString("start"), dateFormat);
         Date endDate = Helper.getDatetimeGMT(jo.optString("end"), dateFormat);
         long rightNow = java.util.Calendar.getInstance().getTimeInMillis();
-
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    public static JSONObject getNotifDetails(Context context) {
-        JSONObject info = null;
-        try {
-            info = new JSONObject(Store.getString(context, INTV_NOTIF));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return info;
+    static JSONObject getNotifDetails(Context context) {
+        return Helper.strToJsonObject(Store.getString(context, INTV_NOTIF));
     }
 
     public static JSONObject getTodayIntervention(Context context) {
-        JSONObject todayIntervention = new JSONObject();
-        JSONArray treatmentImageArr;
-        JSONArray treatmentTextArr;
-        Integer userCondition = Experiment.getUserCondition(context);
-        String treatmentText = "";
-        String treatmentImage = "";
+        String treatmentText;
+        String treatmentImage;
 
-        try {
-            treatmentImageArr = new JSONArray(Store.getString(context, INTV_TREATMENT_IMAGE));
-            treatmentTextArr = new JSONArray(Store.getString(context, INTV_TREATMENT_TEXT));
-            if (treatmentTextArr.length() == 1 && treatmentImageArr.length() == 1) {
-                treatmentText = treatmentTextArr.getString(0);
-                treatmentImage = treatmentImageArr.getString(0);
-            } else {
-                treatmentText = treatmentTextArr.getString(userCondition);
-                treatmentImage = treatmentImageArr.getString(userCondition);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        JSONArray treatmentImageArr = Helper.strToJsonArray(Store.getString(context, INTV_TREATMENT_IMAGE));
+        JSONArray treatmentTextArr = Helper.strToJsonArray(Store.getString(context, INTV_TREATMENT_TEXT));
+        if (treatmentTextArr.length() == 1 && treatmentImageArr.length() == 1) {
+            treatmentText = treatmentTextArr.optString(0);
+            treatmentImage = treatmentImageArr.optString(0);
+        } else {
+            int userCondition = Experiment.getUserCondition(context);
+            treatmentText = treatmentTextArr.optString(userCondition);
+            treatmentImage = treatmentImageArr.optString(userCondition);
         }
+
+        JSONObject todayIntervention = new JSONObject();
         Helper.setJSONValue(todayIntervention, "start", Store.getString(context, INTV_START));
         Helper.setJSONValue(todayIntervention, "end", Store.getString(context, INTV_END));
         Helper.setJSONValue(todayIntervention, "every", Store.getString(context, INTV_EVERY));
@@ -170,39 +150,4 @@ public class Intervention extends BaseConfig {
         return todayIntervention;
     }
 
-//    public static File getTodayImagePath(Context context) {
-//        ImageSaver imageSaver = new ImageSaver(context);
-//        return imageSaver.getImagePath("beehiveImages", "beehiveTodayImage.png");
-//    }
-
-//    private void downloadImage(String image_url) {
-//        if (image_url.equals("")) return;
-//
-//        Picasso.with(mContext)
-//                .load(image_url)
-//                .into(new Target() {
-//                          @Override
-//                          public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                              ImageSaver imageSaver = new ImageSaver(mContext);
-//                              imageSaver.
-//                                      setFileName("beehiveTodayImage.png").
-//                                      setDirectoryName("beehiveImages").
-//                                      save(bitmap);
-//
-//                              Log.i("BeehiveBitmapSave", "imageSaved");
-//                          }
-//
-//                          @Override
-//                          public void onBitmapFailed(Drawable errorDrawable) {
-//                              Log.d("PicassoBitmap", "bitmap failed");
-//                          }
-//
-//                          @Override
-//                          public void onPrepareLoad(Drawable placeHolderDrawable) {}
-//                      }
-//                );
-//    }
-
 }
-
-// TODO: 2/21/17 use NYC timezone
