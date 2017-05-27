@@ -89,8 +89,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         long dailyAlarmMillis = allReminders.optLong("daily_reminder");
         dailyReminder.setReminderBeforeBedTime(bedTimeAlarmMillis, true);
         dailyReminder.setTodayReminder(dailyAlarmMillis, true);
-        Store.setLong(context, Store.DAILY_ALARM_MILLIS, bedTimeAlarmMillis);
-        Store.setLong(context, Store.BEDTIME_ALARM_MILLIS, dailyAlarmMillis);
+        Store.setLong(context, Store.BEDTIME_ALARM_MILLIS, bedTimeAlarmMillis);
+        Store.setLong(context, Store.DAILY_ALARM_MILLIS, dailyAlarmMillis);
     }
 
     private boolean isForToday(String prefKey) {
@@ -123,8 +123,17 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         int hoursBeforeSleep = getHoursBeforeSleep(context);
         String key = todayIsWeekend() ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
         long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
+        sleepTimeInMillis = extendToNextDayIfNeeded(sleepTimeInMillis);
         long millisBeforeSleep = Helper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
         return sleepTimeInMillis - millisBeforeSleep;
+    }
+
+    private static long extendToNextDayIfNeeded(long sleepTimeInMillis) {
+        Calendar sleepTime = Calendar.getInstance();
+        sleepTime.setTimeInMillis(sleepTimeInMillis);
+        Calendar now = Calendar.getInstance();
+        if (sleepTime.before(now)) sleepTime.add(Calendar.DAY_OF_MONTH, 1);
+        return sleepTime.getTimeInMillis();
     }
 
     private static int getHoursBeforeSleep(Context context) {
