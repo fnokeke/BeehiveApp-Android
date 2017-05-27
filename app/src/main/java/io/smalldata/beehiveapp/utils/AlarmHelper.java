@@ -10,10 +10,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,16 +23,31 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
 import io.smalldata.beehiveapp.main.NotificationPublisher;
 
-import static android.R.attr.max;
-import static io.smalldata.beehiveapp.utils.DateHelper.strToDate;
-
 /**
  * Helper.java
  * Created: 1/24/17
  * author: Fabian Okeke
  */
 
-public class Helper {
+public class AlarmHelper {
+
+    public static void showInstantNotif(Context context, String title, String message, String appIdToLaunch, Integer NOTIF_ID) {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(R.drawable.info_tip)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setSound(getDefaultSound())
+                .setContentText(message);
+
+        if (!appIdToLaunch.equals("")) {
+            Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, appIdToLaunch);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            mBuilder.setContentIntent(contentIntent);
+        }
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIF_ID, mBuilder.build());
+    }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
@@ -76,24 +87,6 @@ public class Helper {
 
     private static Uri getDefaultSound() {
         return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    }
-
-    public static void showInstantNotif(Context context, String title, String message, String appIdToLaunch, Integer NOTIF_ID) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(R.drawable.info_tip)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setSound(getDefaultSound())
-                .setContentText(message);
-
-        if (!appIdToLaunch.equals("")) {
-            Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, appIdToLaunch);
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            mBuilder.setContentIntent(contentIntent);
-        }
-
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(NOTIF_ID, mBuilder.build());
     }
 
 }

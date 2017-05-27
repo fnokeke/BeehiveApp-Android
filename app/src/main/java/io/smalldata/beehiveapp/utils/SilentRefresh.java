@@ -33,7 +33,7 @@ public class SilentRefresh {
 
     public void syncExperiment() {
         JSONObject fullUserDetails = Experiment.getFullUserDetails(mContext);
-        Helper.showInstantNotif(mContext, "Beehive Remote Sync", Helper.getTimestamp(), "", 7778);
+        Helper.showInstantNotif(mContext, "Beehive Remote Sync", DateHelper.getTimestamp(), "", 7778);
         CallAPI.connectStudy(mContext, fullUserDetails, silentConnectHandler);
     }
 

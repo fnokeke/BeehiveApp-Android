@@ -21,6 +21,7 @@ import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.JsonHelper;
@@ -75,7 +76,7 @@ public class Rescuetime extends BaseConfig {
 
         JSONObject params = new JSONObject();
         JsonHelper.setJSONValue(params, "email", email);
-        JsonHelper.setJSONValue(params, "date", Helper.getTodayDateStr());
+        JsonHelper.setJSONValue(params, "date", DateHelper.getTodayDateStr());
         CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
     }
 
@@ -98,7 +99,7 @@ public class Rescuetime extends BaseConfig {
             String nP = currStats.optString("neutralPercent");
             String nA = currStats.optString("neutralActivity");
 
-            String timeStamp = Helper.getTimestamp();
+            String timeStamp = DateHelper.getTimestamp();
 
             String statsRT = String.format(locale, "Last Updated Rescuetime \n(" + timeStamp + "): " +
                     "\n\nFocused: %s hrs (%s%%)\n%s", fT, fP, fA) +

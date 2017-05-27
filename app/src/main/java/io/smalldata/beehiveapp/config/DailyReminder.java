@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -27,7 +28,7 @@ public class DailyReminder {
 
     private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
         String title = alreadySeenAlarm(lastSetAlarm) ? "Tip: Ignored, already seen. " : "Upcoming Reminder";
-        String content = String.format("(%s) / (%s)", Helper.millisToDateFormat(lastSetAlarm), Helper.millisToDateFormat(alarmMillis));
+        String content = String.format("(%s) / (%s)", DateHelper.millisToDateFormat(lastSetAlarm), DateHelper.millisToDateFormat(alarmMillis));
         title = String.format("*%s* - %s", notifType, title);
         final int INSTANT_NOTIF_ID_DAILY = 7777;
         final int INSTANT_NOTIF_ID_SLEEP = 5555;
@@ -59,7 +60,7 @@ public class DailyReminder {
         final int DAILY_INTV_ALARM_ID = 7700;
         Helper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
-        Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, Helper.getTodayDateStr());
+        Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {
@@ -69,7 +70,7 @@ public class DailyReminder {
 
     private boolean intvAlreadySetForToday() {
         String lastCheckedDate = Store.getString(mContext, Store.LAST_CHECKED_INTV_DATE);
-        String today = Helper.getTodayDateStr();
+        String today = DateHelper.getTodayDateStr();
         return today.equals(lastCheckedDate);
     }
 

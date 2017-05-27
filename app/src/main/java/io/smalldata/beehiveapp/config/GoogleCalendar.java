@@ -19,6 +19,7 @@ import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -63,7 +64,7 @@ public class GoogleCalendar extends BaseConfig {
 
         JSONObject params = new JSONObject();
         JsonHelper.setJSONValue(params, "email", email);
-        JsonHelper.setJSONValue(params, "date", Helper.getTodayDateStr());
+        JsonHelper.setJSONValue(params, "date", DateHelper.getTodayDateStr());
         CallAPI.getAllCalEvents(mContext, params, showCalResponseHandler);
     }
 
@@ -84,7 +85,7 @@ public class GoogleCalendar extends BaseConfig {
                 Float busyHours = (float) busyTimeMs / 3600000;
                 Integer noOfTodayEvents = countTodayEvents(mJsonArray);
 
-                String statsCal = "Updated: " + Helper.getTimestamp() + "\nNo of events today: " + noOfTodayEvents.toString() + "\n\n" +
+                String statsCal = "Updated: " + DateHelper.getTimestamp() + "\nNo of events today: " + noOfTodayEvents.toString() + "\n\n" +
                         "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
                         "Today Events:\n" + mJsonStr +
                         "Potential Notification Time:\n" + getFreeTime(mJsonArray);
@@ -153,10 +154,10 @@ public class GoogleCalendar extends BaseConfig {
             // use only events with specific begin/end time (not just begin/end date)
             if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
                 start = jo.optJSONObject("start").optString("dateTime");
-                startDT = Helper.getDatetimeGMT(start);
+                startDT = DateHelper.getDatetimeGMT(start);
 
                 end = jo.optJSONObject("end").optString("dateTime");
-                endDT = Helper.getDatetimeGMT(end);
+                endDT = DateHelper.getDatetimeGMT(end);
 
                 totalMs += endDT.getTime() - startDT.getTime();
             }
@@ -221,10 +222,10 @@ public class GoogleCalendar extends BaseConfig {
             // use only events with specific begin/end time (not just begin/end date)
             if (!(jo.optJSONObject("start").optString("dateTime").equals(""))) {
                 start = jo.optJSONObject("start").optString("dateTime");
-                startDT = Helper.getDatetimeGMT(start);
+                startDT = DateHelper.getDatetimeGMT(start);
 
                 end = jo.optJSONObject("end").optString("dateTime");
-                endDT = Helper.getDatetimeGMT(end);
+                endDT = DateHelper.getDatetimeGMT(end);
 
                 removeBusyTime(freeHoursOfDay, startDT, endDT);
             }

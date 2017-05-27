@@ -20,6 +20,7 @@ import java.util.HashMap;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.DailyReminder;
 import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -116,7 +117,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         int endHour = Integer.parseInt(window[1]);
         int diffInMinutes = (endHour - startHour) * 60;
-        long millisFromStart = Helper.getRandomInt(0, diffInMinutes) * 60 * 1000;
+        long millisFromStart = DateHelper.getRandomInt(0, diffInMinutes) * 60 * 1000;
         return cal.getTimeInMillis() + millisFromStart;
     }
 
@@ -125,7 +126,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         String key = todayIsWeekend() ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
         long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
         sleepTimeInMillis = extendToNextDayIfNeeded(sleepTimeInMillis);
-        long millisBeforeSleep = Helper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
+        long millisBeforeSleep = DateHelper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
         return sleepTimeInMillis - millisBeforeSleep;
     }
 

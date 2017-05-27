@@ -11,6 +11,7 @@ import java.util.Date;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -114,8 +115,8 @@ public class Intervention extends BaseConfig {
 
     private static Boolean isForToday(JSONObject jo) {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
-        Date startDate = Helper.getDatetimeGMT(jo.optString("start"), dateFormat);
-        Date endDate = Helper.getDatetimeGMT(jo.optString("end"), dateFormat);
+        Date startDate = DateHelper.getDatetimeGMT(jo.optString("start"), dateFormat);
+        Date endDate = DateHelper.getDatetimeGMT(jo.optString("end"), dateFormat);
         long rightNow = java.util.Calendar.getInstance().getTimeInMillis();
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
