@@ -12,8 +12,8 @@ import java.util.Calendar;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.Store;
 
 public class RefreshService extends Service {
@@ -50,7 +50,7 @@ public class RefreshService extends Service {
             googleCalendar.refreshAndStoreStats();
         }
 
-        Helper.showInstantNotif(mContext, "Background Refresh Service.", "Done at: " + DateHelper.getTimestamp(), "", 3434);
+        AlarmHelper.showInstantNotif(mContext, "Background Refresh Service.", "Done at: " + DateHelper.getTimestamp(), "", 3434);
         Intervention.prepareTodayIntervention(mContext);
     }
 

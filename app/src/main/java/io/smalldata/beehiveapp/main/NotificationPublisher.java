@@ -5,11 +5,6 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
-
-import io.smalldata.beehiveapp.config.GoogleCalendar;
-import io.smalldata.beehiveapp.utils.Helper;
-import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Handle broadcast notification

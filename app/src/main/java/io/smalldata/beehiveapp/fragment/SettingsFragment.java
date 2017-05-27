@@ -21,7 +21,6 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.config.DailyReminder;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.DateHelper;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 

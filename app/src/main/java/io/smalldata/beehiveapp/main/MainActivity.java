@@ -24,19 +24,13 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
-import io.smalldata.beehiveapp.fragment.HomeFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
-import io.smalldata.beehiveapp.utils.DeviceInfo;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.Network;
-import io.smalldata.beehiveapp.utils.Store;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context mContext;

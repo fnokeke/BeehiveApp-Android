@@ -13,10 +13,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.utils.ConnectHelper;
-import io.smalldata.beehiveapp.utils.DeviceInfo;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 

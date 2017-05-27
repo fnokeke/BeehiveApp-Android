@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
-import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 

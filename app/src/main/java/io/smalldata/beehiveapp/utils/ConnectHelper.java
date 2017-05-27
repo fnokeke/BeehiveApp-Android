@@ -101,7 +101,7 @@ public class ConnectHelper {
     private void showSettingsTip() {
         String title = "Select your reminder preferences";
         String content = "Go to Beehive App >> Settings";
-        Helper.showInstantNotif(mContext, title, content, "", 7777);
+        AlarmHelper.showInstantNotif(mContext, title, content, "", 7777);
     }
 
 
