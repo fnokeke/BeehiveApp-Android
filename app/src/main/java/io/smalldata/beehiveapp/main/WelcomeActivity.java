@@ -17,6 +17,7 @@ import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.utils.ConnectHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -47,8 +48,8 @@ public class WelcomeActivity extends AppCompatActivity {
             Boolean canContinue = checkUserInputAndNetworkConnection(tvContinueResponse);
             if (canContinue) {
                 JSONObject userInfo = new JSONObject();
-                Helper.setJSONValue(userInfo, "email", etWelcomeEmail.getText().toString().trim().toLowerCase());
-                Helper.setJSONValue(userInfo, "code", etWelcomeCode.getText().toString().trim().toLowerCase());
+                JsonHelper.setJSONValue(userInfo, "email", etWelcomeEmail.getText().toString().trim().toLowerCase());
+                JsonHelper.setJSONValue(userInfo, "code", etWelcomeCode.getText().toString().trim().toLowerCase());
                 ConnectHelper connectHelper = new ConnectHelper(mContext, tvContinueResponse);
                 connectHelper.connectToBeehive(userInfo);
                 startActivity(new Intent(mContext, MainActivity.class));

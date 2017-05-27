@@ -2,20 +2,19 @@ package io.smalldata.beehiveapp.main;
 
 import android.content.Context;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static io.smalldata.beehiveapp.utils.Helper.copy;
 import static io.smalldata.beehiveapp.utils.Store.IS_CALENDAR_ENABLED;
-import static io.smalldata.beehiveapp.utils.Store.IS_GEOFENCE_ENABLED;
 import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_IMAGE_ENABLED;
-import static io.smalldata.beehiveapp.utils.Store.IS_RESCUETIME_ENABLED;
 import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_TEXT_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_GEOFENCE_ENABLED;
+import static io.smalldata.beehiveapp.utils.Store.IS_RESCUETIME_ENABLED;
 
 /**
  * Save experiment details for later access
@@ -32,10 +31,10 @@ public class Experiment {
 
     public static JSONObject getExperimentInfo(Context context) {
         JSONObject experimentInfo = new JSONObject();
-        Helper.setJSONValue(experimentInfo, "start", Store.getString(context, "expStart"));
-        Helper.setJSONValue(experimentInfo, "end", Store.getString(context, "expEnd"));
-        Helper.setJSONValue(experimentInfo, "title", Store.getString(context, "expTitle"));
-        Helper.setJSONValue(experimentInfo, "code", Store.getString(context, "code"));
+        JsonHelper.setJSONValue(experimentInfo, "start", Store.getString(context, "expStart"));
+        JsonHelper.setJSONValue(experimentInfo, "end", Store.getString(context, "expEnd"));
+        JsonHelper.setJSONValue(experimentInfo, "title", Store.getString(context, "expTitle"));
+        JsonHelper.setJSONValue(experimentInfo, "code", Store.getString(context, "code"));
         return experimentInfo;
     }
 
@@ -70,19 +69,19 @@ public class Experiment {
 
     public static JSONObject getUserInfo(Context context) {
         JSONObject userInfo = new JSONObject();
-        Helper.setJSONValue(userInfo, "firstname", Store.getString(context, "firstname"));
-        Helper.setJSONValue(userInfo, "lastname", Store.getString(context, "lastname"));
-        Helper.setJSONValue(userInfo, "email", Store.getString(context, "email"));
-        Helper.setJSONValue(userInfo, "gender", Store.getString(context, "gender"));
-        Helper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
-        Helper.setJSONValue(userInfo, "condition", Store.getInt(context, "condition"));
+        JsonHelper.setJSONValue(userInfo, "firstname", Store.getString(context, "firstname"));
+        JsonHelper.setJSONValue(userInfo, "lastname", Store.getString(context, "lastname"));
+        JsonHelper.setJSONValue(userInfo, "email", Store.getString(context, "email"));
+        JsonHelper.setJSONValue(userInfo, "gender", Store.getString(context, "gender"));
+        JsonHelper.setJSONValue(userInfo, "code", Store.getString(context, "code"));
+        JsonHelper.setJSONValue(userInfo, "condition", Store.getInt(context, "condition"));
         return userInfo;
     }
 
     public static JSONObject getFullUserDetails(Context context) {
         JSONObject fullUserDetails = Experiment.getUserInfo(context);
         JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(context);
-        Helper.copy(fromPhoneDetails, fullUserDetails);
+        JsonHelper.copy(fromPhoneDetails, fullUserDetails);
         return fullUserDetails;
     }
 

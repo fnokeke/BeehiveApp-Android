@@ -20,6 +20,7 @@ import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
 import static android.content.ContentValues.TAG;
@@ -61,8 +62,8 @@ public class GoogleCalendar extends BaseConfig {
         }
 
         JSONObject params = new JSONObject();
-        Helper.setJSONValue(params, "email", email);
-        Helper.setJSONValue(params, "date", Helper.getTodaysDateStr());
+        JsonHelper.setJSONValue(params, "email", email);
+        JsonHelper.setJSONValue(params, "date", Helper.getTodayDateStr());
         CallAPI.getAllCalEvents(mContext, params, showCalResponseHandler);
     }
 

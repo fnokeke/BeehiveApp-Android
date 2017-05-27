@@ -34,6 +34,7 @@ import io.smalldata.beehiveapp.utils.ConnectHelper;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.Helper;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 import io.smalldata.beehiveapp.utils.Store;
 
@@ -164,7 +165,7 @@ public class ConnectFragment extends Fragment {
     View.OnClickListener checkRTBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
+            JsonHelper.setJSONValue(params, "email", Store.getString(mContext, "email"));
 
             Display.showBusy(mContext, "Checking your Rescuetime connectivity...");
             CallAPI.checkRTConn(mContext, params, rtResponseHandler);
@@ -191,7 +192,7 @@ public class ConnectFragment extends Fragment {
     View.OnClickListener checkCalBtnHandler = new View.OnClickListener() {
         public void onClick(View v) {
             JSONObject params = new JSONObject();
-            Helper.setJSONValue(params, "email", Store.getString(mContext, "email"));
+            JsonHelper.setJSONValue(params, "email", Store.getString(mContext, "email"));
 
             Display.showBusy(mContext, "Checking your Google GoogleCalendar connectivity...");
             CallAPI.checkCalConn(mContext, params, calResponseHandler);
@@ -248,11 +249,11 @@ public class ConnectFragment extends Fragment {
         Spinner genderField = (Spinner) getActivity().findViewById(R.id.spinner_gender);
 
         JSONObject userInfo = new JSONObject();
-        Helper.setJSONValue(userInfo, "firstname", fnField.getText().toString().trim().toLowerCase());
-        Helper.setJSONValue(userInfo, "lastname", lnField.getText().toString().trim().toLowerCase());
-        Helper.setJSONValue(userInfo, "email", emailField.getText().toString().trim().toLowerCase());
-        Helper.setJSONValue(userInfo, "code", codeField.getText().toString().trim().toLowerCase());
-        Helper.setJSONValue(userInfo, "gender", genderField.getSelectedItem().toString());
+        JsonHelper.setJSONValue(userInfo, "firstname", fnField.getText().toString().trim().toLowerCase());
+        JsonHelper.setJSONValue(userInfo, "lastname", lnField.getText().toString().trim().toLowerCase());
+        JsonHelper.setJSONValue(userInfo, "email", emailField.getText().toString().trim().toLowerCase());
+        JsonHelper.setJSONValue(userInfo, "code", codeField.getText().toString().trim().toLowerCase());
+        JsonHelper.setJSONValue(userInfo, "gender", genderField.getSelectedItem().toString());
         return userInfo;
     }
 

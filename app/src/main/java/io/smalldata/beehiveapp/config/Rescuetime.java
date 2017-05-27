@@ -23,6 +23,7 @@ import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Helper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
 import static io.smalldata.beehiveapp.utils.Store.getString;
@@ -73,8 +74,8 @@ public class Rescuetime extends BaseConfig {
         }
 
         JSONObject params = new JSONObject();
-        Helper.setJSONValue(params, "email", email);
-        Helper.setJSONValue(params, "date", Helper.getTodaysDateStr());
+        JsonHelper.setJSONValue(params, "email", email);
+        JsonHelper.setJSONValue(params, "date", Helper.getTodayDateStr());
         CallAPI.getRTRealtimeActivity(mContext, params, getRTResponseHandler);
     }
 
@@ -215,17 +216,17 @@ public class Rescuetime extends BaseConfig {
         String neutralActivity = activityArr[2].toString();
 
         JSONObject results = new JSONObject();
-        Helper.setJSONValue(results, "focusedActivity", focusedActivity);
-        Helper.setJSONValue(results, "focusedTotal", String.format(locale, "%.1f", focusedTotal));
-        Helper.setJSONValue(results, "focusedPercent", focusedPercent);
+        JsonHelper.setJSONValue(results, "focusedActivity", focusedActivity);
+        JsonHelper.setJSONValue(results, "focusedTotal", String.format(locale, "%.1f", focusedTotal));
+        JsonHelper.setJSONValue(results, "focusedPercent", focusedPercent);
 
-        Helper.setJSONValue(results, "distrActivity", distrActivity);
-        Helper.setJSONValue(results, "distrTotal", String.format(locale, "%.1f", distrTotal));
-        Helper.setJSONValue(results, "distrPercent", distrPercent);
+        JsonHelper.setJSONValue(results, "distrActivity", distrActivity);
+        JsonHelper.setJSONValue(results, "distrTotal", String.format(locale, "%.1f", distrTotal));
+        JsonHelper.setJSONValue(results, "distrPercent", distrPercent);
 
-        Helper.setJSONValue(results, "neutralActivity", neutralActivity);
-        Helper.setJSONValue(results, "neutralTotal", String.format(locale, "%.1f", neutralTotal));
-        Helper.setJSONValue(results, "neutralPercent", neutralPercent);
+        JsonHelper.setJSONValue(results, "neutralActivity", neutralActivity);
+        JsonHelper.setJSONValue(results, "neutralTotal", String.format(locale, "%.1f", neutralTotal));
+        JsonHelper.setJSONValue(results, "neutralPercent", neutralPercent);
 
         return results;
     }
