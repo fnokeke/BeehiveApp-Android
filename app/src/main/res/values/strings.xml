@@ -98,5 +98,9 @@
     <string name="intentKeySettingsFragment">isSettingsFragment</string>
     <string name="default_window_time">16-19</string>
     <string name="default_window_exact_hours">4pm to 7pm</string>
+    <string name="welcome_connecting">Connecting...</string>
+    <string name="welcome_no_network">No network connection...</string>
+    <string name="welcome_valid_email_needed">Umm... valid email needed.</string>
+    <string name="welcome_valid_code_needed">Errm... enter a valid code.</string>
 
 </resources>

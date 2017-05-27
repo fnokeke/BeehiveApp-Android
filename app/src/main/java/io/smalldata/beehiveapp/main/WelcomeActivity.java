@@ -63,13 +63,13 @@ public class WelcomeActivity extends AppCompatActivity {
 
         if (isValidEmail(email) && isValidCode(code) && Network.isDeviceOnline(mContext)) {
             canContinue = true;
-            tvFeedback.setText("Connecting...");
+            tvFeedback.setText(R.string.welcome_connecting);
         }  else if (!Network.isDeviceOnline(mContext)){
-            tvContinueResponse.setText("No network connection...");
+            tvContinueResponse.setText(R.string.welcome_no_network);
         } else if (!isValidEmail(email)) {
-            tvFeedback.setText("Umm... valid email needed.");
+            tvFeedback.setText(R.string.welcome_valid_email_needed);
         } else if (!isValidCode(code)) {
-            tvFeedback.setText("Errm... enter a valid code.");
+            tvFeedback.setText(R.string.welcome_valid_code_needed);
         }
         return canContinue;
     }
