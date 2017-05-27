@@ -97,8 +97,8 @@ public class DailyReminder extends BaseConfig {
     }
 
     private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
-        String title = alreadySeenAlarm(lastSetAlarm) ? "HelperTip: Ignored because already seen. " : "Upcoming Reminder";
-        String content = String.format("last(%s)/todo(%s)", Helper.millisToDateFormat(lastSetAlarm), Helper.millisToDateFormat(alarmMillis));
+        String title = alreadySeenAlarm(lastSetAlarm) ? "Tip: Ignored, already seen. " : "Upcoming Reminder";
+        String content = String.format("(%s) / (%s)", Helper.millisToDateFormat(lastSetAlarm), Helper.millisToDateFormat(alarmMillis));
         title = String.format("*%s* - %s", notifType, title);
         int notifId = notifType.equals("daily") ? INSTANT_NOTIF_ID_DAILY : INSTANT_NOTIF_ID_SLEEP;
         Helper.showInstantNotif(mContext, title, content, "", notifId);
@@ -129,29 +129,10 @@ public class DailyReminder extends BaseConfig {
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, Helper.getTodaysDateStr());
     }
 
-    private void oldSetDailyReminder(long alarmMillis, boolean shouldShowTip, int alarmId, boolean ignorePastAlarm) {
-        long lastSetAlarm = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
-        if (shouldShowTip) {
-            String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
-            String title = alreadySeenAlarm(lastSetAlarm) ? "Remove!!: Already seen reminder" : "Upcoming Daily Reminder";
-            String content = "Alarm time set at: " + alarmTimeStr;
-            Log.i(TAG, title + content);
-            Helper.showInstantNotif(mContext, title, content, "", INSTANT_NOTIF_ID_DAILY);
-        }
-
-        long rightNow = Calendar.getInstance().getTimeInMillis();
-        if (ignorePastAlarm && rightNow > alarmMillis) return;
-        if (alreadySeenAlarm(lastSetAlarm)) return;
-
-        JSONObject notif = Intervention.getNotifDetails(mContext);
-        Helper.scheduleSingleAlarm(mContext, alarmId, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
-        saveLastDayAndTimeAlarmScheduled(mContext, alarmMillis);
-        Store.setString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, String.valueOf(alarmMillis));
-    }
-
     private boolean alreadySeenAlarm(long alarmMillis) {
         long rightNow = Calendar.getInstance().getTimeInMillis();
         return intvAlreadySetForToday() && (rightNow > alarmMillis) && (alarmMillis > 0);
+//        return (rightNow > alarmMillis) && (alarmMillis > 0);
     }
 
     private boolean intvAlreadySetForToday() {
@@ -177,6 +158,26 @@ public class DailyReminder extends BaseConfig {
 
     private void saveLastDayAndTimeAlarmScheduled(Context context, long alarmMillis) {
         Store.setString(context, Store.LAST_CHECKED_INTV_DATE, Helper.getTodaysDateStr());
+        Store.setString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, String.valueOf(alarmMillis));
+    }
+
+    private void oldSetDailyReminder(long alarmMillis, boolean shouldShowTip, int alarmId, boolean ignorePastAlarm) {
+        long lastSetAlarm = Long.parseLong(Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
+        if (shouldShowTip) {
+            String alarmTimeStr = Helper.millisToDateFormat(alarmMillis);
+            String title = alreadySeenAlarm(lastSetAlarm) ? "Remove!!: Already seen reminder" : "Upcoming Daily Reminder";
+            String content = "Alarm time set at: " + alarmTimeStr;
+            Log.i(TAG, title + content);
+            Helper.showInstantNotif(mContext, title, content, "", INSTANT_NOTIF_ID_DAILY);
+        }
+
+        long rightNow = Calendar.getInstance().getTimeInMillis();
+        if (ignorePastAlarm && rightNow > alarmMillis) return;
+        if (alreadySeenAlarm(lastSetAlarm)) return;
+
+        JSONObject notif = Intervention.getNotifDetails(mContext);
+        Helper.scheduleSingleAlarm(mContext, alarmId, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
+        saveLastDayAndTimeAlarmScheduled(mContext, alarmMillis);
         Store.setString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, String.valueOf(alarmMillis));
     }
 

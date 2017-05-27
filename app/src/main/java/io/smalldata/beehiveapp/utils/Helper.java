@@ -78,11 +78,13 @@ public class Helper {
     }
 
     public static String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(Calendar.getInstance().getTime());
+//        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(Calendar.getInstance().getTime());
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(System.currentTimeMillis());
     }
 
     public static long getTimestampInMillis() {
-        return Calendar.getInstance().getTimeInMillis();
+//        return Calendar.getInstance().getTimeInMillis();
+        return System.currentTimeMillis();
     }
 
     public static String millisToDateFormat(Calendar cal) {
@@ -90,12 +92,11 @@ public class Helper {
     }
 
     public static String millisToDateFormat(long timeInMillis) {
+        if (timeInMillis <= 0) return "Zero.am";
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(timeInMillis);
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
-//        Intent launchAppIntent = getLaunchIntent(getApplicationContext(), "io.smalldatalab.android.pam");
-
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
@@ -123,7 +124,7 @@ public class Helper {
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
-//                .setShowWhen(true)
+                .setShowWhen(true)
 //                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
 //                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
                 .setSmallIcon(android.R.drawable.ic_popup_reminder);

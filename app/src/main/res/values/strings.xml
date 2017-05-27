@@ -96,5 +96,7 @@
     <string name="weekday_reminder_window_pref">weekday_reminder_window_pref</string>
     <string name="weekend_reminder_window_pref">weekend_reminder_window_pref</string>
     <string name="intentKeySettingsFragment">isSettingsFragment</string>
+    <string name="default_window_time">16-19</string>
+    <string name="default_window_exact_hours">4pm to 7pm</string>
 
 </resources>
