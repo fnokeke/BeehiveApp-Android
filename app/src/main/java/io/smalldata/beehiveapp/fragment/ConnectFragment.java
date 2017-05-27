@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -49,7 +48,7 @@ public class ConnectFragment extends Fragment {
     Context mContext;
     Activity mActivity;
     TextView connResponseTV;
-    TextView calRTResponseTV;
+    TextView checkDataStreamsStatusTV;
     TextView howToConnTV;
     TextView formTitleTV;
     Button submitBtn;
@@ -117,7 +116,7 @@ public class ConnectFragment extends Fragment {
 
         connResponseTV = (TextView) getActivity().findViewById(R.id.tv_connect_status);
         formTitleTV = (TextView) mActivity.findViewById(R.id.tv_form_title);
-        calRTResponseTV = (TextView) mActivity.findViewById(R.id.tv_check_conn_status);
+        checkDataStreamsStatusTV = (TextView) mActivity.findViewById(R.id.tv_check_conn_status);
         howToConnTV = (TextView) mActivity.findViewById(R.id.tv_how_to_conn);
     }
 
@@ -224,12 +223,12 @@ public class ConnectFragment extends Fragment {
 
         if (result.optBoolean(responseType, false)) {
             msgId = app.equals("GoogleCalendar") ? R.string.cal_is_connected : R.string.rt_is_connected;
-            Display.showSuccess(calRTResponseTV, msgId);
+            Display.showSuccess(checkDataStreamsStatusTV, msgId);
             Display.clear(howToConnTV);
             Display.hide(connResponseTV);
         } else {
             msgId = app.equals("GoogleCalendar") ? R.string.cal_is_not_connected : R.string.rt_is_not_connected;
-            Display.showError(calRTResponseTV, msgId);
+            Display.showError(checkDataStreamsStatusTV, msgId);
             Display.showPlain(howToConnTV, R.string.desc_how_to_connect);
         }
     }
@@ -307,9 +306,9 @@ public class ConnectFragment extends Fragment {
 
     public void resetFormInput() {
         Display.hide(howToConnTV);
-        Display.hide(calRTResponseTV);
         Display.hide(connResponseTV);
-        Display.showPlain(formTitleTV, getResources().getString(R.string.desc_connect_status));
+        Display.showPlain(formTitleTV, getString(R.string.desc_connect_status));
+        Display.showPlain(checkDataStreamsStatusTV, getString(R.string.desc_check_conn));
 
         fnField.setText("");
         lnField.setText("");
