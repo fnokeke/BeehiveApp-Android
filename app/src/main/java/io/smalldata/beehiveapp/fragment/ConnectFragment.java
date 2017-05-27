@@ -30,7 +30,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.ConnectHelper;
+import io.smalldata.beehiveapp.utils.ConnectBeehiveHelper;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.JsonHelper;
@@ -139,7 +139,7 @@ public class ConnectFragment extends Fragment {
 
         Display.clear(howToConnTV);
         JSONObject userInfo = getFormInput();
-        new ConnectHelper(mContext, formTitleTV).connectToBeehive(userInfo);
+        new ConnectBeehiveHelper(mContext, formTitleTV).connectToBeehive(userInfo);
     }
 
 

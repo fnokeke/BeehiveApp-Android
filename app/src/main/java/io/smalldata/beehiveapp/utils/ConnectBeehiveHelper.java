@@ -23,22 +23,16 @@ import io.smalldata.beehiveapp.main.RefreshService;
  * Created by fnokeke on 5/18/17.
  */
 
-public class ConnectHelper {
-    private final static String TAG = "ConnectHelper";
+public class ConnectBeehiveHelper {
+    private final static String TAG = "ConnectBeehiveHelper";
     private Context mContext;
     private TextView tvFeedback;
     private Experiment experiment;
 
-    public ConnectHelper(Context context, TextView feedback) {
+    public ConnectBeehiveHelper(Context context, TextView feedback) {
         mContext = context;
         tvFeedback = feedback;
         experiment = new Experiment(context);
-    }
-
-    public ConnectHelper(Context context) {
-        mContext = context;
-        experiment = new Experiment(context);
-        tvFeedback = null;
     }
 
     public void connectToBeehive(JSONObject userInfo) {

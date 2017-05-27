@@ -13,7 +13,7 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.utils.ConnectHelper;
+import io.smalldata.beehiveapp.utils.ConnectBeehiveHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 
@@ -47,8 +47,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 JSONObject userInfo = new JSONObject();
                 JsonHelper.setJSONValue(userInfo, "email", etWelcomeEmail.getText().toString().trim().toLowerCase());
                 JsonHelper.setJSONValue(userInfo, "code", etWelcomeCode.getText().toString().trim().toLowerCase());
-                ConnectHelper connectHelper = new ConnectHelper(mContext, tvContinueResponse);
-                connectHelper.connectToBeehive(userInfo);
+                ConnectBeehiveHelper connectBeehiveHelper = new ConnectBeehiveHelper(mContext, tvContinueResponse);
+                connectBeehiveHelper.connectToBeehive(userInfo);
                 startActivity(new Intent(mContext, MainActivity.class));
             }
         }
