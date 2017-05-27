@@ -18,7 +18,7 @@ import static io.smalldata.beehiveapp.utils.Store.IS_RESCUETIME_ENABLED;
 import static io.smalldata.beehiveapp.utils.Store.IS_DASHBOARD_TEXT_ENABLED;
 
 /**
- * Save experiment details for offline access
+ * Save experiment details for later access
  * Created by fnokeke on 2/21/17.
  */
 
@@ -41,7 +41,6 @@ public class Experiment {
 
     public void saveConfigs(JSONObject jsonExperimentInfo) {
         if (jsonExperimentInfo.length() == 0) return;
-
         saveToggles(jsonExperimentInfo);
         new Intervention(mContext).saveSettings(jsonExperimentInfo.optJSONArray("interventions"));
         Store.printAll(mContext);
@@ -49,7 +48,6 @@ public class Experiment {
 
     private void saveToggles(JSONObject experiment) {
         if (experiment.length() == 0) return;
-
         Store.setBoolean(mContext, IS_CALENDAR_ENABLED, experiment.optBoolean(IS_CALENDAR_ENABLED));
         Store.setBoolean(mContext, IS_GEOFENCE_ENABLED, experiment.optBoolean(IS_GEOFENCE_ENABLED));
         Store.setBoolean(mContext, IS_DASHBOARD_IMAGE_ENABLED, experiment.optBoolean(IS_DASHBOARD_IMAGE_ENABLED));
@@ -107,9 +105,6 @@ public class Experiment {
         hours = hours > 0 ? hours : 1;
         return hours;
     }
-    public static String getInterventionReminderTime(Context context) {
-        return Store.getString(context, Store.INTV_WHEN);
-    }
 
     public boolean canShowSettings() {
         return Store.getBoolean(mContext, Store.CAN_SHOW_SETTINGS);
@@ -118,4 +113,5 @@ public class Experiment {
     public void enableSettings(boolean status) {
         Store.setBoolean(mContext, Store.CAN_SHOW_SETTINGS, status);
     }
+
 }
