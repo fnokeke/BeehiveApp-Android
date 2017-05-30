@@ -41,13 +41,14 @@ public class Store {
     public static final String INTV_NOTIF = "notif";
     public static final String INTV_DAILY_NOTIF_DISABLED = "intv_daily_notif_disabled";
 
-    public static final String LAST_SCHEDULED_REMINDER_TIME = "lastDailyReminder";
     public static final String LAST_CHECKED_INTV_DATE = "lastCheckedDate";
     public static final String IS_EXIT_BUTTON = "isExitButton";
-    public static String CAN_SHOW_SETTINGS = "canShowSettings";
-    public static String LAST_SCHEDULED_BEDTIME_REMINDER = "lastBedTimeReminder";
-    public static String DAILY_ALARM_MILLIS = "dailyAlarmMillis";
-    public static String BEDTIME_ALARM_MILLIS = "bedTimeAlarmMillis";
+    public final static String CAN_SHOW_SETTINGS = "canShowSettings";
+    public static final String LAST_REMINDER_DATE = "lastReminderDate";
+    public static final String LAST_SCHEDULED_REMINDER_TIME = "lastDailyReminder";
+    public final static String LAST_SCHEDULED_BEDTIME_REMINDER = "lastBedTimeReminder";
+    public final static String DAILY_ALARM_MILLIS = "dailyAlarmMillis";
+    public final static String BEDTIME_ALARM_MILLIS = "bedTimeAlarmMillis";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

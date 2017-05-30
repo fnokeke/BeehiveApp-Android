@@ -9,9 +9,11 @@ import android.os.IBinder;
 
 import java.util.Calendar;
 
+import io.smalldata.beehiveapp.config.DailyReminder;
 import io.smalldata.beehiveapp.config.GoogleCalendar;
 import io.smalldata.beehiveapp.config.Intervention;
 import io.smalldata.beehiveapp.config.Rescuetime;
+import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -50,7 +52,14 @@ public class RefreshService extends Service {
             googleCalendar.refreshAndStoreStats();
         }
 
-        AlarmHelper.showInstantNotif(mContext, "Background updateContents()", "Done at: " + DateHelper.getTimestamp(), "", 3434);
+        String title;
+        if (DailyReminder.isNewDayForReminder(mContext)) {
+            SettingsFragment.generateAndStoreReminders(mContext);
+            title = "Background New Day For Reminder!";
+        } else {
+            title = "Background update for same day";
+        }
+        AlarmHelper.showInstantNotif(mContext, title, "Done at: " + DateHelper.getTimestamp(), "", 3434);
         Intervention.prepareTodayIntervention(mContext);
     }
 
@@ -58,8 +67,8 @@ public class RefreshService extends Service {
         Intent refreshIntent = new Intent(context, RefreshService.class);
         PendingIntent pendingRefreshIntent = PendingIntent.getService(context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 2 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
-//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(0), 6 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 2 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, getMillisUntilTriggerTime(13), 2 * AlarmManager.INTERVAL_HOUR, pendingRefreshIntent);
     }
 
     public static long getMillisUntilTriggerTime(int hourOf24HourDay) {

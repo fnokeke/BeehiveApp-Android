@@ -85,7 +85,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     private void applyGeneratedReminders(Context context, String prefKey) {
         if (!isTodayPrefUpdate(prefKey)) return;
-        JSONObject allReminders = generateAllReminders(context);
+        generateAndStoreReminders(context);
+        JSONObject allReminders = getCurrentReminders(context);
         long bedTimeAlarmMillis = allReminders.optLong("bedtime_reminder");
         long dailyAlarmMillis = allReminders.optLong("daily_reminder");
         dailyReminder.setReminderBeforeBedTime(bedTimeAlarmMillis, true);
@@ -98,13 +99,15 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return todayIsWeekend() ? prefKey.contains("weekend") : prefKey.contains("weekday");
     }
 
-    public static JSONObject generateAllReminders(Context context) {
-        JSONObject alarms = new JSONObject();
-        JsonHelper.setJSONValue(alarms, context.getString(R.string.daily_reminder), generateDailyReminder(context));
-        JsonHelper.setJSONValue(alarms, context.getString(R.string.bedtime_reminder), generateBedTimeReminder(context));
-        return alarms;
+    private static boolean notReadyToGenerate(Context context) {
+        return getSelectedWindowTime(context).equals("");
     }
 
+    public static void generateAndStoreReminders(Context context) {
+        if (notReadyToGenerate(context)) return;
+        Store.setLong(context, Store.DAILY_ALARM_MILLIS, generateDailyReminder(context));
+        Store.setLong(context, Store.BEDTIME_ALARM_MILLIS, generateBedTimeReminder(context));
+    }
     private static long generateDailyReminder(Context context) {
         String userWindowTime = getSelectedWindowTime(context);
         String[] window = userWindowTime.split("-");

@@ -58,6 +58,7 @@ public class DailyReminder {
         AlarmHelper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
+        Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {
@@ -71,4 +72,9 @@ public class DailyReminder {
         return today.equals(lastCheckedDate);
     }
 
+    public static boolean isNewDayForReminder(Context context) {
+        String lastReminderDate = Store.getString(context, Store.LAST_REMINDER_DATE);
+        String today = DateHelper.getTodayDateStr();
+        return !today.equals(lastReminderDate);
+    }
 }
