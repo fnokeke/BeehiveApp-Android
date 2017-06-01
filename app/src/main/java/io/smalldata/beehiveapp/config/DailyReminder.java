@@ -49,16 +49,19 @@ public class DailyReminder {
 
     public void setTodayReminder(long alarmMillis, boolean shouldShowTip) {
         if (alarmMillis <= 0) return;
-        long lastSetAlarm = Store.getLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME);
+        long lastSetAlarm = Store.getLong(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER);
         if (shouldShowTip) showAlarmTip(alarmMillis, lastSetAlarm, "daily");
         if (alreadySeenAlarm(lastSetAlarm)) return;
 
         JSONObject notif = Intervention.getNotifDetails(mContext);
         final int DAILY_INTV_ALARM_ID = 7700;
         AlarmHelper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
-        Store.setLong(mContext, Store.LAST_SCHEDULED_REMINDER_TIME, alarmMillis);
+        Store.setLong(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER, alarmMillis);
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
         Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());
+
+        String lastReminderStr = Store.getString(mContext, Store.LAST_REMINDER_DATE);
+        AlarmHelper.showInstantNotif(mContext, "lastReminderStr: " + lastReminderStr, "Done at: " + DateHelper.getTimestamp(), "", 9911);
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {

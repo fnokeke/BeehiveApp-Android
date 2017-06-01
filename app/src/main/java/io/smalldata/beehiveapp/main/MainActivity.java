@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            JSONObject userInfo = Experiment.getUserInfo(mContext);
 //            Helper.copy(userInfo, params);
 //            JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
-//            JsonHelper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_REMINDER_TIME));
+//            JsonHelper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER));
 //            JsonHelper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
 //            JsonHelper.setJSONValue(params, "was_dismissed", was_dismissed);
 //            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
@@ -177,6 +177,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 // TODO: 5/25/17 move all raw strings to strings.xml
 // TODO: 5/25/17 click on notif to go to settings 
-// TODO: 5/25/17 do not disable window time in order to accommodate for days where researcher does not want to fire any alarm
-// TODO: 5/25/17 make sure that alarm resets at midnight of every new day
+// TODO: 5/25/17 do not disable window time in order to accommodate for days where researcher does not want to fire any autoUpdateAlarm
+// TODO: 5/25/17 make sure that autoUpdateAlarm resets at midnight of every new day
 

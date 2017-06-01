@@ -55,7 +55,8 @@ public class Intervention extends BaseConfig {
     public static void prepareTodayIntervention(Context context) {
         JSONArray interventions = getAllInterventions(context);
         JSONObject intv;
-        for (Integer i = 0; i < interventions.length(); i++) {
+        int i;
+        for (i = 0; i < interventions.length(); i++) {
             intv = JsonHelper.strToJsonObject(interventions.optString(i));
             if (isForToday(intv) && isTodayInterventionType(context, intv)) {
                 Log.i(TAG, "TodayIntv: " + intv.toString());
@@ -78,14 +79,17 @@ public class Intervention extends BaseConfig {
                     DailyReminder dr = new DailyReminder(context);
                     dr.setReminderBeforeBedTime(currentReminders.optLong(context.getString(R.string.bedtime_reminder)), true);
                     dr.setTodayReminder(currentReminders.optLong(context.getString(R.string.daily_reminder)), true);
+//                    AlarmHelper.showInstantNotif(context, DateHelper.getTimestamp() + " intv set",
+//                            currentReminders.toString(), "", 4003); // FIXME: 5/31/17 remove debug code
                 }
 
                 break;
             }
 
-            if (i == interventions.length()) {
-                AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked all at: " + DateHelper.getTimestamp(), "", 3435);
-            }
+        }
+
+        if (i == interventions.length()) {
+            AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked: " + DateHelper.getTimestamp(), "", 3993);
         }
 
         if (Store.getString(context, "iTreatmentImage").equals("")) {

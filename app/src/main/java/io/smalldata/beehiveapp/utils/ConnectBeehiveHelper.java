@@ -10,12 +10,10 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
-import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.main.RefreshService;
+import io.smalldata.beehiveapp.main.AutoUpdateAlarm;
 
 
 /**
@@ -46,8 +44,8 @@ public class ConnectBeehiveHelper {
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
             Log.i(TAG, "onConnectStudySuccess: " + jsonResult.toString());
-            Store.wipeAll(mContext);
-            SettingsFragment.wipeAll(mContext);
+//            Store.wipeAll(mContext);
+//            SettingsFragment.wipeAll(mContext);
 
             JSONObject jsonExperimentInfo = jsonResult.optJSONObject("experiment");
             Display.dismissBusy();
@@ -73,7 +71,7 @@ public class ConnectBeehiveHelper {
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
 
             Display.dismissBusy();
-            RefreshService.startRefreshInIntervals(mContext);
+            new AutoUpdateAlarm().setAlarmForPeriodicUpdate(mContext);
 
             showSettingsTip();
         }
@@ -93,7 +91,7 @@ public class ConnectBeehiveHelper {
     };
 
     private void showSettingsTip() {
-        String title = "Select your reminder preferences";
+        String title = "Select Preference";
         String content = "Go to Beehive App >> Settings";
         AlarmHelper.showInstantNotif(mContext, title, content, "", 7777);
     }

@@ -1,8 +1,6 @@
 package io.smalldata.beehiveapp.utils;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
@@ -11,9 +9,7 @@ import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.main.RefreshService;
 
 
 /**
