@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -24,12 +23,16 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.fragment.AboutFragment;
 import io.smalldata.beehiveapp.fragment.ConnectFragment;
 import io.smalldata.beehiveapp.fragment.SettingsFragment;
 import io.smalldata.beehiveapp.fragment.StudyFragment;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,26 +70,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void handleClickedNotification(Bundle bundle) {
         if(bundle != null){
-            String appIdToLaunch = bundle.getString("appId");
-            boolean was_dismissed = bundle.getBoolean("was_dismissed");
+            String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
+            boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
 
-            if (!was_dismissed) {
+            if (!wasDismissed) {
                 IntentLauncher.launchApp(mContext, appIdToLaunch);
             }
 
-            boolean openSettingsFragment = bundle.getBoolean("isSettingsFragment");
-            if (openSettingsFragment) {
-                Toast.makeText(mContext, "bout to open Settings...", Toast.LENGTH_SHORT).show();
-            }
-
-//            JSONObject params = Intervention.getNotifDetails(mContext);
-//            JSONObject userInfo = Experiment.getUserInfo(mContext);
-//            Helper.copy(userInfo, params);
-//            JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
-//            JsonHelper.setJSONValue(params, "time_appeared", Store.getString(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER));
-//            JsonHelper.setJSONValue(params, "time_clicked", String.valueOf(Helper.getCurrentTimeInMillis()));
-//            JsonHelper.setJSONValue(params, "was_dismissed", was_dismissed);
-//            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
+            JSONObject params = Experiment.getUserInfo(mContext);
+            JsonHelper.setJSONValue(params, "title", bundle.getString(AlarmHelper.ALARM_NOTIF_TITLE));
+            JsonHelper.setJSONValue(params, "content", bundle.getString(AlarmHelper.ALARM_NOTIF_CONTENT));
+            JsonHelper.setJSONValue(params, "app_id", bundle.getString(AlarmHelper.ALARM_APP_ID));
+            JsonHelper.setJSONValue(params, "was_dismissed", bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED));
+            JsonHelper.setJSONValue(params, "time_appeared", bundle.getLong(AlarmHelper.ALARM_MILLIS_SET));
+            JsonHelper.setJSONValue(params, "time_clicked", System.currentTimeMillis());
+            JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
+            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
         }
     }
 
@@ -99,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onConnectFailure(VolleyError error) {
             Log.e("MainActivity.class", "submit_notif_stats error " + error.toString());
+            AlarmHelper.showInstantNotif(mContext, "NotifClicked Submit Error", error.toString(), "", 9191);
             error.printStackTrace();
         }
     };
@@ -178,5 +178,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 // TODO: 5/25/17 move all raw strings to strings.xml
 // TODO: 5/25/17 click on notif to go to settings 
 // TODO: 5/25/17 do not disable window time in order to accommodate for days where researcher does not want to fire any autoUpdateAlarm
-// TODO: 5/25/17 make sure that autoUpdateAlarm resets at midnight of every new day
 

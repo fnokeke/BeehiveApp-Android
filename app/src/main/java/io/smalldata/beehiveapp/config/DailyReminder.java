@@ -39,9 +39,9 @@ public class DailyReminder {
         if (shouldShowTip) showAlarmTip(bedTimeInMillis, lastSetAlarm, "bedtime");
         if (alreadySeenAlarm(lastSetAlarm)) return;
 
-        final String title = "BedTime Survey: How was your day?";
+        final String title = "How was your day?";
         final String content = "Tap here to respond.";
-        final String appId = "io.smalldatalab.android.pam";
+        final String appId = Store.PAM_ID;
         final int BED_TIME_ALARM_ID = 5500;
         AlarmHelper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER, bedTimeInMillis);
@@ -61,7 +61,7 @@ public class DailyReminder {
         Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());
 
         String lastReminderStr = Store.getString(mContext, Store.LAST_REMINDER_DATE);
-        AlarmHelper.showInstantNotif(mContext, "lastReminderStr: " + lastReminderStr, "Done at: " + DateHelper.getTimestamp(), "", 9911);
+        AlarmHelper.showInstantNotif(mContext, "lastReminderStr: " + lastReminderStr, "Done at: " + DateHelper.getFormattedTimestamp(), "", 9911);
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {

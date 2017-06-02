@@ -41,7 +41,7 @@ public class DateHelper {
         return result;
     }
 
-    public static String getTimestamp() {
+    public static String getFormattedTimestamp() {
         return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(System.currentTimeMillis());
     }
 

@@ -79,8 +79,6 @@ public class Intervention extends BaseConfig {
                     DailyReminder dr = new DailyReminder(context);
                     dr.setReminderBeforeBedTime(currentReminders.optLong(context.getString(R.string.bedtime_reminder)), true);
                     dr.setTodayReminder(currentReminders.optLong(context.getString(R.string.daily_reminder)), true);
-//                    AlarmHelper.showInstantNotif(context, DateHelper.getTimestamp() + " intv set",
-//                            currentReminders.toString(), "", 4003); // FIXME: 5/31/17 remove debug code
                 }
 
                 break;
@@ -89,7 +87,7 @@ public class Intervention extends BaseConfig {
         }
 
         if (i == interventions.length()) {
-            AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked: " + DateHelper.getTimestamp(), "", 3993);
+            AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked: " + DateHelper.getFormattedTimestamp(), "", 3993);
         }
 
         if (Store.getString(context, "iTreatmentImage").equals("")) {
@@ -129,7 +127,7 @@ public class Intervention extends BaseConfig {
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    static JSONObject getNotifDetails(Context context) {
+    public static JSONObject getNotifDetails(Context context) {
         return JsonHelper.strToJsonObject(Store.getString(context, INTV_NOTIF));
     }
 

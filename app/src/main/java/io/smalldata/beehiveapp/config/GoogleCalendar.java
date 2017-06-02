@@ -84,7 +84,7 @@ public class GoogleCalendar extends BaseConfig {
                 Float busyHours = (float) busyTimeMs / 3600000;
                 Integer noOfTodayEvents = countTodayEvents(mJsonArray);
 
-                String statsCal = "Updated: " + DateHelper.getTimestamp() + "\nNo of events today: " + noOfTodayEvents.toString() + "\n\n" +
+                String statsCal = "Updated: " + DateHelper.getFormattedTimestamp() + "\nNo of events today: " + noOfTodayEvents.toString() + "\n\n" +
                         "Total Busy Hours: " + String.format(locale, "%.02f", busyHours) + "\n\n" +
                         "Today Events:\n" + mJsonStr +
                         "Potential Notification Time:\n" + getFreeTime(mJsonArray);

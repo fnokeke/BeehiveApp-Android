@@ -28,7 +28,6 @@ public class AutoUpdateAlarm extends BroadcastReceiver {
     }
 
     private void performUpdate(Context context) {
-        AlarmHelper.showInstantNotif(context, "onReceive( ) update", "At:" + DateHelper.getTimestamp(), "", 9988); // FIXME: 5/31/17 remove debug code
         String title;
         String lastReminderStr = Store.getString(context, Store.LAST_REMINDER_DATE);
         String todayStr = DateHelper.getTodayDateStr();
@@ -39,7 +38,7 @@ public class AutoUpdateAlarm extends BroadcastReceiver {
             title = "Same: ";
         }
         title = String.format(Locale.getDefault(), "%s: %s/%s", title, lastReminderStr, todayStr);
-        AlarmHelper.showInstantNotif(context, title, DateHelper.getTimestamp() + " onRecv()", "", 3434); // FIXME: 5/31/17 remove debug code
+        AlarmHelper.showInstantNotif(context, title, DateHelper.getFormattedTimestamp() + " onRecv()", "", 3434); // FIXME: 5/31/17 remove debug code
         Intervention.prepareTodayIntervention(context);
     }
 

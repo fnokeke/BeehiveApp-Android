@@ -8,6 +8,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import io.smalldata.beehiveapp.utils.Network;
+
 
 /**
  * CallAPI.java for REST API calls
@@ -49,6 +51,7 @@ public class CallAPI {
     }
 
     private static void addRequestToQueue(Context context, String url, final JSONObject params, final VolleyJsonCallback callback) {
+        if (!Network.isDeviceOnline(context)) return;
         JsonObjectRequest request = createRequest(url, params, callback);
         SingletonRequest.getInstance(context).addToRequestQueue(request);
     }
