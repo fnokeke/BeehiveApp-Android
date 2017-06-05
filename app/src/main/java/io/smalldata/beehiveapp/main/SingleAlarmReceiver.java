@@ -25,13 +25,6 @@ public class SingleAlarmReceiver extends BroadcastReceiver {
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         int id = intent.getIntExtra(NOTIFICATION_ID, 1);
         notificationManager.notify(id, notification);
-//        Log.d(TAG, "onReceive: notif id=" + id + " " + "/ notif-info = " + notification.toString());
-//
-//        int alarmId = intent.getIntExtra("alarmId", 10);
-//        String title = intent.getStringExtra(AlarmHelper.ALARM_NOTIF_TITLE);
-//        String content = intent.getStringExtra(AlarmHelper.ALARM_NOTIF_CONTENT);
-//        String appId = intent.getStringExtra(AlarmHelper.ALARM_APP_ID);
-//        AlarmHelper.showInstantNotif(context, "id:" + id + "; aid:" + alarmId, content, appId, alarmId + 1);
     }
 }
 

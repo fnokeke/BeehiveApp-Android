@@ -71,6 +71,11 @@
             android:process=":autoService" >
         </service>
 
+        <receiver
+            android:name=".main.NotifClickORDismissReceiver"
+            android:exported="false" >
+        </receiver>
+
     </application>
 
 </manifest>

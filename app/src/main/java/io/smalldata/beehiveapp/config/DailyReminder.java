@@ -43,7 +43,7 @@ public class DailyReminder {
         final String content = "Tap here to respond.";
         final String appId = Store.PAM_ID;
         final int BED_TIME_ALARM_ID = 8880;
-        AlarmHelper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis);
+        AlarmHelper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis, "sleep");
         Store.setLong(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER, bedTimeInMillis);
     }
 
@@ -55,7 +55,7 @@ public class DailyReminder {
 
         JSONObject notif = Intervention.getNotifDetails(mContext);
         final int DAILY_REMINDER_ALARM_ID = 7700;
-        AlarmHelper.scheduleSingleAlarm(mContext, DAILY_REMINDER_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
+        AlarmHelper.scheduleSingleAlarm(mContext, DAILY_REMINDER_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis, "");
         Store.setLong(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER, alarmMillis);
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
         Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());

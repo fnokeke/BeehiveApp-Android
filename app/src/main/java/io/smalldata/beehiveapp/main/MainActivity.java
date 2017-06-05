@@ -45,10 +45,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContext = this;
         FirebaseMessaging.getInstance().subscribeToTopic("news");
 
-        if (savedInstanceState == null) {
-            handleClickedNotification(getIntent().getExtras());
-        }
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,41 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTV = (TextView) findViewById(R.id.tv_timeout_prompt);
 
     }
-
-    private void handleClickedNotification(Bundle bundle) {
-        if(bundle != null){
-            String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
-            boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
-
-            if (!wasDismissed) {
-                IntentLauncher.launchApp(mContext, appIdToLaunch);
-            }
-
-            JSONObject params = Experiment.getUserInfo(mContext);
-            JsonHelper.setJSONValue(params, "title", bundle.getString(AlarmHelper.ALARM_NOTIF_TITLE));
-            JsonHelper.setJSONValue(params, "content", bundle.getString(AlarmHelper.ALARM_NOTIF_CONTENT));
-            JsonHelper.setJSONValue(params, "app_id", bundle.getString(AlarmHelper.ALARM_APP_ID));
-            JsonHelper.setJSONValue(params, "was_dismissed", bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED));
-            JsonHelper.setJSONValue(params, "time_appeared", bundle.getLong(AlarmHelper.ALARM_MILLIS_SET));
-            JsonHelper.setJSONValue(params, "time_clicked", System.currentTimeMillis());
-            JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(mContext));
-            CallAPI.addNotifClickedStats(mContext, params, submitNotifClickHandler);
-        }
-    }
-
-    VolleyJsonCallback submitNotifClickHandler = new VolleyJsonCallback() {
-        @Override
-        public void onConnectSuccess(JSONObject result) {
-            Log.i("MainActivity.class", "submit_notif_stats success " + result.toString());
-        }
-
-        @Override
-        public void onConnectFailure(VolleyError error) {
-            Log.e("MainActivity.class", "submit_notif_stats error " + error.toString());
-            AlarmHelper.showInstantNotif(mContext, "NotifClicked Submit Error", error.toString(), "", 9191);
-            error.printStackTrace();
-        }
-    };
 
     @Override
     public void onBackPressed() {

@@ -11,11 +11,11 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.main.MainActivity;
+import io.smalldata.beehiveapp.main.NotifClickORDismissReceiver;
 import io.smalldata.beehiveapp.main.SingleAlarmReceiver;
 
 /**
- * Helper.java
+ * AlarmHelper.java
  * Created: 1/24/17
  * author: Fabian Okeke
  */
@@ -45,9 +45,9 @@ public class AlarmHelper {
         mNotificationManager.notify(NOTIF_ID, mBuilder.build());
     }
 
-    public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis) {
+    public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis, String alarmType) {
         Intent singleIntent = new Intent(context, SingleAlarmReceiver.class);
-        Notification notification = createNotification(context, alarmId, title, content, appIdToLaunch, alarmMillis);
+        Notification notification = createNotification(context, alarmId, title, content, appIdToLaunch, alarmMillis, alarmType);
         singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION, notification);
         singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION_ID, alarmId);
 
@@ -63,7 +63,8 @@ public class AlarmHelper {
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmMillis, pendingIntent);
     }
 
-    private static Intent appendExtras(Intent intent, String title, String content, String appIdToLaunch, long alarmMillis, boolean wasDismissed) {
+    private static Intent createOnClickIntent(Context context, String title, String content, String appIdToLaunch, long alarmMillis, boolean wasDismissed) {
+        Intent intent = new Intent(context, NotifClickORDismissReceiver.class);
         intent.putExtra(ALARM_NOTIF_TITLE, title);
         intent.putExtra(ALARM_NOTIF_CONTENT, content);
         intent.putExtra(ALARM_APP_ID, appIdToLaunch);
@@ -72,18 +73,15 @@ public class AlarmHelper {
         return intent;
     }
 
-    private static Notification createNotification(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis) {
-        Intent appLauncherIntent = new Intent(context, MainActivity.class);
-        appLauncherIntent = appendExtras(appLauncherIntent, title, content, appIdToLaunch, alarmMillis, false);
-
-        Intent deleteIntent = new Intent();
-        deleteIntent = appendExtras(deleteIntent, title, content, appIdToLaunch, alarmMillis, true);
+    private static Notification createNotification(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis, String alarmType) {
+        Intent appLauncherIntent = createOnClickIntent(context, title, content, appIdToLaunch, alarmMillis, false);
+        Intent deleteIntent = createOnClickIntent(context, title, content, appIdToLaunch, alarmMillis, true);
 
         final int CONTENT_INTENT_PREFIX = 16;// make requestCode unique
         final int DELETE_INTENT_PREFIX = 32; // make requestCode unique
 
-        PendingIntent contentIntent = PendingIntent.getActivity(context, CONTENT_INTENT_PREFIX + alarmId, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        PendingIntent deletePendingIntent = PendingIntent.getActivity(context, DELETE_INTENT_PREFIX + alarmId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getBroadcast(context, CONTENT_INTENT_PREFIX + alarmId, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, DELETE_INTENT_PREFIX + alarmId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentIntent(contentIntent);
         builder.setContentTitle(title)
@@ -91,8 +89,12 @@ public class AlarmHelper {
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
-                .setShowWhen(true)
-                .setSmallIcon(android.R.drawable.ic_popup_reminder);
+                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setShowWhen(true);
+
+        if (alarmType.equals("sleep")) {
+            builder.setSmallIcon(R.drawable.end_of_day_reminder);
+        }
 
         return builder.build();
     }

@@ -24,6 +24,7 @@ import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
+import static android.R.transition.move;
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 /**
@@ -116,10 +117,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
 
-//        if (Store.getBoolean(context, Store.IS_FIRST_TIME_GEN_REMINDER)) {
-//            cal.add(Calendar.DAY_OF_MONTH, 1);
-//            Store.setBoolean(context, Store.IS_FIRST_TIME_GEN_REMINDER, false);
-//        }
+        // first reminder during onboarding should start next day
+        if (!Store.getBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET)) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Store.setBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET, false);
+        }
 
         int endHour = Integer.parseInt(window[1]);
         int diffInMinutes = (endHour - startHour) * 60;
@@ -132,8 +134,31 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         String key = todayIsWeekend() ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
         long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
         sleepTimeInMillis = toValidSleepTime(sleepTimeInMillis);
+        sleepTimeInMillis = adjustFirstEverReminder(context, sleepTimeInMillis);
         long millisBeforeSleep = DateHelper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
         return sleepTimeInMillis - millisBeforeSleep;
+    }
+
+    private static long adjustFirstEverReminder(Context context, long sleepTimeInMillis) {
+        if (Store.getBoolean(context, Store.FIRST_EVER_BED_REMINDER_SET)) return sleepTimeInMillis;
+        Store.setBoolean(context, Store.FIRST_EVER_BED_REMINDER_SET, false);
+
+        Calendar bedCal = Calendar.getInstance();
+        bedCal.setTimeInMillis(sleepTimeInMillis);
+
+        Calendar nextDayMidnight = Calendar.getInstance();
+        nextDayMidnight.add(Calendar.DAY_OF_MONTH, 1);
+        nextDayMidnight.set(Calendar.HOUR, 0);
+        nextDayMidnight.set(Calendar.MINUTE, 0);
+        nextDayMidnight.set(Calendar.SECOND, 0);
+
+        // if first bed time reminder will happen today, before 11:59PM then move bed reminder to tomorrow.
+        if (bedCal.before(nextDayMidnight)) {
+            bedCal.add(Calendar.DAY_OF_MONTH, 1);
+            sleepTimeInMillis = bedCal.getTimeInMillis();
+        }
+
+        return sleepTimeInMillis;
     }
 
     private static Calendar toMillisToday(long timeInMillis) {
@@ -149,7 +174,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private static long toValidSleepTime(long sleepTimeInMillis) {
         Calendar todaySleepTime = toMillisToday(sleepTimeInMillis);
         Calendar now = Calendar.getInstance();
-//        if (todaySleepTime.before(now)) todaySleepTime.add(Calendar.DAY_OF_MONTH, 1);
+        if (todaySleepTime.before(now)) todaySleepTime.add(Calendar.DAY_OF_MONTH, 1);
         return todaySleepTime.getTimeInMillis();
     }
 
