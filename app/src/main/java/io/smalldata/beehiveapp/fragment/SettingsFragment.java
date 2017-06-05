@@ -87,10 +87,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (!isTodayPrefUpdate(prefKey)) return;
         generateAndStoreReminders(context);
         JSONObject allReminders = getCurrentReminders(context);
-        long bedTimeAlarmMillis = allReminders.optLong("bedtime_reminder");
         long dailyAlarmMillis = allReminders.optLong("daily_reminder");
-        dailyReminder.setReminderBeforeBedTime(bedTimeAlarmMillis, true);
+        long bedTimeAlarmMillis = allReminders.optLong("bedtime_reminder");
         dailyReminder.setTodayReminder(dailyAlarmMillis, true);
+        dailyReminder.setReminderBeforeBedTime(bedTimeAlarmMillis, true);
     }
 
     private boolean isTodayPrefUpdate(String prefKey) {
@@ -116,6 +116,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
 
+//        if (Store.getBoolean(context, Store.IS_FIRST_TIME_GEN_REMINDER)) {
+//            cal.add(Calendar.DAY_OF_MONTH, 1);
+//            Store.setBoolean(context, Store.IS_FIRST_TIME_GEN_REMINDER, false);
+//        }
+
         int endHour = Integer.parseInt(window[1]);
         int diffInMinutes = (endHour - startHour) * 60;
         long millisFromStart = DateHelper.getRandomInt(0, diffInMinutes) * 60 * 1000;
@@ -126,17 +131,26 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         int hoursBeforeSleep = getHoursBeforeSleep(context);
         String key = todayIsWeekend() ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
         long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
-        sleepTimeInMillis = extendToNextDayIfNeeded(sleepTimeInMillis);
+        sleepTimeInMillis = toValidSleepTime(sleepTimeInMillis);
         long millisBeforeSleep = DateHelper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
         return sleepTimeInMillis - millisBeforeSleep;
     }
 
-    private static long extendToNextDayIfNeeded(long sleepTimeInMillis) {
-        Calendar sleepTime = Calendar.getInstance();
-        sleepTime.setTimeInMillis(sleepTimeInMillis);
+    private static Calendar toMillisToday(long timeInMillis) {
+        Calendar given = Calendar.getInstance();
+        given.setTimeInMillis(timeInMillis);
+        Calendar today = Calendar.getInstance();
+        given.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+        given.set(Calendar.MONTH, today.get(Calendar.MONTH));
+        given.set(Calendar.YEAR, today.get(Calendar.YEAR));
+        return given;
+    }
+
+    private static long toValidSleepTime(long sleepTimeInMillis) {
+        Calendar todaySleepTime = toMillisToday(sleepTimeInMillis);
         Calendar now = Calendar.getInstance();
-        if (sleepTime.before(now)) sleepTime.add(Calendar.DAY_OF_MONTH, 1);
-        return sleepTime.getTimeInMillis();
+//        if (todaySleepTime.before(now)) todaySleepTime.add(Calendar.DAY_OF_MONTH, 1);
+        return todaySleepTime.getTimeInMillis();
     }
 
     private static int getHoursBeforeSleep(Context context) {

@@ -18,10 +18,12 @@
         android:title="Weekday Schedule">
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekday_wakeup_time_pref"
+            android:defaultValue="204000000"
             android:title="Wakeup Time" />
 
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekday_sleep_time_pref"
+            android:defaultValue="204000000"
             android:title="Sleep Time" />
 
         <ListPreference
@@ -37,10 +39,12 @@
         android:title="Weekend Schedule">
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekend_wakeup_time_pref"
+            android:defaultValue="204000000"
             android:title="Wakeup Time" />
 
         <io.smalldata.beehiveapp.main.TimePreference
             android:key="weekend_sleep_time_pref"
+            android:defaultValue="204000000"
             android:title="Sleep Time" />
 
         <ListPreference

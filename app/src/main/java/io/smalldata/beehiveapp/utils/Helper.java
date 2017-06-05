@@ -10,10 +10,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,9 +21,7 @@ import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.main.NotificationPublisher;
-
-import static android.R.attr.max;
+import io.smalldata.beehiveapp.main.SingleAlarmReceiver;
 
 /**
  * Helper.java
@@ -72,10 +66,10 @@ public class Helper {
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
-        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
+        Intent notificationIntent = new Intent(context, SingleAlarmReceiver.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, alarmId);
+        notificationIntent.putExtra(SingleAlarmReceiver.NOTIFICATION, notification);
+        notificationIntent.putExtra(SingleAlarmReceiver.NOTIFICATION_ID, alarmId);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

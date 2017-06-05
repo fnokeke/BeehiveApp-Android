@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.main.NotificationPublisher;
+import io.smalldata.beehiveapp.main.SingleAlarmReceiver;
 
 /**
  * Helper.java
@@ -46,12 +46,19 @@ public class AlarmHelper {
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis) {
-        Intent notificationIntent = new Intent(context, NotificationPublisher.class);
-        Notification notification = createNotification(context, title, content, appIdToLaunch, alarmMillis);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, alarmId);
+        Intent singleIntent = new Intent(context, SingleAlarmReceiver.class);
+        Notification notification = createNotification(context, alarmId, title, content, appIdToLaunch, alarmMillis);
+        singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION, notification);
+        singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION_ID, alarmId);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        singleIntent.putExtra("alarmId", alarmId);
+        singleIntent.putExtra(ALARM_NOTIF_TITLE, title);
+        singleIntent.putExtra(ALARM_NOTIF_CONTENT, content);
+        singleIntent.putExtra(ALARM_APP_ID, appIdToLaunch);
+        singleIntent.putExtra(ALARM_MILLIS_SET, alarmMillis); // FIXME: 6/5/17 debug code
+
+        final int PENDING_INTENT_PREFIX = 64; // make requestCode unique
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, PENDING_INTENT_PREFIX + alarmId, singleIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmMillis, pendingIntent);
     }
@@ -62,18 +69,21 @@ public class AlarmHelper {
         intent.putExtra(ALARM_APP_ID, appIdToLaunch);
         intent.putExtra(ALARM_MILLIS_SET, alarmMillis);
         intent.putExtra(ALARM_NOTIF_WAS_DISMISSED, wasDismissed);
-       return intent;
+        return intent;
     }
 
-    private static Notification createNotification(Context context, String title, String content, String appIdToLaunch, long alarmMillis) {
+    private static Notification createNotification(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis) {
         Intent appLauncherIntent = new Intent(context, MainActivity.class);
         appLauncherIntent = appendExtras(appLauncherIntent, title, content, appIdToLaunch, alarmMillis, false);
 
         Intent deleteIntent = new Intent();
         deleteIntent = appendExtras(deleteIntent, title, content, appIdToLaunch, alarmMillis, true);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 1, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        PendingIntent deletePendingIntent = PendingIntent.getActivity(context, 99, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        final int CONTENT_INTENT_PREFIX = 16;// make requestCode unique
+        final int DELETE_INTENT_PREFIX = 32; // make requestCode unique
+
+        PendingIntent contentIntent = PendingIntent.getActivity(context, CONTENT_INTENT_PREFIX + alarmId, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent deletePendingIntent = PendingIntent.getActivity(context, DELETE_INTENT_PREFIX + alarmId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentIntent(contentIntent);
         builder.setContentTitle(title)
@@ -82,8 +92,6 @@ public class AlarmHelper {
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
                 .setShowWhen(true)
-//                .addAction(android.R.drawable.ic_input_add, "Ok, do now.", contentIntent) // #0
-//                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Remove!", dismissIntent) // #2
                 .setSmallIcon(android.R.drawable.ic_popup_reminder);
 
         return builder.build();

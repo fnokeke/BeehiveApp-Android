@@ -24,7 +24,7 @@ public class DailyReminder {
     }
 
     private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
-        String title = alreadySeenAlarm(lastSetAlarm) ? "Tip: Ignored, already seen. " : "Upcoming Reminder";
+        String title = alreadySeenAlarm(lastSetAlarm) ? "Tip: Ignored, already seen. " : "Upcoming " + notifType.toUpperCase();
         String content = String.format("(%s) / (%s)", DateHelper.millisToDateFormat(lastSetAlarm), DateHelper.millisToDateFormat(alarmMillis));
         title = String.format("*%s* - %s", notifType, title);
         final int INSTANT_NOTIF_ID_DAILY = 7777;
@@ -42,7 +42,7 @@ public class DailyReminder {
         final String title = "How was your day?";
         final String content = "Tap here to respond.";
         final String appId = Store.PAM_ID;
-        final int BED_TIME_ALARM_ID = 5500;
+        final int BED_TIME_ALARM_ID = 8880;
         AlarmHelper.scheduleSingleAlarm(mContext, BED_TIME_ALARM_ID, title, content, appId, bedTimeInMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_BEDTIME_REMINDER, bedTimeInMillis);
     }
@@ -54,8 +54,8 @@ public class DailyReminder {
         if (alreadySeenAlarm(lastSetAlarm)) return;
 
         JSONObject notif = Intervention.getNotifDetails(mContext);
-        final int DAILY_INTV_ALARM_ID = 7700;
-        AlarmHelper.scheduleSingleAlarm(mContext, DAILY_INTV_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
+        final int DAILY_REMINDER_ALARM_ID = 7700;
+        AlarmHelper.scheduleSingleAlarm(mContext, DAILY_REMINDER_ALARM_ID, notif.optString("title"), notif.optString("content"), notif.optString("app_id"), alarmMillis);
         Store.setLong(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER, alarmMillis);
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
         Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());

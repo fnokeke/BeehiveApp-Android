@@ -37,8 +37,8 @@ public class AutoUpdateAlarm extends BroadcastReceiver {
         } else {
             title = "Same: ";
         }
-        title = String.format(Locale.getDefault(), "%s: %s/%s", title, lastReminderStr, todayStr);
-        AlarmHelper.showInstantNotif(context, title, DateHelper.getFormattedTimestamp() + " onRecv()", "", 3434); // FIXME: 5/31/17 remove debug code
+//        title = String.format(Locale.getDefault(), "%s: %s/%s", title, lastReminderStr, todayStr);
+//        AlarmHelper.showInstantNotif(context, title, DateHelper.getFormattedTimestamp() + " onRecv()", "", 3434); // FIXME: 5/31/17 remove debug code
         Intervention.prepareTodayIntervention(context);
     }
 

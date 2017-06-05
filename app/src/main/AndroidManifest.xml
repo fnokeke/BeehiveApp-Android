@@ -37,8 +37,7 @@
         </activity>
 
         <receiver
-            android:name=".main.NotificationPublisher"
-            android:process=":remote" />
+            android:name=".main.SingleAlarmReceiver" android:process=":singleReceiver" />
 
         <receiver android:name=".main.StartMyServiceAtBootReceiver">
             android:enabled="false">
@@ -63,13 +62,13 @@
         </service>
 
         <receiver
-            android:process=":remote"
+            android:process=":autoReceiver"
             android:name=".main.AutoUpdateAlarm" />
 
         <service
             android:name=".main.AutoUpdateAlarmService"
             android:enabled="true"
-            android:process=":autoUpdateAlarm" >
+            android:process=":autoService" >
         </service>
 
     </application>
