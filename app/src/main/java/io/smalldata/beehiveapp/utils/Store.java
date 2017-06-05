@@ -48,6 +48,8 @@ public class Store {
     public static final String LAST_SCHEDULED_DAILY_REMINDER = "lastDailyReminder";
     public final static String LAST_SCHEDULED_BEDTIME_REMINDER = "lastBedTimeReminder";
     public final static String PAM_ID = "io.smalldatalab.android.pam";
+    public static final String GEN_DAILY_REMINDER = "genDailyReminder";
+    public static final String GEN_BEDTIME_REMINDER = "genBedTimeReminder";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

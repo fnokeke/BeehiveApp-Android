@@ -59,9 +59,6 @@ public class DailyReminder {
         Store.setLong(mContext, Store.LAST_SCHEDULED_DAILY_REMINDER, alarmMillis);
         Store.setString(mContext, Store.LAST_CHECKED_INTV_DATE, DateHelper.getTodayDateStr());
         Store.setString(mContext, Store.LAST_REMINDER_DATE, DateHelper.getTodayDateStr());
-
-        String lastReminderStr = Store.getString(mContext, Store.LAST_REMINDER_DATE);
-        AlarmHelper.showInstantNotif(mContext, "lastReminderStr: " + lastReminderStr, "Done at: " + DateHelper.getFormattedTimestamp(), "", 9911);
     }
 
     private boolean alreadySeenAlarm(long alarmMillis) {
