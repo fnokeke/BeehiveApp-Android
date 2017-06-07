@@ -139,4 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 // TODO: 5/25/17 move all raw strings to strings.xml
 // TODO: 5/25/17 click on notif to go to settings 
 // TODO: 5/25/17 do not disable window time in order to accommodate for days where researcher does not want to fire any autoUpdateAlarm
+// TODO: 6/6/17 add: Participant since date
+
 

@@ -24,7 +24,6 @@ import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static android.R.transition.move;
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 /**
@@ -98,12 +97,12 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return todayIsWeekend() ? prefKey.contains("weekend") : prefKey.contains("weekday");
     }
 
-    private static boolean notReadyToGenerate(Context context) {
+    private static boolean userNotSelectedWindowTime(Context context) {
         return getSelectedWindowTime(context).equals("");
     }
 
     public static void generateAndStoreReminders(Context context) {
-        if (notReadyToGenerate(context)) return;
+        if (userNotSelectedWindowTime(context)) return;
         Store.setLong(context, Store.GEN_DAILY_REMINDER, generateDailyReminder(context));
         Store.setLong(context, Store.GEN_BEDTIME_REMINDER, generateBedTimeReminder(context));
     }
@@ -116,13 +115,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         cal.set(Calendar.HOUR_OF_DAY, startHour);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-
-        // first reminder during onboarding should start next day
-        if (!Store.getBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET)) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            Store.setBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET, false);
-        }
-
+//        cal = adjustForOnBoardingDailyReminder(context, cal); // FIXME: 6/7/17 remove
+        
         int endHour = Integer.parseInt(window[1]);
         int diffInMinutes = (endHour - startHour) * 60;
         long millisFromStart = DateHelper.getRandomInt(0, diffInMinutes) * 60 * 1000;
@@ -134,14 +128,24 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         String key = todayIsWeekend() ? "weekend_sleep_time_pref" : "weekday_sleep_time_pref";
         long sleepTimeInMillis = getDefaultSharedPreferences(context).getLong(key, 0);
         sleepTimeInMillis = toValidSleepTime(sleepTimeInMillis);
-        sleepTimeInMillis = adjustFirstEverReminder(context, sleepTimeInMillis);
+//        sleepTimeInMillis = adjustForOnBoardingBedTimeReminder(context, sleepTimeInMillis); // FIXME: 6/7/17 remove
         long millisBeforeSleep = DateHelper.getRandomInt(0, hoursBeforeSleep * 60) * 60 * 1000;
         return sleepTimeInMillis - millisBeforeSleep;
     }
 
-    private static long adjustFirstEverReminder(Context context, long sleepTimeInMillis) {
+    // first reminder during on-boarding should start next day
+    private static Calendar adjustForOnBoardingDailyReminder(Context context, Calendar cal) {
+        if (!Store.getBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET)) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Store.setBoolean(context, Store.FIRST_EVER_DAILY_REMINDER_SET, true);
+        }
+        return cal;
+    }
+
+
+    private static long adjustForOnBoardingBedTimeReminder(Context context, long sleepTimeInMillis) {
         if (Store.getBoolean(context, Store.FIRST_EVER_BED_REMINDER_SET)) return sleepTimeInMillis;
-        Store.setBoolean(context, Store.FIRST_EVER_BED_REMINDER_SET, false);
+        Store.setBoolean(context, Store.FIRST_EVER_BED_REMINDER_SET, true);
 
         Calendar bedCal = Calendar.getInstance();
         bedCal.setTimeInMillis(sleepTimeInMillis);

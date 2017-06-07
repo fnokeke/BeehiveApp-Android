@@ -26,11 +26,15 @@ public class DailyReminder {
     private void showAlarmTip(long alarmMillis, long lastSetAlarm, String notifType) {
         String title = alreadySeenAlarm(lastSetAlarm) ? "Tip: Ignored, already seen. " : "Upcoming " + notifType.toUpperCase();
         String content = String.format("(%s) / (%s)", DateHelper.millisToDateFormat(lastSetAlarm), DateHelper.millisToDateFormat(alarmMillis));
-        title = String.format("*%s* - %s", notifType, title);
+        title = String.format("*%s* - %s", notifType, title); // FIXME: 6/7/17 redundant code
         final int INSTANT_NOTIF_ID_DAILY = 7777;
         final int INSTANT_NOTIF_ID_SLEEP = 5555;
         final int notifId = notifType.equals("daily") ? INSTANT_NOTIF_ID_DAILY : INSTANT_NOTIF_ID_SLEEP;
-        AlarmHelper.showInstantNotif(mContext, title, content, "", notifId);
+        if (!alreadySeenAlarm(lastSetAlarm)) {
+            title = String.format("Upcoming %s Reminder", notifType.toUpperCase());
+            content = String.format("At: %s", DateHelper.millisToDateFormat(alarmMillis));
+            AlarmHelper.showInstantNotif(mContext, title, content, "", notifId);
+        }
     }
 
     public void setReminderBeforeBedTime(long bedTimeInMillis, boolean shouldShowTip) {

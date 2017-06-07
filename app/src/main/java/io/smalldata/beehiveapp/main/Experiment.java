@@ -112,4 +112,9 @@ public class Experiment {
         Store.setBoolean(mContext, Store.CAN_SHOW_SETTINGS, status);
     }
 
+    public static boolean userAlreadyConnected(Context context) {
+        JSONObject userInfo = Experiment.getUserInfo(context);
+        return !userInfo.optString("email").equals("");
+    }
+
 }

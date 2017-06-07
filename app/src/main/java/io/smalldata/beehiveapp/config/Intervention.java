@@ -87,7 +87,8 @@ public class Intervention extends BaseConfig {
         }
 
         if (i == interventions.length()) {
-            AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked: " + DateHelper.getFormattedTimestamp(), "", 3993);
+            Log.i(TAG, "prepareTodayIntervention: No intervention today");
+//            AlarmHelper.showInstantNotif(context, "No intervention matched.", "Checked: " + DateHelper.getFormattedTimestamp(), "", 3993);
         }
 
         if (Store.getString(context, "iTreatmentImage").equals("")) {

@@ -30,14 +30,28 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.welcome);
-        setResources();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Experiment.userAlreadyConnected(mContext)) {
+            startActivity(new Intent(mContext, MainActivity.class));
+        } else {
+            setContentView(R.layout.welcome);
+            setResources();
+        }
     }
 
     private void setResources() {
         tvContinueResponse = (TextView) findViewById(R.id.tv_continue_response);
         etWelcomeEmail = (EditText) findViewById(R.id.et_welcome_email);
         etWelcomeCode = (EditText) findViewById(R.id.et_welcome_code);
+
+        JSONObject userInfo = Experiment.getUserInfo(mContext);
+        etWelcomeEmail.setText(userInfo.optString("email"));
+        etWelcomeCode.setText(userInfo.optString("code"));
+
         btnContinue = (Button) findViewById(R.id.btn_welcome_continue);
         btnContinue.setOnClickListener(btnContinueHandler);
     }
