@@ -18,10 +18,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import io.fabric.sdk.android.Fabric;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        Fabric.with(this, new Crashlytics());
+
         FirebaseMessaging.getInstance().subscribeToTopic("news");
 
         setContentView(R.layout.activity_main);
@@ -61,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         transaction.replace(R.id.content_frame, new ConnectFragment()).commit();
 
         mTV = (TextView) findViewById(R.id.tv_timeout_prompt);
-
     }
 
     @Override

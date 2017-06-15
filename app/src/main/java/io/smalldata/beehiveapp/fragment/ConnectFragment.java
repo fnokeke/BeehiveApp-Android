@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -140,6 +141,11 @@ public class ConnectFragment extends Fragment {
         Display.clear(howToConnTV);
         JSONObject userInfo = getFormInput();
         new ConnectBeehiveHelper(mContext, formTitleTV).connectToBeehive(userInfo);
+        logCrashAnalyticsUser(userInfo);
+    }
+
+    private void logCrashAnalyticsUser(JSONObject userInfo) {
+        Crashlytics.setUserIdentifier(userInfo.optString("email"));
     }
 
 
