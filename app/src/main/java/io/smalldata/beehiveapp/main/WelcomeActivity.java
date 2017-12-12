@@ -67,7 +67,6 @@ public class WelcomeActivity extends AppCompatActivity {
             if (canContinue) {
                 ConnectBeehiveHelper connectBeehiveHelper = new ConnectBeehiveHelper(mContext, tvContinueResponse);
                 connectBeehiveHelper.fetchStudyUsingCode(etWelcomeCode.getText().toString().trim().toLowerCase());
-//                startActivity(new Intent(mContext, MainActivity.class));
             }
         }
     };

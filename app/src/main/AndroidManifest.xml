@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
 
     <application
@@ -39,45 +39,79 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".main.SingleAlarmReceiver" android:process=":singleReceiver" />
+        <activity android:name=".login.LoginActivity">
+            <intent-filter android:label="Beehive Login">
+                <action android:name="android.intent.action.VIEW" />
 
-        <receiver android:name=".main.StartMyServiceAtBootReceiver">
-            android:enabled="false">
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "beehive://androidlogin" -->
+                <data
+                    android:host="androidlogin"
+                    android:scheme="beehive" />
+            </intent-filter>
+            <intent-filter android:label="Beehive Login">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "http://slm.smalldata.io/beehive-android-login” -->
+                <data
+                    android:host="slm.smalldata.io"
+                    android:pathPrefix="/beehive-android-login"
+                    android:scheme="http" />
+            </intent-filter>
+            <intent-filter android:label="Beehive Login">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "https://slm.smalldata.io/beehive-android-login” -->
+                <data
+                    android:host="slm.smalldata.io"
+                    android:pathPrefix="/beehive-android-login"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".login.BeginStudy" />
+
+        <receiver
+            android:name=".main.SingleAlarmReceiver"
+            android:process=":singleReceiver" />
+
+        <receiver android:name=".main.StartMyServiceAtBootReceiver" android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".main.BeehiveFirebaseMessagingService">
+        <service android:name=".main.BeehiveFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".main.BeehiveFirebaseInstanceIDService">
+        <service android:name=".main.BeehiveFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
         <receiver
-            android:process=":autoReceiver"
-            android:name=".main.AutoUpdateAlarm" />
+            android:name=".main.AutoUpdateAlarm"
+            android:process=":autoReceiver" />
 
         <service
             android:name=".main.AutoUpdateAlarmService"
             android:enabled="true"
-            android:process=":autoService" >
-        </service>
+            android:process=":autoService" />
 
         <receiver
             android:name=".main.NotifClickORDismissReceiver"
-            android:exported="false" >
-        </receiver>
+            android:exported="false" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

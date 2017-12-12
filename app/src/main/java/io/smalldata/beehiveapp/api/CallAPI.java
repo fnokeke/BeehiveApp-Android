@@ -20,8 +20,8 @@ import io.smalldata.beehiveapp.utils.Network;
 
 public class CallAPI {
 
-        final static private String BASE_URL = "http://10.0.2.2:5000";
-//    final static private String BASE_URL = "http://slm.smalldata.io";
+//        final static private String BASE_URL = "http://10.0.2.2:5000";
+    final static private String BASE_URL = "http://slm.smalldata.io";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
     final static private String CAL_CHECK_CONN_URL = BASE_URL + "/mobile/check/calendar";
     final static private String FETCH_STUDY_URL = BASE_URL + "/mobile/fetchstudy";
@@ -29,6 +29,8 @@ public class CallAPI {
     final static private String RT_ACTIVITY_URL = BASE_URL + "/rescuetime/realtime";
     final static private String NOTIF_CLICKED_STATS = BASE_URL + "/mobile/add/notif-clicked-stats";
     final static private String CAL_EVENTS_URL = BASE_URL + "/mobile/calendar/events";
+    final static public String GOOGLE_LOGIN_NO_OHMAGE_URL = CallAPI.BASE_URL + "/android_google_login_participant";
+    final static public String GOOGLE_LOGIN_THEN_OHMAGE_URL = CallAPI.BASE_URL + "/android_google_login_participant";
 
 
     private static JsonObjectRequest createRequest(final String url, final JSONObject params, final VolleyJsonCallback callback) {
