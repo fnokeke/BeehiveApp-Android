@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
+import io.smalldata.beehiveapp.main.MainActivity;
 
 public class LoginActivity extends Activity {
 
@@ -38,7 +39,7 @@ public class LoginActivity extends Activity {
             if (dataParts.length > 1) {
                 username = dataParts[1];
             }
-            Intent beginStudyIntent = new Intent(getBaseContext(), BeginStudy.class);
+            Intent beginStudyIntent = new Intent(getBaseContext(), MainActivity.class);
             beginStudyIntent.putExtra("username", username);
             startActivity(beginStudyIntent);
         }
@@ -57,16 +58,6 @@ public class LoginActivity extends Activity {
             private void openGoogleLoginURL() {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_NO_OHMAGE_URL));
                 startActivity(browserIntent);
-            }
-        });
-
-        Button btnUserId = (Button) findViewById(R.id.btn_user_id);
-        btnUserId.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText etUserId = (EditText) findViewById(R.id.et_user_id);
-                String userId = etUserId.getText().toString().trim().toLowerCase();
-                Log.d(TAG, "UserId: " + userId);
             }
         });
 
