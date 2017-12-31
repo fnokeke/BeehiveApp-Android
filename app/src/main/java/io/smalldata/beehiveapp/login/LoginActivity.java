@@ -1,21 +1,25 @@
 package io.smalldata.beehiveapp.login;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+
+import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.main.MainActivity;
+import io.smalldata.beehiveapp.main.Profile;
+import io.smalldata.beehiveapp.utils.JsonHelper;
 
 public class LoginActivity extends Activity {
 
-    private static final String TAG = "LoginActivity";
+    Context mContext;
+    Profile mProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,39 +31,43 @@ public class LoginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        readIntent();
+        completeGoogleLoginIfOngoing();
     }
 
-    private void readIntent() {
+    private void completeGoogleLoginIfOngoing() {
         Intent intent = getIntent();
         Uri data = intent.getData();
         if (data != null) {
             String[] dataParts = data.toString().split("=");
-            String username = "Not Signed In";
             if (dataParts.length > 1) {
-                username = dataParts[1];
+                JSONObject user = JsonHelper.strToJsonObject(dataParts[1]);
+                mProfile.saveFirstname(user.optString("firstname"));
+                mProfile.saveUsername(user.optString("email"));
+                onboardUserTimePref();
             }
-            Intent beginStudyIntent = new Intent(getBaseContext(), MainActivity.class);
-            beginStudyIntent.putExtra("username", username);
-            startActivity(beginStudyIntent);
         }
 
     }
 
-    private void setResources() {
+    private void onboardUserTimePref() {
+        Intent beginStudyIntent = new Intent(getBaseContext(), MainActivity.class);
+        startActivity(beginStudyIntent);
+    }
 
+    private void setResources() {
+        mContext = this;
+        mProfile = new Profile(mContext);
         Button btnGoogleLogin = (Button) findViewById(R.id.btn_google_login);
         btnGoogleLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openGoogleLoginURL();
             }
-
-            private void openGoogleLoginURL() {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_NO_OHMAGE_URL));
-                startActivity(browserIntent);
-            }
         });
+    }
 
+    private void openGoogleLoginURL() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_NO_OHMAGE_URL));
+        startActivity(browserIntent);
     }
 }

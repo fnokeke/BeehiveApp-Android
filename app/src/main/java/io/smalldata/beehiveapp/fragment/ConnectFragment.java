@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.crashlytics.android.Crashlytics;
+//import com.crashlytics.android.Crashlytics; fixme: remove comment
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.ConnectBeehiveHelper;
+import io.smalldata.beehiveapp.utils.ConnectBeehive;
 import io.smalldata.beehiveapp.utils.Constants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.JsonHelper;
@@ -140,12 +140,12 @@ public class ConnectFragment extends Fragment {
 
         Display.clear(howToConnTV);
         JSONObject userInfo = getFormInput();
-        new ConnectBeehiveHelper(mContext, formTitleTV).connectToBeehive(userInfo);
+        new ConnectBeehive(mContext, formTitleTV).connectToBeehive(userInfo);
         logCrashAnalyticsUser(userInfo);
     }
 
     private void logCrashAnalyticsUser(JSONObject userInfo) {
-        Crashlytics.setUserIdentifier(userInfo.optString("email"));
+//        Crashlytics.setUserIdentifier(userInfo.optString("email")); // FIXME: 12/17/17 remove comment
     }
 
 

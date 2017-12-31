@@ -16,37 +16,28 @@ import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.login.LoginActivity;
 import io.smalldata.beehiveapp.main.AutoUpdateAlarm;
 import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.main.Profile;
 
 /**
  * Help connect user to Beehive Researcher Study
  * Created by fnokeke on 5/18/17.
  */
 
-public class ConnectBeehiveHelper {
-    private final static String TAG = "ConnectBeehiveHelper";
+public class ConnectBeehive {
+    private final static String TAG = "ConnectBeehive";
     private Context mContext;
     private TextView tvFeedback;
     private Experiment experiment;
+    private Profile mProfile;
 
-    public ConnectBeehiveHelper(Context context, TextView feedback) {
+    public ConnectBeehive(Context context, TextView feedback) {
         mContext = context;
+        mProfile = new Profile(context);
         tvFeedback = feedback;
         experiment = new Experiment(context);
     }
 
-    public void connectToBeehive(JSONObject userInfo) {
-        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
-        JsonHelper.copy(fromPhoneDetails, userInfo);
-        Display.showBusy(mContext, "Transferring your bio...");
-        CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
-    }
-
     public void fetchStudyUsingCode(String code) {
-        if (!Network.isDeviceOnline(mContext)) {
-            Display.showError(tvFeedback, "No network connection.");
-            return;
-        }
-
         JSONObject data = new JSONObject();
         JsonHelper.setJSONValue(data, "code", code);
         Display.showBusy(mContext, "Verifying code...");
@@ -56,10 +47,10 @@ public class ConnectBeehiveHelper {
     private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
-            Log.i(TAG, "fetchStudySuccess: " + jsonResult.toString());
             Display.dismissBusy();
             Display.showSuccess(tvFeedback, "Successfully connected!");
-            mContext.startActivity(new Intent(mContext, LoginActivity.class));
+            mProfile.saveStudyConfig(jsonResult);
+            beginLoginProcess();
         }
 
         @Override
@@ -73,6 +64,21 @@ public class ConnectBeehiveHelper {
             }
         }
     };
+
+    private void beginLoginProcess() {
+        mContext.startActivity(new Intent(mContext, LoginActivity.class));
+    }
+
+
+
+
+    // TODO: 12/16/17 remove dead code (connectToBeehive)
+    public void connectToBeehive(JSONObject userInfo) {
+        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
+        JsonHelper.copy(fromPhoneDetails, userInfo);
+        Display.showBusy(mContext, "Transferring your bio...");
+        CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
+    }
 
     private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
         @Override

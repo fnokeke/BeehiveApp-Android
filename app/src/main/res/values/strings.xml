@@ -102,5 +102,7 @@
     <string name="welcome_no_network">No network connection...</string>
     <string name="welcome_valid_email_needed">Umm... valid email needed.</string>
     <string name="welcome_valid_code_needed">Errm... enter a valid code.</string>
+    <string name="weekday_instruction">On <i>weekdays (Mon - Fri)</i>, when do you typically sleep, wakeup? Indicate your most convenient notification window.</string>
+    <string name="weekend_instruction">On <i>weekends (Sat, Sun)</i>, when do you typically sleep, wakeup? Indicate your most convenient notification window.</string>
 
 </resources>

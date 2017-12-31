@@ -18,12 +18,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.crashlytics.android.Crashlytics;
-import com.google.firebase.messaging.FirebaseMessaging;
+//import com.crashlytics.android.Crashlytics; // FIXME: 12/17/17 remove comment
+//import com.google.firebase.messaging.FirebaseMessaging; // FIXME: 12/17/17 remove comment
 
 import org.json.JSONObject;
 
-import io.fabric.sdk.android.Fabric;
+//import io.fabric.sdk.android.Fabric; // FIXME: 12/17/17 remove comment
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        Fabric.with(this, new Crashlytics());
+//        Fabric.with(this, new Crashlytics()); // FIXME: 12/17/17 remove comment
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
