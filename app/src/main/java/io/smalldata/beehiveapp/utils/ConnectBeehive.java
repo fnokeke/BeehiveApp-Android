@@ -13,10 +13,10 @@ import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.login.LoginActivity;
+import io.smalldata.beehiveapp.onboarding.Step0BLoginUser;
 import io.smalldata.beehiveapp.main.AutoUpdateAlarm;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.main.Profile;
+import io.smalldata.beehiveapp.onboarding.Profile;
 
 /**
  * Help connect user to Beehive Researcher Study
@@ -66,7 +66,7 @@ public class ConnectBeehive {
     };
 
     private void beginLoginProcess() {
-        mContext.startActivity(new Intent(mContext, LoginActivity.class));
+        mContext.startActivity(new Intent(mContext, Step0BLoginUser.class));
     }
 
 
@@ -122,7 +122,7 @@ public class ConnectBeehive {
             Log.e("onConnectFailure: ", error.toString());
 
             Display.showError(tvFeedback, "Cannot submit your bio.");
-            String msg = String.format(Constants.LOCALE, "Error, submitting info. %s", error.toString());
+            String msg = String.format(OldConstants.LOCALE, "Error, submitting info. %s", error.toString());
             Display.showError(tvFeedback, msg);
             Display.dismissBusy();
             error.printStackTrace();

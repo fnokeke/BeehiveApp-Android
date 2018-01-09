@@ -1,0 +1,20 @@
+package io.smalldata.beehiveapp.onboarding;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import io.smalldata.beehiveapp.R;
+
+public class AboutApp extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_about_app);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        setTitle("About");
+    }
+}

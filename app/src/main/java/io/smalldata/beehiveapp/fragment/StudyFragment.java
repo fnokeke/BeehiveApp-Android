@@ -21,11 +21,7 @@ import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.Constants;
-import io.smalldata.beehiveapp.utils.Store;
-
-import static io.smalldata.beehiveapp.R.id.studyCodeTV;
-import static io.smalldata.beehiveapp.R.id.studyTitleTV;
+import io.smalldata.beehiveapp.utils.OldConstants;
 
 //import android.support.v4.app.Fragment;
 
@@ -37,7 +33,7 @@ import static io.smalldata.beehiveapp.R.id.studyTitleTV;
 public class StudyFragment extends Fragment {
     Context mContext;
     Activity mActivity;
-    Locale locale = Constants.LOCALE;
+    Locale locale = OldConstants.LOCALE;
 
     @Nullable
     @Override

@@ -20,7 +20,7 @@ import java.util.Locale;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.OldConstants;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.JsonHelper;
@@ -47,7 +47,7 @@ public class Rescuetime extends BaseConfig {
     private final static String DISTRACTED_MSG = "distracted_msg";
     private final static String SHOW_STATS = "show_stats";
 
-    private static Locale locale = Constants.LOCALE;
+    private static Locale locale = OldConstants.LOCALE;
 
 
     public Rescuetime(Context context) {

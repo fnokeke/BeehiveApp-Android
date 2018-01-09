@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.main;
+package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +12,12 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.main.AppInfo;
+import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.ConnectBeehive;
 import io.smalldata.beehiveapp.utils.Network;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class Step0AWelcomeStudyCode extends AppCompatActivity {
     Context mContext;
     Button btnContinue;
     TextView tvContinueResponse;
@@ -38,7 +40,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private boolean userIsLoggedIn() {
-        return Experiment.userAlreadyConnected(mContext);
+        return Profile.usernameExists(mContext);
     }
 
     private void showAppInfo() {
@@ -71,18 +73,18 @@ public class WelcomeActivity extends AppCompatActivity {
         String code = etWelcomeCode.getText().toString().trim();
         boolean canContinue = false;
 
-        if (isValidCode(code) && Network.isDeviceOnline(mContext)) {
+        if (isValidCodeEntered(code) && Network.isDeviceOnline(mContext)) {
             canContinue = true;
             tvFeedback.setText(R.string.welcome_connecting);
         } else if (!Network.isDeviceOnline(mContext)) {
             tvContinueResponse.setText(R.string.welcome_no_network);
-        } else if (!isValidCode(code)) {
+        } else if (!isValidCodeEntered(code)) {
             tvFeedback.setText(R.string.welcome_valid_code_needed);
         }
         return canContinue;
     }
 
-    private boolean isValidCode(String code) {
+    private boolean isValidCodeEntered(String code) {
         return !code.equals("");
     }
 

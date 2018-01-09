@@ -10,9 +10,12 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import org.json.JSONObject;
+
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.NotifClickORDismissReceiver;
-import io.smalldata.beehiveapp.main.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.onboarding.Constants;
 
 /**
  * AlarmHelper.java
@@ -48,8 +51,8 @@ public class AlarmHelper {
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis, String alarmType) {
         Intent singleIntent = new Intent(context, SingleAlarmReceiver.class);
         Notification notification = createNotification(context, alarmId, title, content, appIdToLaunch, alarmMillis, alarmType);
-        singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION, notification);
-        singleIntent.putExtra(SingleAlarmReceiver.NOTIFICATION_ID, alarmId);
+        singleIntent.putExtra(Constants.NOTIFICATION, notification);
+        singleIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
 
         singleIntent.putExtra("alarmId", alarmId);
         singleIntent.putExtra(ALARM_NOTIF_TITLE, title);

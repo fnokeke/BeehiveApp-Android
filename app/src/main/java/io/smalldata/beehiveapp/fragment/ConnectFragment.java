@@ -32,7 +32,7 @@ import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.utils.ConnectBeehive;
-import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.OldConstants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Network;
@@ -240,7 +240,7 @@ public class ConnectFragment extends Fragment {
     }
 
     public void handleConnErrors(VolleyError error, String app) {
-        String msg = String.format(Constants.LOCALE, "Error checking %s connectivity status. " +
+        String msg = String.format(OldConstants.LOCALE, "Error checking %s connectivity status. " +
                 "Please contact researcher. Error details: %s", app, error.toString());
         Display.showError(connResponseTV, msg);
         error.printStackTrace();

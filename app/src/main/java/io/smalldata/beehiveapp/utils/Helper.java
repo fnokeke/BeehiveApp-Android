@@ -22,7 +22,8 @@ import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.main.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.onboarding.Constants;
 
 /**
  * Helper.java
@@ -45,7 +46,7 @@ public class Helper {
     }
 
     public static Date getDatetimeGMT(String datetimeStr, String format) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.LOCALE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, OldConstants.LOCALE);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         Date result = new Date();
@@ -58,19 +59,19 @@ public class Helper {
     }
 
     public static String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(System.currentTimeMillis());
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", OldConstants.LOCALE).format(System.currentTimeMillis());
     }
 
     public static String millisToDateFormat(long timeInMillis) {
         if (timeInMillis <= 0) return "Zero.am";
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(timeInMillis);
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", OldConstants.LOCALE).format(timeInMillis);
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
         Intent notificationIntent = new Intent(context, SingleAlarmReceiver.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
-        notificationIntent.putExtra(SingleAlarmReceiver.NOTIFICATION, notification);
-        notificationIntent.putExtra(SingleAlarmReceiver.NOTIFICATION_ID, alarmId);
+        notificationIntent.putExtra(Constants.NOTIFICATION, notification);
+        notificationIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -125,12 +126,12 @@ public class Helper {
     }
 
     public static String dateToStr(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", OldConstants.LOCALE);
         return sdf.format(date);
     }
 
     public static Date strToDate(String dateStr) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", OldConstants.LOCALE);
         Date formattedDate = new Date();
         try {
             formattedDate = sdf.parse(dateStr);

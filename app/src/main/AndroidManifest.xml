@@ -18,9 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".main.WelcomeActivity"
+            android:name=".onboarding.Step0AWelcomeStudyCode"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter-->
+        </activity>
+
+
         <activity
             android:name=".main.MainActivity"
             android:label="@string/app_name"
@@ -29,17 +36,19 @@
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.LoginActivity">
+
+        <activity android:name=".onboarding.Step0BLoginUser">
+
             <intent-filter android:label="Beehive Login">
                 <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "beehive://androidlogin" -->
                 <data
                     android:host="androidlogin"
                     android:scheme="beehive" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
             <intent-filter android:label="Beehive Login">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -52,6 +61,7 @@
                     android:pathPrefix="/beehive-android-login"
                     android:scheme="http" />
             </intent-filter>
+
             <intent-filter android:label="Beehive Login">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -64,11 +74,13 @@
                     android:pathPrefix="/beehive-android-login"
                     android:scheme="https" />
             </intent-filter>
+
         </activity>
+
         <activity android:name=".login.BeginStudy" />
 
         <receiver
-            android:name=".main.SingleAlarmReceiver"
+            android:name=".notification.SingleAlarmReceiver"
             android:process=":singleReceiver" />
         <receiver
             android:name=".main.StartMyServiceAtBootReceiver"
@@ -107,24 +119,46 @@
             android:name="io.fabric.ApiKey"
             android:value="a89a2256d46d96dd8ec48a4fa61c26eba3db0baa" />
 
-        <activity android:name=".main.AppInfo" />
-        <activity android:name=".onboarding.WeekdayTime">
+        <activity android:name=".main.AppInfo"></activity>
 
-
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+        <activity android:name=".onboarding.Step1SleepWakeTime">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
+        <activity
+            android:name=".onboarding.Step2TimeWindow"
+            android:parentActivityName=".onboarding.Step1SleepWakeTime">
 
-        <activity android:name=".onboarding.WeekendTime"
-            android:parentActivityName=".onboarding.WeekdayTime" >
+            <!-- Accepts URIs that begin with "beehive://androidlogin" -->
+            <data
+                android:host="androidlogin"
+                android:scheme="beehive" />
         </activity>
+        <activity
+            android:name=".onboarding.Step3OnboardingCompleted"
+            android:parentActivityName=".onboarding.Step2TimeWindow" />
+
+        <receiver
+            android:name=".onboarding.DateChangeOrRebootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
         <activity
-            android:name=".onboarding.OnboardingCompleted"
-            android:parentActivityName=".onboarding.WeekendTime" />
+            android:name=".onboarding.AboutApp"
+            android:parentActivityName=".main.AppInfo">
+
+        </activity>
     </application>
 
 </manifest>

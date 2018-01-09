@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.login;
+package io.smalldata.beehiveapp.onboarding;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,10 +13,9 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.main.Profile;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 
-public class LoginActivity extends Activity {
+public class Step0BLoginUser extends Activity {
 
     Context mContext;
     Profile mProfile;
@@ -50,7 +49,7 @@ public class LoginActivity extends Activity {
     }
 
     private void onboardUserTimePref() {
-        Intent beginStudyIntent = new Intent(getBaseContext(), MainActivity.class);
+        Intent beginStudyIntent = new Intent(getBaseContext(), Step1SleepWakeTime.class);
         startActivity(beginStudyIntent);
     }
 

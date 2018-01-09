@@ -49,13 +49,6 @@
             android:layout_margin="10dp"
             android:layout_height="wrap_content" />
 
-        <!--<EditText-->
-            <!--android:id="@+id/et_welcome_email"-->
-            <!--android:hint="enter your email"-->
-            <!--android:textAlignment="center"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content" />-->
-
         <EditText
             android:id="@+id/et_welcome_code"
             android:hint="enter experiment code"

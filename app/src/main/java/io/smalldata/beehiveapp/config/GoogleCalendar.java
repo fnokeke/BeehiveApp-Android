@@ -18,7 +18,7 @@ import java.util.Locale;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.Constants;
+import io.smalldata.beehiveapp.utils.OldConstants;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -33,7 +33,7 @@ import static io.smalldata.beehiveapp.utils.Store.getString;
 
 public class GoogleCalendar extends BaseConfig {
     private Context mContext;
-    private final static Locale locale = Constants.LOCALE;
+    private final static Locale locale = OldConstants.LOCALE;
     private final static String STATS_CAL = "statsCal";
     private final static String EVENT_COUNT_LIMIT = "event_num_limit";
     private final static String EVENT_TIME_LIMIT = "event_time_limit";

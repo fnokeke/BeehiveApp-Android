@@ -29,10 +29,10 @@ public class DateHelper {
     }
 
     public static Date getDatetimeGMT(String datetimeStr, String format) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Constants.LOCALE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, OldConstants.LOCALE);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-        Date result = new Date();
+        Date result = null;
         try {
             result = dateFormat.parse(datetimeStr);
         } catch (ParseException pe) {
@@ -42,22 +42,22 @@ public class DateHelper {
     }
 
     public static String getFormattedTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(System.currentTimeMillis());
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", OldConstants.LOCALE).format(System.currentTimeMillis());
     }
 
     public static String millisToDateFormat(long timeInMillis) {
         if (timeInMillis <= 0) return "Zero.am";
-        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", Constants.LOCALE).format(timeInMillis);
+        return new SimpleDateFormat("yyyy-MM-dd h:mm:ss a", OldConstants.LOCALE).format(timeInMillis);
     }
 
     public static String dateToStr(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", OldConstants.LOCALE);
         return sdf.format(date);
     }
 
     public static Date strToDate(String dateStr) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Constants.LOCALE);
-        Date formattedDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", OldConstants.LOCALE);
+        Date formattedDate = null;
         try {
             formattedDate = sdf.parse(dateStr);
         } catch (ParseException e) {

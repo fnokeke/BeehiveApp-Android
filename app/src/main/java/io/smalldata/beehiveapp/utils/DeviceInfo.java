@@ -28,9 +28,9 @@ public class DeviceInfo {
     public static JSONObject getPhoneDetails(Context context) {
 
         long lastInstalledTimeMS = getLastInstalledTimeMilliSeconds(context);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Constants.LOCALE);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", OldConstants.LOCALE);
         String prettyLastInstalledTime = formatter.format(new Date(lastInstalledTimeMS));
-        String phoneModel = String.format(Constants.LOCALE, "%s %s", Build.MANUFACTURER, Build.MODEL);
+        String phoneModel = String.format(OldConstants.LOCALE, "%s %s", Build.MANUFACTURER, Build.MODEL);
         phoneModel = phoneModel.length() > 30 ? phoneModel.substring(0, 30) : phoneModel;
 
         JSONObject phoneDetails = new JSONObject();
