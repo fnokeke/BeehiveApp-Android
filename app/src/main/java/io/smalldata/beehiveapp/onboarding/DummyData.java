@@ -49,7 +49,7 @@ class DummyData {
                 "            \"probable_half_notify\": \"False\",\n" +
                 "            \"created_at\": \"2017-12-17 15:06:19.989863\",\n" +
                 "            \"exp_code\": \"mobile\",\n" +
-                "            \"notif_time\": \"3_hour\",\n" +
+                "            \"notif_time\": \"1_hour\",\n" +
                 "            \"frequency\": \"daily\",\n" +
                 "            \"start_date\": \"2017-12-20\",\n" +
                 "            \"notif_title\": \"Meditation Time\",\n" +

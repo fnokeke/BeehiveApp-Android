@@ -30,4 +30,7 @@ public class Constants {
     final static String KEY_LAST_SAVED_DATE = "keyLastSavedDate";
 
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
+
+//    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
+//    final static String NOTIF_TYPE_SLEEP_WAKE = "sleep_wake";
 }

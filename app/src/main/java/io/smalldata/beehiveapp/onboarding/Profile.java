@@ -191,7 +191,7 @@ public class Profile {
 
     private void extractThenScheduleNotif(JSONObject protocol) {
         JSONObject notif = new JSONObject();
-        JsonHelper.setJSONValue(notif, "alarm_Id", getNotifId(protocol));
+        JsonHelper.setJSONValue(notif, "alarmId", getNotifId(protocol));
         JsonHelper.setJSONValue(notif, "title", protocol.optString("notif_title"));
         JsonHelper.setJSONValue(notif, "content", protocol.optString("notif_content"));
         JsonHelper.setJSONValue(notif, "appIdToLaunch", protocol.optString("notif_appid"));

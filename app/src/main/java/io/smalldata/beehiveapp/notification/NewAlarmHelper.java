@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -40,15 +41,13 @@ public class NewAlarmHelper {
         singleIntent.putExtra(Constants.ALARM_APP_ID, notif.optString("appIdToLaunch"));
         singleIntent.putExtra(Constants.ALARM_MILLIS_SET, notif.optLong("alarmMillis")); // FIXME: 6/5/17 debug code
 
-        final int PENDING_INTENT_PREFIX = 64; // make requestCode unique
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, PENDING_INTENT_PREFIX + alarmId, singleIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmId, singleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             throw new UnsupportedOperationException("alarmManager should not be null");
         }
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, notif.optLong("alarmMillis"), pendingIntent);
-//        alarmManager.set(AlarmManager.RTC_WAKEUP,  new Date().getTime(), pendingIntent);
     }
 
     private static Notification createNewNotif(Context context, JSONObject notif) {
