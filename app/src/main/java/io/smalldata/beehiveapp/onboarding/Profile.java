@@ -328,6 +328,11 @@ public class Profile {
     void enableOverwriteTodayIntv() {
         Store.setString(mContext, Constants.KEY_LAST_SAVED_DATE, "");
     }
+
+    public void wipeAllData() {
+        Store.wipeAll(mContext);
+    }
+
 }
 
 // TODO: 1/3/18 implement halfNotify

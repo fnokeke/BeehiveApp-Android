@@ -44,7 +44,7 @@ public class ConnectBeehive {
         CallAPI.fetchStudy(mContext, data, fetchStudyResponseHandler);
     }
 
-    private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() {
+    private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() { 
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
             Display.dismissBusy();
@@ -61,6 +61,7 @@ public class ConnectBeehive {
                 Display.showError(tvFeedback, "You don't have network connection.");
             } else {
                 Display.showError(tvFeedback, "Uh oh...invalid code.");
+                // FIXME: 1/10/18 wrong study code should not land in onConnectFailure
             }
         }
     };

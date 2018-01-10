@@ -3,13 +3,11 @@ package io.smalldata.beehiveapp.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
@@ -60,6 +58,7 @@ public class AppInfo extends AppCompatActivity {
                 startActivity(new Intent(mContext, AboutApp.class));
                 break;
             case R.id.action_logout:
+                mProfile.wipeAllData();
                 startActivity(new Intent(mContext, Step0AWelcomeStudyCode.class));
                 break;
         }

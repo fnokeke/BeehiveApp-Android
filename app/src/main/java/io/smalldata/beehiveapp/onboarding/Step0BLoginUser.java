@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -37,11 +38,10 @@ public class Step0BLoginUser extends Activity {
         Intent intent = getIntent();
         Uri data = intent.getData();
         if (data != null) {
-            String[] dataParts = data.toString().split("=");
+            String[] dataParts = data.toString().split("\\?");
             if (dataParts.length > 1) {
-                JSONObject user = JsonHelper.strToJsonObject(dataParts[1]);
-                mProfile.saveFirstname(user.optString("firstname"));
-                mProfile.saveUsername(user.optString("email"));
+                mProfile.saveFirstname(dataParts[1]);
+                mProfile.saveUsername(dataParts[2]);
                 onboardUserTimePref();
             }
         }
@@ -49,8 +49,7 @@ public class Step0BLoginUser extends Activity {
     }
 
     private void onboardUserTimePref() {
-        Intent beginStudyIntent = new Intent(getBaseContext(), Step1SleepWakeTime.class);
-        startActivity(beginStudyIntent);
+        startActivity(new Intent(mContext, Step1SleepWakeTime.class));
     }
 
     private void setResources() {
