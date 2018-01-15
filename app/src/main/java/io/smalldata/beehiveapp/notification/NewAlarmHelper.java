@@ -8,17 +8,16 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.NotifClickORDismissReceiver;
 import io.smalldata.beehiveapp.onboarding.Constants;
-import io.smalldata.beehiveapp.utils.JsonHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
 
 /**
  * Created by fnokeke on 1/3/18.
@@ -26,6 +25,29 @@ import io.smalldata.beehiveapp.utils.JsonHelper;
  */
 
 public class NewAlarmHelper {
+
+    public static void startDaily4amTask(Context context) {
+        AlarmHelper.showInstantNotif(context, "Start 4am Task",
+                DateHelper.getFormattedTimestamp(), "", 7711); // FIXME: 1/15/18 remove debug
+
+        final int alarmId = Constants.DAILY_TASK_ALARM_ID;
+        Intent intent = new Intent(context, DailyTaskReceiver.class);
+        intent.putExtra("alarmId", alarmId);
+        intent.putExtra(Constants.NOTIFICATION_ID, alarmId);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pi = PendingIntent.getBroadcast(context, alarmId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar cal4am = Calendar.getInstance();
+        cal4am.set(Calendar.HOUR_OF_DAY, 4);
+        cal4am.set(Calendar.MINUTE, 0);
+        cal4am.set(Calendar.SECOND, 0);
+        cal4am.set(Calendar.MILLISECOND, 0);
+
+        if (am != null) {
+            am.setRepeating(AlarmManager.RTC_WAKEUP, cal4am.getTimeInMillis(),  AlarmManager.INTERVAL_DAY, pi);
+        }
+    }
 
     public static void scheduleIntvReminder(Context context, JSONObject notif) {
         Notification notification = createNewNotif(context, notif);

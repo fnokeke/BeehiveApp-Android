@@ -27,7 +27,12 @@ public class AppInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
+    }
+
+    @Override
+    protected void onResume() {
         setAppInfo();
+        super.onResume();
     }
 
     private void setAppInfo() {

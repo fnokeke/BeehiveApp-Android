@@ -1,7 +1,6 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +10,7 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -186,7 +186,12 @@ public class Profile {
                 extractThenScheduleNotif(p);
             }
         }
-        Toast.makeText(mContext, "Today intv applied.", Toast.LENGTH_SHORT).show();
+        AlarmHelper.showInstantNotif(mContext,
+                "Today Intv Applied",
+                "at: " + DateHelper.getFormattedTimestamp(),
+                "",
+                9063);
+//        Toast.makeText(mContext, "Today intv applied.", Toast.LENGTH_SHORT).show();
     }
 
     private void extractThenScheduleNotif(JSONObject protocol) {
@@ -217,7 +222,7 @@ public class Profile {
         return Store.getString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED);
     }
 
-    void resetSavedNotifForToday() {
+    void clearExistingAppInfoNotifText() {
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, "");
     }
 

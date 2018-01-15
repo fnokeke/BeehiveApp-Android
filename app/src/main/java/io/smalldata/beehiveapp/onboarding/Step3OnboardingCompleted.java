@@ -35,8 +35,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mProfile.enableOverwriteTodayIntv();
-                new TriggerIntervention(mContext).startIntvForToday();
+                TriggerIntervention.startDaily4amTask(mContext, true);
                 startActivity(new Intent(mContext, AppInfo.class));
             }
         });

@@ -18,7 +18,7 @@ public class SingleAlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) {
-            throw new  UnsupportedOperationException("Your notification manager should not be null");
+            throw new UnsupportedOperationException("Your notification manager should not be null");
         }
 
         Notification notification = intent.getParcelableExtra(Constants.NOTIFICATION);

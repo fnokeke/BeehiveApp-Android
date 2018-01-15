@@ -31,6 +31,8 @@ public class Constants {
 
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
 
+    public static final int DAILY_TASK_ALARM_ID = 9991;
+
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
 //    final static String NOTIF_TYPE_SLEEP_WAKE = "sleep_wake";
 }
