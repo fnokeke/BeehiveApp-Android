@@ -10,10 +10,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import org.json.JSONObject;
-
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.main.NotifClickORDismissReceiver;
+import io.smalldata.beehiveapp.notification.NotifClickORDismissReceiver;
 import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
 import io.smalldata.beehiveapp.onboarding.Constants;
 

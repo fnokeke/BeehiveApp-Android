@@ -106,7 +106,7 @@
             android:process=":autoService" />
 
         <receiver
-            android:name=".main.NotifClickORDismissReceiver"
+            android:name=".notification.NotifClickORDismissReceiver"
             android:exported="false" />
 
         <meta-data
@@ -114,7 +114,7 @@
             android:value="a89a2256d46d96dd8ec48a4fa61c26eba3db0baa" />
 
         <activity android:name=".main.AppInfo" />
-        <activity android:name=".onboarding.Step1SleepWakeTime"></activity>
+        <activity android:name=".onboarding.Step1SleepWakeTime" />
         <activity
             android:name=".onboarding.Step2TimeWindow"
             android:parentActivityName=".onboarding.Step1SleepWakeTime">
@@ -146,6 +146,8 @@
             android:name=".notification.DailyTaskReceiver"
             android:enabled="true"
             android:exported="true" />
+
+        <activity android:name=".onboarding.EMA"></activity>
     </application>
 
 </manifest>

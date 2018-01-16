@@ -10,7 +10,6 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -186,22 +185,16 @@ public class Profile {
                 extractThenScheduleNotif(p);
             }
         }
-        AlarmHelper.showInstantNotif(mContext,
-                "Today Intv Applied",
-                "at: " + DateHelper.getFormattedTimestamp(),
-                "",
-                9063);
-//        Toast.makeText(mContext, "Today intv applied.", Toast.LENGTH_SHORT).show();
     }
 
     private void extractThenScheduleNotif(JSONObject protocol) {
         JSONObject notif = new JSONObject();
-        JsonHelper.setJSONValue(notif, "alarmId", getNotifId(protocol));
+        JsonHelper.setJSONValue(notif, Constants.ALARM_ID, getNotifId(protocol));
         JsonHelper.setJSONValue(notif, "title", protocol.optString("notif_title"));
         JsonHelper.setJSONValue(notif, "content", protocol.optString("notif_content"));
         JsonHelper.setJSONValue(notif, "appIdToLaunch", protocol.optString("notif_appid"));
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-        JsonHelper.setJSONValue(notif, "alarmType", protocol.optString("notif_type"));
+        JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type")); // FIXME: 1/16/18 rename to NOTIF_TYPE; STOP USING RAW STRING
         NewAlarmHelper.scheduleIntvReminder(mContext, notif);
         markTodayAsIntvApplied();
         saveToNotifAppliedToday(notif);
