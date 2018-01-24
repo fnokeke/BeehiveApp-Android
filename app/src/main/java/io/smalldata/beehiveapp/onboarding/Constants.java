@@ -40,6 +40,7 @@ public class Constants {
     public static final String ALARM_ID = "alarmId";
     public static final String TYPE_EMA = "typeEMA";
     public static final String EMA_RESPONSE = "emaResponse";
+    public static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
 //    final static String NOTIF_TYPE_SLEEP_WAKE = "sleep_wake";

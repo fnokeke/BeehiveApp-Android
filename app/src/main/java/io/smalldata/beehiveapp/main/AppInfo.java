@@ -44,6 +44,9 @@ public class AppInfo extends AppCompatActivity {
 
         TextView tvIntv = (TextView) findViewById(R.id.tv_interventions);
         tvIntv.setText(mProfile.getAllAppliedNotifForToday());
+
+        TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
+        tvParticipantSince.setText(mProfile.getFirstDayOfStudy());
     }
 
     @Override

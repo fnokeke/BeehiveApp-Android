@@ -55,8 +55,7 @@ public class NewAlarmHelper {
             throw new UnsupportedOperationException("alarmManager should not be null");
         }
 
-//        alarmManager.set(AlarmManager.RTC_WAKEUP, notif.optLong("alarmMillis"), pendingIntent);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, new Date().getTime(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, notif.optLong("alarmMillis"), pendingIntent);
     }
 
     private static Notification createNewNotif(Context context, JSONObject notif) {
@@ -77,9 +76,10 @@ public class NewAlarmHelper {
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
                 .setSmallIcon(android.R.drawable.ic_popup_reminder)
+                .setWhen(notif.optLong("alarmMillis"))
                 .setShowWhen(true);
 
-        if (notif.optString("alarmType").equals("sleep_wake")) {
+        if (notif.optString(Constants.NOTIF_TYPE).equals("sleep_wake")) {
             builder.setSmallIcon(R.drawable.end_of_day_reminder);
         }
 

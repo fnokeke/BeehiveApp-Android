@@ -10,6 +10,7 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -204,6 +205,10 @@ public class Profile {
         Store.setString(mContext, Constants.KEY_LAST_SAVED_DATE, DateHelper.getTodayDateStr());
     }
 
+    public static String getLastAppliedIntvDate(Context context) {
+        return Store.getString(context, Constants.KEY_LAST_SAVED_DATE);
+    }
+
     private void saveToNotifAppliedToday(JSONObject notif) {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
@@ -323,14 +328,17 @@ public class Profile {
         return String.format("%s to %s", startDate, endDate);
     }
 
-    void enableOverwriteTodayIntv() {
-        Store.setString(mContext, Constants.KEY_LAST_SAVED_DATE, "");
-    }
-
     public void wipeAllData() {
         Store.wipeAll(mContext);
     }
 
+    public void setTodayAsFirstDay() {
+        Store.setString(mContext, Constants.KEY_FIRST_DAY_OF_STUDY, DateHelper.getTodayDateStr());
+    }
+
+    public String getFirstDayOfStudy() {
+        return Store.getString(mContext, Constants.KEY_FIRST_DAY_OF_STUDY);
+    }
 }
 
 // TODO: 1/3/18 implement halfNotify

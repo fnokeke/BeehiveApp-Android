@@ -12,6 +12,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class Step2TimeWindow extends AppCompatActivity {
 
@@ -59,7 +61,6 @@ public class Step2TimeWindow extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
-                Toast.makeText(mContext, "You selected: " + item, Toast.LENGTH_SHORT).show();
                 mProfile.saveUserSelectedTimeWindow(dayType, item);
             }
 
@@ -69,6 +70,7 @@ public class Step2TimeWindow extends AppCompatActivity {
         });
 
     }
+
 
     private String[] getDropdownTimeWindow(String typeOfDay) {
         String wakeTime = mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_WAKE);
@@ -88,6 +90,9 @@ public class Step2TimeWindow extends AppCompatActivity {
 
         return GenerateUserWindow.generateWindowList(wakeTime, sleepTime, mProfile.getUserWindowHourDuration());
     }
+
+
+
 
 }
 

@@ -10,7 +10,7 @@
             android:scaleX="0.100000"
             android:scaleY="-0.100000">
         <path
-            android:fillColor="#000000"
+            android:fillColor="#fff"
             android:strokeWidth="1"
             android:pathData="M3100 5664 c-414 -53 -814 -201 -1154 -428 -156 -104 -252 -182 -395 -321 -151
 -146 -253 -269 -373 -449 -218 -329 -363 -705 -425 -1106 -22 -143 -25 -575 -5
@@ -23,12 +23,12 @@
 8 -698 58 -1319 381 -1762 917 -571 692 -728 1626 -417 2472 85 230 247 514 404
 706 417 510 990 830 1645 919 123 17 414 20 561 5z" />
         <path
-            android:fillColor="#000000"
+            android:fillColor="#fff"
             android:strokeWidth="1"
             android:pathData="M3553 4014 c-71 -35 -111 -145 -83 -228 16 -49 82 -104 135 -112 135 -20 235 142
 168 271 -39 75 -142 107 -220 69z" />
         <path
-            android:fillColor="#000000"
+            android:fillColor="#fff"
             android:strokeWidth="1"
             android:pathData="M3315 3356 c-33 -8 -101 -30 -151 -51 -89 -35 -92 -37 -97 -73 -4 -20 -5 -37 -4
 -39 2 -1 36 4 75 12 82 17 146 11 174 -17 14 -14 18 -33 18 -80 0 -88 -17 -175

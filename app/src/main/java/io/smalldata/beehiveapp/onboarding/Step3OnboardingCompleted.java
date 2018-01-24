@@ -12,6 +12,8 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.AppInfo;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class Step3OnboardingCompleted extends AppCompatActivity {
 
@@ -27,7 +29,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         setTitle(title);
 
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -35,9 +37,25 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TriggerIntervention.startDaily4amTask(mContext, true);
+                if (!alreadyAppliedTodayIntv()) {
+                    TriggerIntervention.startDaily3amTask(mContext, true);
+                } else {
+                    // FIXME: 1/24/18 remove debug code
+                    AlarmHelper.showInstantNotif(mContext,
+                            "Sorry, intv already applied today.",
+                            "at: " + DateHelper.getFormattedTimestamp(),
+                            "",
+                            9060);
+
+                }
                 startActivity(new Intent(mContext, AppInfo.class));
             }
         });
+
+    }
+
+
+    private boolean alreadyAppliedTodayIntv() {
+        return DateHelper.getTodayDateStr().equals(Profile.getLastAppliedIntvDate(getApplicationContext()));
     }
 }

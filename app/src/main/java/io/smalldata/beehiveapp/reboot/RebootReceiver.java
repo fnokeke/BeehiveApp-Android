@@ -12,7 +12,7 @@ public class RebootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            TriggerIntervention.startDaily4amTask(context, false);
+            TriggerIntervention.startDaily3amTask(context, false);
         }
 
     }

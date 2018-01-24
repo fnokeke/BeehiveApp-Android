@@ -26,8 +26,8 @@ public class TriggerIntervention {
         mProfile = new Profile(mContext);
     }
 
-    public static void startDaily4amTask(Context context, boolean isUserTriggered) {
-        AlarmHelper.showInstantNotif(context, "Start 4am Task",
+    public static void startDaily3amTask(Context context, boolean isUserTriggered) {
+        AlarmHelper.showInstantNotif(context, "Start 3am Task",
                 DateHelper.getFormattedTimestamp(),
                 "", 7711); // FIXME: 1/15/18 remove debug
 
@@ -43,7 +43,7 @@ public class TriggerIntervention {
         PendingIntent pi = PendingIntent.getBroadcast(context, alarmId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar cal4am = Calendar.getInstance();
-        cal4am.set(Calendar.HOUR_OF_DAY, 4);
+        cal4am.set(Calendar.HOUR_OF_DAY, 3);
         cal4am.set(Calendar.MINUTE, 0);
         cal4am.set(Calendar.SECOND, 0);
         cal4am.set(Calendar.MILLISECOND, 0);
@@ -59,13 +59,17 @@ public class TriggerIntervention {
 
 
     public void startIntvForToday() {
-        if (isNewDay() && todayIntvExists()) {
+        if (isNewDay() && todayIntvExists() && !todayIsFirstDayOfStudy()) {
             mProfile.applyIntvForToday();
         }
     }
 
+    private boolean todayIsFirstDayOfStudy() {
+        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
+    }
+
     private boolean isNewDay() {
-        String lastSavedDate = Store.getString(mContext, Constants.KEY_LAST_SAVED_DATE);
+        String lastSavedDate = Profile.getLastAppliedIntvDate(mContext);
         String todayDate = DateHelper.getTodayDateStr();
         return !lastSavedDate.equals(todayDate);
     }

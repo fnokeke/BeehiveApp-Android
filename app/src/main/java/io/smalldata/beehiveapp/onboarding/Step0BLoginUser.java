@@ -42,6 +42,7 @@ public class Step0BLoginUser extends Activity {
             if (dataParts.length > 1) {
                 mProfile.saveFirstname(dataParts[1]);
                 mProfile.saveUsername(dataParts[2]);
+                mProfile.setTodayAsFirstDay();
                 onboardUserTimePref();
             }
         }

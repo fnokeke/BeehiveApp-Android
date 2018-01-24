@@ -74,7 +74,8 @@ public class ExtractAlarmMillis {
         } else { // after_wakeup
             alarmMillis += randomMins * ONE_MINUTE;
         }
-        return extendToNextDayIfBehindNow(alarmMillis);
+        return alarmMillis;
+//        return extendToNextDayIfBehindNow(alarmMillis);
     }
 
     // move to next day is necessary when user selects sleep time past midnight
@@ -105,7 +106,8 @@ public class ExtractAlarmMillis {
         int alarmHour = getClockHour(userWindowArr[0]);
         int alarmMinutes = getRandomInt(userWindowDurationInHour * 60);
         Calendar cal = getTodayCalendarTime(alarmHour, alarmMinutes);
-        return extendToNextDayIfBehindNow(cal.getTimeInMillis());
+        return cal.getTimeInMillis();
+//        return extendToNextDayIfBehindNow(cal.getTimeInMillis());
     }
 
     private static int getRandomInt(int limit) {
