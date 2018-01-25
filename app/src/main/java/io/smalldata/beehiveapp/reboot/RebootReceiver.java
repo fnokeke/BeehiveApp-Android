@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import io.smalldata.beehiveapp.onboarding.TriggerIntervention;
+import io.smalldata.beehiveapp.server.ServerUpdate;
 
 public class RebootReceiver extends BroadcastReceiver {
 
@@ -13,6 +14,7 @@ public class RebootReceiver extends BroadcastReceiver {
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             TriggerIntervention.startDaily3amTask(context, false);
+            ServerUpdate.setAlarmForPeriodicUpdate(context);
         }
 
     }

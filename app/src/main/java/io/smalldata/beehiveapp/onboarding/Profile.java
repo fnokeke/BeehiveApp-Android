@@ -10,7 +10,6 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -43,12 +42,20 @@ public class Profile {
         Store.setString(mContext, Constants.USERNAME, username);
     }
 
-    private static String getUsername(Context mContext) {
+    public String getUsername() {
         return Store.getString(mContext, Constants.USERNAME);
     }
 
-    static boolean usernameExists(Context mContext) {
-        return !getUsername(mContext).equals("");
+    public String getStudyCode() {
+        return getStudyConfig().optJSONObject("experiment").optString("code");
+    }
+
+    static boolean usernameExists(Context context) {
+        return !fetchUsername(context).equals("");
+    }
+
+    private static String fetchUsername(Context context) {
+        return Store.getString(context, Constants.USERNAME);
     }
 
     int getNumOfSteps() {

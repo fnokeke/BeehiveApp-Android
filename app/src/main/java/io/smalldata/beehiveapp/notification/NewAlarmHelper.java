@@ -2,6 +2,7 @@ package io.smalldata.beehiveapp.notification;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -105,5 +106,22 @@ public class NewAlarmHelper {
     public static boolean todayIsWeekend() {
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+    }
+
+    public static void notifyUpdateApp(Context context, String title, String message, String url) {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(R.drawable.beehive)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setSound(getDefaultSound())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setContentText(message);
+
+        Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        PendingIntent urlPendingIntent = PendingIntent.getActivity(context, 33, urlIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        mBuilder.setContentIntent(urlPendingIntent);
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(9876, mBuilder.build());
     }
 }

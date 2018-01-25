@@ -11,15 +11,20 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.EMA;
+import io.smalldata.beehiveapp.onboarding.Profile;
+import io.smalldata.beehiveapp.server.FileHelper;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 import io.smalldata.beehiveapp.utils.JsonHelper;
+import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Handle all notification dismissed event
@@ -28,6 +33,7 @@ import io.smalldata.beehiveapp.utils.JsonHelper;
 
 public class NotifClickORDismissReceiver extends BroadcastReceiver {
     private static final String TAG = "NotifClickORDismiss";
+    private final Locale locale = Locale.getDefault();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -57,6 +63,36 @@ public class NotifClickORDismissReceiver extends BroadcastReceiver {
         } else {
             Toast.makeText(context, "Dismissed app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
         }
+
+
+
+
+
+        long alarmTimeMillis = bundle.getLong(Constants.ALARM_MILLIS_SET);
+        String phoneRingerMode = DeviceInfo.getRingerMode(context);
+
+        Profile profile = new Profile(context);
+        String username = profile.getUsername();
+        String studyCode = profile.getStudyCode();
+
+        String title = bundle.getString(Constants.ALARM_NOTIF_TITLE);
+        String content = bundle.getString(Constants.ALARM_NOTIF_CONTENT);
+        String appId = bundle.getString(Constants.ALARM_APP_ID);
+        long timeOfClickOrDismiss = System.currentTimeMillis();
+
+        String data = String.format(locale, "%s, %s, %d, %s, %s, %s, %s, %s, %d;\n",
+                username,
+                studyCode,
+                alarmTimeMillis,
+                phoneRingerMode,
+                title,
+                content,
+                appId,
+                wasDismissed,
+                timeOfClickOrDismiss);
+
+        FileHelper.appendToFile(context, Constants.NOTIFICATION_FILENAME, data);
+
     }
 
     public VolleyJsonCallback getSubmitNotifClickHandler() {

@@ -85,12 +85,12 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".main.BeehiveFirebaseMessagingService">
+        <service android:name=".fcm.FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".main.BeehiveFirebaseInstanceIDService">
+        <service android:name=".fcm.FirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -147,7 +147,12 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".onboarding.EMA"></activity>
+        <activity android:name=".onboarding.EMA" />
+
+        <service
+            android:name=".server.ServerUpdate"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
