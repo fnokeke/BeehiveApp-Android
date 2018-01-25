@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.server;
+package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,16 +15,17 @@ import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 
 /**
- * Helper for file operations
+ * Operations for locally storing data in files
+ * that will later be transferred to a server endpoint
  * Created by fnokeke on 5/29/17.
  */
 
-public class FileHelper {
-    private static final String TAG = "FileHelper";
+public class LocalStorage {
+    private static final String TAG = "LocalStorage";
 
     public static void prepareAllStorageFiles(Context context) {
-        FileHelper.appendToFile(context, Constants.NOTIFICATION_FILENAME, "");
-        FileHelper.appendToFile(context, Constants.APP_ANALYTICS_FILENAME, "");
+        LocalStorage.appendToFile(context, Constants.NOTIF_LOGS_CSV, "");
+        LocalStorage.appendToFile(context, Constants.ANALYTICS_LOG_CSV, "");
     }
 
     public static void appendToFile(Context context, String filename, String data) {
@@ -39,7 +40,7 @@ public class FileHelper {
         }
     }
 
-    public static String readFromFile(Context context, String filename) {
+    static String readFromFile(Context context, String filename) {
 
         String ret = "";
 
@@ -70,7 +71,7 @@ public class FileHelper {
         return ret;
     }
 
-    public static void resetFile(Context context, String filename) {
+    static void resetFile(Context context, String filename) {
         try {
             FileOutputStream fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);

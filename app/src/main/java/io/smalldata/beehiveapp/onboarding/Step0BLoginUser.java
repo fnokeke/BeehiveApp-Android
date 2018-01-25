@@ -7,14 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
-import org.json.JSONObject;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
-import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.utils.JsonHelper;
+import io.smalldata.beehiveapp.fcm.LocalStorage;
 
 public class Step0BLoginUser extends Activity {
 
@@ -38,15 +34,20 @@ public class Step0BLoginUser extends Activity {
         Intent intent = getIntent();
         Uri data = intent.getData();
         if (data != null) {
-            String[] dataParts = data.toString().split("\\?");
-            if (dataParts.length > 1) {
-                mProfile.saveFirstname(dataParts[1]);
-                mProfile.saveUsername(dataParts[2]);
-                mProfile.setTodayAsFirstDay();
-                onboardUserTimePref();
-            }
+            prepareUserEnv(data);
         }
 
+    }
+
+    private void prepareUserEnv(Uri data) {
+        String[] dataParts = data.toString().split("\\?");
+        if (dataParts.length > 1) {
+            mProfile.saveFirstname(dataParts[1]);
+            mProfile.saveUsername(dataParts[2]);
+            mProfile.setTodayAsFirstDay();
+            LocalStorage.prepareAllStorageFiles(mContext);
+            onboardUserTimePref();
+        }
     }
 
     private void onboardUserTimePref() {

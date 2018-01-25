@@ -1,4 +1,4 @@
-package io.smalldata.beehiveapp.server;
+package io.smalldata.beehiveapp.fcm;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,8 +13,6 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
-
-import io.smalldata.beehiveapp.fcm.AppJobService;
 
 public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
 
@@ -35,13 +33,12 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
                 .setTrigger(Trigger.executionWindow(0, 5))
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
-//                .setConstraints(Constraint.DEVICE_CHARGING)
                 .setTag(TAG)
                 .build();
         dispatcher.mustSchedule(job);
     }
 
-    public static void setAlarmForPeriodicUpdate(Context context) {
+    public static void startRepeatingServerTask(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ServerPeriodicUpdateReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);

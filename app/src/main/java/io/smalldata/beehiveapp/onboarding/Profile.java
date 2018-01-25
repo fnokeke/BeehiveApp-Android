@@ -38,6 +38,14 @@ public class Profile {
         return JsonHelper.strToJsonObject(Store.getString(mContext, Constants.STUDY_CONFIG_KEY));
     }
 
+    public static String getCurrentUsername(Context context) {
+        return Store.getString(context, Constants.USERNAME);
+    }
+
+    public static String getCurrentCode(Context context) {
+        JSONObject jo = JsonHelper.strToJsonObject(Store.getString(context, Constants.STUDY_CONFIG_KEY));
+        return jo.optJSONObject("experiment").optString("code");
+    }
     void saveUsername(String username) {
         Store.setString(mContext, Constants.USERNAME, username);
     }
@@ -346,6 +354,7 @@ public class Profile {
     public String getFirstDayOfStudy() {
         return Store.getString(mContext, Constants.KEY_FIRST_DAY_OF_STUDY);
     }
+
 }
 
 // TODO: 1/3/18 implement halfNotify

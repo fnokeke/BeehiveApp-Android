@@ -41,8 +41,8 @@ public class Constants {
     public static final String EMA_RESPONSE = "emaResponse";
     public static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
 
-    public static final String NOTIFICATION_FILENAME = "notifLogs.csv";
-    public static final String APP_ANALYTICS_FILENAME = "analytics.csv";
+    public static final String NOTIF_LOGS_CSV = "notifLogs.csv";
+    public static final String ANALYTICS_LOG_CSV = "analytics.csv";
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
 //    final static String NOTIF_TYPE_SLEEP_WAKE = "sleep_wake";

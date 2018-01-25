@@ -24,7 +24,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.server.ServerPeriodicUpdateReceiver;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
@@ -54,7 +53,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String url = data.get("url");
             switch (type) {
                 case SERVER_SYNC:
-                    ServerPeriodicUpdateReceiver.setAlarmForPeriodicUpdate(mContext);
+                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext);
                     break;
                 case NOTIFY_USER:
                     if (title != null || content != null) {

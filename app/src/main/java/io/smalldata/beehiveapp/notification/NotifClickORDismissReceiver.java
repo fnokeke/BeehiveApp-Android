@@ -4,27 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
-
-import com.android.volley.VolleyError;
-
-import org.json.JSONObject;
 
 import java.util.Locale;
 
-import io.smalldata.beehiveapp.api.CallAPI;
-import io.smalldata.beehiveapp.api.VolleyJsonCallback;
-import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.EMA;
 import io.smalldata.beehiveapp.onboarding.Profile;
-import io.smalldata.beehiveapp.server.FileHelper;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
-import io.smalldata.beehiveapp.utils.JsonHelper;
-import io.smalldata.beehiveapp.utils.Store;
 
 /**
  * Handle all notification dismissed event
@@ -32,46 +22,33 @@ import io.smalldata.beehiveapp.utils.Store;
  */
 
 public class NotifClickORDismissReceiver extends BroadcastReceiver {
-    private static final String TAG = "NotifClickORDismiss";
     private final Locale locale = Locale.getDefault();
+    private Context mContext;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        mContext = context;
         Bundle bundle = intent.getExtras();
-        JSONObject params = Experiment.getUserInfo(context);
-        JsonHelper.setJSONValue(params, "title", bundle.getString(Constants.ALARM_NOTIF_TITLE));
-        JsonHelper.setJSONValue(params, "content", bundle.getString(Constants.ALARM_NOTIF_CONTENT));
-        JsonHelper.setJSONValue(params, "app_id", bundle.getString(Constants.ALARM_APP_ID));
-        JsonHelper.setJSONValue(params, "was_dismissed", bundle.getBoolean(Constants.ALARM_NOTIF_WAS_DISMISSED));
-        JsonHelper.setJSONValue(params, "time_appeared", bundle.getLong(Constants.ALARM_MILLIS_SET));
-        JsonHelper.setJSONValue(params, "time_clicked", System.currentTimeMillis());
-        JsonHelper.setJSONValue(params, "ringer_mode", DeviceInfo.getRingerMode(context));
-        CallAPI.addNotifClickedStats(context, params, getSubmitNotifClickHandler());
+        if (bundle == null) return;
 
-        String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
-        boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
-        if (params.optString(Constants.NOTIF_TYPE).equals(Constants.TYPE_EMA)) {
-            Intent intEma = new Intent(context, EMA.class);
-            intEma.putExtra("ema_title", params.optString("title"));
-            intEma.putExtra("ema_content", params.optString("content"));
-            context.startActivity(new Intent(intEma));
-            Toast.makeText(context, "Launching EMA.", Toast.LENGTH_SHORT).show();
-        } else if (!wasDismissed) {
-            IntentLauncher.launchApp(context, appIdToLaunch);
-            Toast.makeText(context, "Launching app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+        if (isEMAType(bundle)) {
+            launchEMA(bundle);
         } else {
-            Toast.makeText(context, "Dismissed app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+            launchNonDismissedApp(bundle);
+            saveNotifToLocalStorage(bundle);
         }
+    }
 
+    private boolean isEMAType(Bundle bundle) {
+        String notifType = bundle.getString(Constants.NOTIF_TYPE);
+        return notifType != null && notifType.equals(Constants.TYPE_EMA);
+    }
 
-
-
-
+    private void saveNotifToLocalStorage(Bundle bundle) {
         long alarmTimeMillis = bundle.getLong(Constants.ALARM_MILLIS_SET);
-        String phoneRingerMode = DeviceInfo.getRingerMode(context);
+        String phoneRingerMode = DeviceInfo.getRingerMode(mContext);
 
-        Profile profile = new Profile(context);
+        Profile profile = new Profile(mContext);
         String username = profile.getUsername();
         String studyCode = profile.getStudyCode();
 
@@ -79,6 +56,7 @@ public class NotifClickORDismissReceiver extends BroadcastReceiver {
         String content = bundle.getString(Constants.ALARM_NOTIF_CONTENT);
         String appId = bundle.getString(Constants.ALARM_APP_ID);
         long timeOfClickOrDismiss = System.currentTimeMillis();
+        boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
 
         String data = String.format(locale, "%s, %s, %d, %s, %s, %s, %s, %s, %d;\n",
                 username,
@@ -91,23 +69,27 @@ public class NotifClickORDismissReceiver extends BroadcastReceiver {
                 wasDismissed,
                 timeOfClickOrDismiss);
 
-        FileHelper.appendToFile(context, Constants.NOTIFICATION_FILENAME, data);
-
+        LocalStorage.appendToFile(mContext, Constants.NOTIF_LOGS_CSV, data);
     }
 
-    public VolleyJsonCallback getSubmitNotifClickHandler() {
-        return new VolleyJsonCallback() {
-            @Override
-            public void onConnectSuccess(JSONObject result) {
-                Log.i(TAG, "onConnectSuccess: submit_notif_stats success " + result.toString());
-            }
+    private void launchNonDismissedApp(Bundle bundle) {
+        String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
+        boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
+        if (wasDismissed) {
+            Toast.makeText(mContext, "Dismissed app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+        } else {
+            IntentLauncher.launchApp(mContext, appIdToLaunch);
+            Toast.makeText(mContext, "Launching app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+        }
+    }
 
-            @Override
-            public void onConnectFailure(VolleyError error) {
-                Log.e(TAG, "submit_notif_stats error " + error.toString());
-                error.printStackTrace();
-            }
-        };
+    private void launchEMA(Bundle bundle) {
+        Intent intEma = new Intent(mContext, EMA.class);
+        intEma.putExtra("ema_title", bundle.getString("title"));
+        intEma.putExtra("ema_content", bundle.getString("content"));
+        mContext.startActivity(new Intent(intEma));
+        Toast.makeText(mContext, "Launching EMA.", Toast.LENGTH_SHORT).show();
     }
 
 }
+
