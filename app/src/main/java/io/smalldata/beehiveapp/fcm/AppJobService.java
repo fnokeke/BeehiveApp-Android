@@ -10,7 +10,6 @@ import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class AppJobService extends JobService {
 
-
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
         updateServerRecords(getApplicationContext());

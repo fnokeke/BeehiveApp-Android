@@ -142,17 +142,23 @@
             android:name=".onboarding.AboutApp"
             android:parentActivityName=".main.AppInfo" />
 
-        <receiver
-            android:name=".notification.DailyTaskReceiver"
-            android:enabled="true"
-            android:exported="true" />
+        <receiver android:name=".notification.DailyTaskReceiver" />
+
+        <receiver android:name=".server.ServerPeriodicUpdateReceiver" />
 
         <activity android:name=".onboarding.EMA" />
 
         <service
-            android:name=".server.ServerUpdate"
-            android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false"
+            android:name=".fcm.AppJobService">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>

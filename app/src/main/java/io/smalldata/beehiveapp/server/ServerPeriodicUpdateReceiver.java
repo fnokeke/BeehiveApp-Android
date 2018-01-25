@@ -2,10 +2,9 @@ package io.smalldata.beehiveapp.server;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -17,29 +16,26 @@ import com.firebase.jobdispatcher.Trigger;
 
 import io.smalldata.beehiveapp.fcm.AppJobService;
 
-public class ServerUpdate extends Service {
+public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
 
     private static final String TAG = "BeehiveAppJobService";
 
-    public ServerUpdate() {
-        dispatchOneTimeUpdate(getApplicationContext());
-    }
-
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void onReceive(Context context, Intent intent) {
+        dispatchOneTimeUpdate(context);
     }
 
-    public void dispatchOneTimeUpdate(Context context) {
+    private void dispatchOneTimeUpdate(Context context) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
         Job job = dispatcher.newJobBuilder()
                 .setService(AppJobService.class)
                 .setReplaceCurrent(true)
                 .setLifetime(Lifetime.FOREVER)
-                .setTrigger(Trigger.executionWindow(0, 60))
+//                .setTrigger(Trigger.executionWindow(0, 60))
+                .setTrigger(Trigger.executionWindow(0, 5))
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
-                .setConstraints(Constraint.DEVICE_CHARGING)
+//                .setConstraints(Constraint.DEVICE_CHARGING)
                 .setTag(TAG)
                 .build();
         dispatcher.mustSchedule(job);
@@ -47,12 +43,13 @@ public class ServerUpdate extends Service {
 
     public static void setAlarmForPeriodicUpdate(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, ServerUpdate.class);
+        Intent intent = new Intent(context, ServerPeriodicUpdateReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
         if (am == null) {
             throw new UnsupportedOperationException("Repeating alarmManager should not be null");
         }
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pi);
+//        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pi);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 60000, pi);
     }
 
 }

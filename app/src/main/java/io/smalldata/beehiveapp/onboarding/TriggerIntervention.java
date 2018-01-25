@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -59,13 +60,19 @@ public class TriggerIntervention {
 
 
     public void startIntvForToday() {
-        if (isNewDay() && todayIntvExists() && !todayIsFirstDayOfStudy()) {
+        if (todayIsFirstDayOfStudy()) {
+            Toast.makeText(mContext, "Your first reminder begins tomorrow.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (isNewDay() && todayIntvExists()) {
             mProfile.applyIntvForToday();
         }
     }
 
     private boolean todayIsFirstDayOfStudy() {
-        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
+        return false;
+//        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
     }
 
     private boolean isNewDay() {

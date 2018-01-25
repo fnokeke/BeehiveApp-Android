@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.AppInfo;
-import io.smalldata.beehiveapp.server.ServerUpdate;
+import io.smalldata.beehiveapp.server.ServerPeriodicUpdateReceiver;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 
@@ -40,7 +40,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
             public void onClick(View v) {
                 if (!alreadyAppliedTodayIntv()) {
                     TriggerIntervention.startDaily3amTask(mContext, true);
-                    ServerUpdate.setAlarmForPeriodicUpdate(mContext);
+                    ServerPeriodicUpdateReceiver.setAlarmForPeriodicUpdate(mContext);
                 } else {
                     // FIXME: 1/24/18 remove debug code
                     AlarmHelper.showInstantNotif(mContext,
