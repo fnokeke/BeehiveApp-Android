@@ -106,7 +106,7 @@
             android:process=":autoService" />
 
         <receiver
-            android:name=".notification.NotifClickORDismissReceiver"
+            android:name=".notification.NotifEventReceiver"
             android:exported="false" />
 
         <meta-data

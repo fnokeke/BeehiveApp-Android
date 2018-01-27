@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.notification.NotifClickORDismissReceiver;
+import io.smalldata.beehiveapp.notification.NotifEventReceiver;
 import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
 import io.smalldata.beehiveapp.onboarding.Constants;
 
@@ -65,7 +65,7 @@ public class AlarmHelper {
     }
 
     private static Intent createOnClickIntent(Context context, String title, String content, String appIdToLaunch, long alarmMillis, boolean wasDismissed) {
-        Intent intent = new Intent(context, NotifClickORDismissReceiver.class);
+        Intent intent = new Intent(context, NotifEventReceiver.class);
         intent.putExtra(ALARM_NOTIF_TITLE, title);
         intent.putExtra(ALARM_NOTIF_CONTENT, content);
         intent.putExtra(ALARM_APP_ID, appIdToLaunch);

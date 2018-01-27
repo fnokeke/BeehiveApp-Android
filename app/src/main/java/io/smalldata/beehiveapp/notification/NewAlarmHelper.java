@@ -13,7 +13,6 @@ import android.support.v4.app.NotificationCompat;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.onboarding.Constants;
@@ -88,7 +87,7 @@ public class NewAlarmHelper {
     }
 
     private static Intent createNewOnClickIntent(Context context, JSONObject notif, boolean wasDismissed) {
-        Intent intent = new Intent(context, NotifClickORDismissReceiver.class);
+        Intent intent = new Intent(context, NotifEventReceiver.class);
         intent.putExtra(Constants.NOTIF_TYPE, notif.optString(Constants.NOTIF_TYPE));
         intent.putExtra(Constants.ALARM_NOTIF_TITLE, notif.optString("title"));
         intent.putExtra(Constants.NOTIF_TYPE, notif.optString("alarmType"));

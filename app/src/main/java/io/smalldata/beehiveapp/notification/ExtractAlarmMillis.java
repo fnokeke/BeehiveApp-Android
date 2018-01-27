@@ -70,12 +70,11 @@ public class ExtractAlarmMillis {
 
         final long ONE_MINUTE = 60 * 1000;
         if (sleepWakeMode.equals("before_sleep")) {
-            alarmMillis -= randomMins * ONE_MINUTE; // TODO: 1/7/18 refactor code to more readable format using Calendar.add()
+            alarmMillis -= randomMins * ONE_MINUTE;
         } else { // after_wakeup
             alarmMillis += randomMins * ONE_MINUTE;
         }
-        return alarmMillis;
-//        return extendToNextDayIfBehindNow(alarmMillis);
+        return extendToNextDayIfBehindNow(alarmMillis);
     }
 
     // move to next day is necessary when user selects sleep time past midnight

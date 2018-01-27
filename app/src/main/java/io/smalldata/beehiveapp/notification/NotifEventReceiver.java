@@ -21,7 +21,7 @@ import io.smalldata.beehiveapp.utils.IntentLauncher;
  * Created by fnokeke on 6/5/17.
  */
 
-public class NotifClickORDismissReceiver extends BroadcastReceiver {
+public class NotifEventReceiver extends BroadcastReceiver {
     private final Locale locale = Locale.getDefault();
     private Context mContext;
 
