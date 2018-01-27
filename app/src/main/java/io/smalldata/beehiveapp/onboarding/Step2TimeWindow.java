@@ -64,12 +64,14 @@ public class Step2TimeWindow extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, dropDownItems);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setSelection(mProfile.getLastSavedPosition(dayType));
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
                 mProfile.saveUserSelectedTimeWindow(dayType, item);
+                mProfile.saveSelectedPosition(dayType, position);
 
                 if (dayType.equals("weekend")) {
                     InAppAnalytics.add(mContext, Constants.SELECTED_USER_WINDOW_WEEKEND);

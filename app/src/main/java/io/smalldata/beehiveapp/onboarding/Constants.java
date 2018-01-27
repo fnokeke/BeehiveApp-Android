@@ -30,6 +30,8 @@ public class Constants {
     final static String KEY_WEEKDAY_SLEEP = "keyWeekdaySleep";
     final static String KEY_WEEKEND_WAKE = "keyWeekendWake";
     final static String KEY_WEEKEND_SLEEP = "keyWeekendSleep";
+    public static final String KEY_ITEM_POSITION_WEEKDAY = "keyItemPositionWeekday";
+    public static final String KEY_ITEM_POSITION_WEEKEND = "keyItemPositionWeekend";
 
     final static String KEY_LAST_SAVED_DATE = "keyLastSavedDate";
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";

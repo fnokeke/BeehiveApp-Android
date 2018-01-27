@@ -398,6 +398,22 @@ public class Profile {
     public boolean userCompletedAllSteps() {
         return Store.getBoolean(mContext, Constants.KEY_USER_COMPLETED_STEPS);
     }
+
+    void saveSelectedPosition(String dayType, int position) {
+        String key = Constants.KEY_ITEM_POSITION_WEEKDAY;
+        if (dayType.equals("weekend")) {
+            key = Constants.KEY_ITEM_POSITION_WEEKEND;
+        }
+        Store.setInt(mContext, key, position);
+    }
+
+    int getLastSavedPosition(String dayType) {
+        String key = Constants.KEY_ITEM_POSITION_WEEKDAY;
+        if (dayType.equals("weekend")) {
+            key = Constants.KEY_ITEM_POSITION_WEEKEND;
+        }
+        return Store.getInt(mContext, key);
+    }
 }
 
 // TODO: 1/3/18 implement halfNotify
