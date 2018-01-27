@@ -45,7 +45,12 @@ public class Profile {
 
     public static String getCurrentCode(Context context) {
         JSONObject jo = JsonHelper.strToJsonObject(Store.getString(context, Constants.STUDY_CONFIG_KEY));
-        return jo.optJSONObject("experiment").optString("code");
+        String code = "";
+        JSONObject experiment = jo.optJSONObject("experiment");
+        if (experiment != null) {
+            code = jo.optJSONObject("experiment").optString("code");
+        }
+        return code;
     }
     void saveUsername(String username) {
         Store.setString(mContext, Constants.USERNAME, username);
