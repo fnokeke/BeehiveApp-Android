@@ -2,6 +2,8 @@ package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
 
+import java.util.Locale;
+
 import io.smalldata.beehiveapp.onboarding.Constants;
 
 /**
@@ -12,12 +14,12 @@ import io.smalldata.beehiveapp.onboarding.Constants;
 public class InAppAnalytics {
 
    public static void add(Context context, String data)  {
-      String row = String.format("%s;\n", data);
-      LocalStorage.appendToFile(context, Constants.NOTIF_LOGS_CSV, row);
+      String row = String.format(Locale.getDefault(), "%d, %s;\n", System.currentTimeMillis(), data);
+      LocalStorage.appendToFile(context, Constants.ANALYTICS_LOG_CSV, row);
    }
 
     public static void add(Context context, String key, String value)  {
-        String row = String.format("%s-%s;\n", key, value);
-        LocalStorage.appendToFile(context, Constants.NOTIF_LOGS_CSV, row);
+        String row = String.format(Locale.getDefault(), "%d, %s-%s;\n", System.currentTimeMillis(), key, value);
+        LocalStorage.appendToFile(context, Constants.ANALYTICS_LOG_CSV, row);
     }
 }
