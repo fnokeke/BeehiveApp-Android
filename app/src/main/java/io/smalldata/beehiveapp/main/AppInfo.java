@@ -10,7 +10,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
+import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
@@ -33,6 +35,7 @@ public class AppInfo extends AppCompatActivity {
     protected void onResume() {
         setAppInfo();
         super.onResume();
+        InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
     }
 
     private void setAppInfo() {
@@ -60,12 +63,15 @@ public class AppInfo extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_set_time:
+                InAppAnalytics.add(mContext, Constants.CLICKED_TIMER_BUTTON);
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
                 break;
             case R.id.action_about:
+                InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
                 break;
-            case R.id.action_logout:
+            case R.id.action_reset_app:
+                InAppAnalytics.add(mContext, Constants.CLICKED_RESET_APP_BUTTON);
                 mProfile.wipeAllData();
                 startActivity(new Intent(mContext, Step0AWelcomeStudyCode.class));
                 break;

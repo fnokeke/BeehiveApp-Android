@@ -38,14 +38,20 @@ public class AppJobService extends JobService {
 
     private void sendAllLocalData(Context context) {
         sendNotifLogs(context);
+        sendInAppAnalytics(context);
+    }
+
+    private void sendInAppAnalytics(Context context) {
+        JSONObject data = getLocalData(context, Constants.ANALYTICS_LOG_CSV);
+        CallAPI.submitAnalytics(context, data, getLogResponseHandler(context, Constants.ANALYTICS_LOG_CSV));
     }
 
     private void sendNotifLogs(Context context) {
-        JSONObject params = getLogParams(context, Constants.NOTIF_LOGS_CSV);
-        CallAPI.submitNotifLogs(context, params, getLogResponseHandler(context, Constants.NOTIF_LOGS_CSV));
+        JSONObject data = getLocalData(context, Constants.NOTIF_LOGS_CSV);
+        CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, Constants.NOTIF_LOGS_CSV));
     }
 
-    private static JSONObject getLogParams(Context context, String filename) {
+    private static JSONObject getLocalData(Context context, String filename) {
         JSONObject params = new JSONObject();
         JsonHelper.setJSONValue(params, "username", Profile.getCurrentUsername(context));
         JsonHelper.setJSONValue(params, "code", Profile.getCurrentCode(context));

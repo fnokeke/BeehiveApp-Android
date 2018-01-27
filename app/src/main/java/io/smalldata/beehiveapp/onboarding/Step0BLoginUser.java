@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
 
 public class Step0BLoginUser extends Activity {

@@ -11,19 +11,21 @@ import android.widget.Button;
 import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.fcm.ServerPeriodicUpdateReceiver;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class Step3OnboardingCompleted extends AppCompatActivity {
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.step3_onboarding_completed);
 
-        final Context mContext = this;
+        mContext = this;
         final Profile mProfile = new Profile(mContext);
         Integer numOfSteps = mProfile.getNumOfSteps();
         String title = String.format(Locale.getDefault(), "Step %d of %d", numOfSteps, numOfSteps);
@@ -38,6 +40,8 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InAppAnalytics.add(mContext, Constants.CLICKED_CONGRATS_FINISH_BUTTON);
+
                 if (!alreadyAppliedTodayIntv()) {
                     TriggerIntervention.startDaily3amTask(mContext, true);
 //                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext);
@@ -57,6 +61,11 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_CONGRATS);
+    }
 
     private boolean alreadyAppliedTodayIntv() {
         return DateHelper.getTodayDateStr().equals(Profile.getLastAppliedIntvDate(getApplicationContext()));

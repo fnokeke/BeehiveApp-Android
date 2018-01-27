@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class Step1SleepWakeTime extends AppCompatActivity {
@@ -36,6 +37,12 @@ public class Step1SleepWakeTime extends AppCompatActivity {
         activateTimeDialog();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_USERTIMERS);
+    }
+
     private void setToolbarTitle() {
         Integer numOfSteps = mProfile.getNumOfSteps();
         String title = String.format(Locale.getDefault(), "Step 1 of %d", numOfSteps);
@@ -47,6 +54,8 @@ public class Step1SleepWakeTime extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InAppAnalytics.add(mContext, Constants.CLICKED_SLEEP_WAKE_NEXT_BUTTON);
+
                 if (!isValidTimeEntry()) {
                     Toast.makeText(mContext, "Enter valid wakeup time and sleep time.", Toast.LENGTH_SHORT).show();
                     return;

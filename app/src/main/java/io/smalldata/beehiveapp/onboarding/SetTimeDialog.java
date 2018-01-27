@@ -8,6 +8,8 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
+
 /**
  * Created by fnokeke on 1/1/18.
  * TimePicker Dialog
@@ -31,9 +33,32 @@ public class SetTimeDialog implements View.OnClickListener, TimePickerDialog.OnT
     public void onTimeSet(TimePicker view, int hourOfDay, int mins) {
         String time24Clock = String.format("%s:%s", hourOfDay, mins);
         saveEntry(time24Clock);
+        saveEntryKeyAnalytics(time24Clock);
 
         String userSetTime = to12HourFormat(time24Clock);
         this.mEditText.setText(userSetTime);
+    }
+
+    private void saveEntryKeyAnalytics(String time24Clock) {
+        switch (mEntryKey) {
+            case Constants.KEY_WEEKDAY_WAKE:
+                InAppAnalytics.add(mContext, Constants.CHANGED_WEEKDAY_WAKE);
+                InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_WEEKDAY_WAKE, time24Clock);
+                break;
+            case Constants.KEY_WEEKEND_WAKE:
+                InAppAnalytics.add(mContext, Constants.CHANGED_WEEKEND_WAKE);
+                InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_WEEKEND_WAKE, time24Clock);
+                break;
+            case Constants.KEY_WEEKDAY_SLEEP:
+                InAppAnalytics.add(mContext, Constants.CHANGED_WEEKDAY_SLEEP);
+                InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_WEEKDAY_SLEEP, time24Clock);
+                break;
+            case Constants.KEY_WEEKEND_SLEEP:
+                InAppAnalytics.add(mContext, Constants.CHANGED_WEEKEND_SLEEP);
+                InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_WEEKEND_SLEEP, time24Clock);
+                break;
+        }
+
     }
 
     private void saveEntry(String entryTimeValue) {

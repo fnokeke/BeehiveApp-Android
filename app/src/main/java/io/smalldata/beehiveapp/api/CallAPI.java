@@ -19,7 +19,7 @@ import io.smalldata.beehiveapp.utils.Network;
 
 
 public class CallAPI {
-
+//
         final static private String BASE_URL = "http://10.0.2.2:5000";
 //    final static private String BASE_URL = "http://slm.smalldata.io";
     final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
@@ -32,6 +32,7 @@ public class CallAPI {
     final static public String GOOGLE_LOGIN_NO_OHMAGE_URL = CallAPI.BASE_URL + "/android_google_no_ohmage";
 
     private static final String BEEHIVE_NOTIF_LOGS_URL = BASE_URL + "/mobile/add/notif";
+    private static final String BEEHIVE_ANALYTICS_URL = BASE_URL + "/mobile/add/analytics";
 
 
 
@@ -90,6 +91,10 @@ public class CallAPI {
 
     public static void submitNotifLogs(Context context, JSONObject params, VolleyJsonCallback callback) {
         addRequestToQueue(context, BEEHIVE_NOTIF_LOGS_URL, params, callback);
+    }
+
+    public static void submitAnalytics(Context context, JSONObject params, VolleyJsonCallback callback) {
+        addRequestToQueue(context, BEEHIVE_ANALYTICS_URL, params, callback);
     }
 }
 

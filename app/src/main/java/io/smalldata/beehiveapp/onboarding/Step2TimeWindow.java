@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 
@@ -36,12 +37,19 @@ public class Step2TimeWindow extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InAppAnalytics.add(mContext, Constants.CLICKED_USER_WINDOW_NEXT_BUTTON);
                 startActivity(new Intent(getApplicationContext(), Step3OnboardingCompleted.class));
             }
         });
 
         activateDropDown("weekday");
         activateDropDown("weekend");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_USERWINDOWS);
     }
 
     private void activateDropDown(final String dayType) {
@@ -62,6 +70,15 @@ public class Step2TimeWindow extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
                 mProfile.saveUserSelectedTimeWindow(dayType, item);
+
+                if (dayType.equals("weekend")) {
+                    InAppAnalytics.add(mContext, Constants.SELECTED_USER_WINDOW_WEEKEND);
+                    InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_USER_WINDOW_WEEKEND, item);
+                } else {
+                    InAppAnalytics.add(mContext, Constants.SELECTED_USER_WINDOW_WEEKDAY);
+                    InAppAnalytics.add(mContext, Constants.VALUE_OF_CHANGED_USER_WINDOW_WEEKDAY, item);
+                }
+
             }
 
             @Override
@@ -90,8 +107,6 @@ public class Step2TimeWindow extends AppCompatActivity {
 
         return GenerateUserWindow.generateWindowList(wakeTime, sleepTime, mProfile.getUserWindowHourDuration());
     }
-
-
 
 
 }
