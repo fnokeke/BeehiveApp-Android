@@ -14,7 +14,6 @@ import java.util.Locale;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
-import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class Step1SleepWakeTime extends AppCompatActivity {
     private Context mContext;
@@ -56,12 +55,12 @@ public class Step1SleepWakeTime extends AppCompatActivity {
             public void onClick(View v) {
                 InAppAnalytics.add(mContext, Constants.CLICKED_SLEEP_WAKE_NEXT_BUTTON);
 
-                if (!isValidTimeEntry()) {
+                if (!mProfile.hasValidTimeEntry()) {
                     Toast.makeText(mContext, "Enter valid wakeup time and sleep time.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (!hasMinimumTimeDiff()) {
+                if (!mProfile.hasMinimumTimeDiff()) {
                     Toast.makeText(mContext, "Sleep time should be at least 3 hours from wake-up time.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -73,41 +72,6 @@ public class Step1SleepWakeTime extends AppCompatActivity {
                 startActivity(new Intent(mContext, nextActivity));
             }
         });
-    }
-
-    private boolean isValidTimeEntry() {
-        long weekdayWakeMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_WAKE));
-        long weekdaySleepMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_SLEEP));
-
-        long weekendWakeMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_WAKE));
-        long weekendSleepMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_SLEEP));
-
-        return (weekdayWakeMillis != -1 && weekdaySleepMillis != -1 &&
-                weekendWakeMillis != -1 && weekendSleepMillis != -1);
-    }
-
-    private boolean hasMinimumTimeDiff() {
-        long weekdayWakeMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_WAKE));
-        long weekdaySleepMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_SLEEP));
-
-        long weekendWakeMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_WAKE));
-        long weekendSleepMillis = toMillis(mProfile.getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_SLEEP));
-
-        long minimumDiff = 3 * 60 * 60 * 1000; // 3 hours
-        return Math.abs(weekdaySleepMillis - weekdayWakeMillis) >= minimumDiff &&
-                Math.abs(weekendSleepMillis - weekendWakeMillis) >= minimumDiff;
-    }
-
-    long toMillis(String hrMinStr) {
-        if (hrMinStr.equals("")) return -1;
-
-        String[] timeArr = hrMinStr.split(":");
-        Calendar cal = Calendar.getInstance(); // TODO: 1/3/18 refactor code here
-        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArr[0]));
-        cal.set(Calendar.MINUTE, Integer.parseInt(timeArr[1]));
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTimeInMillis();
     }
 
     private void activateTimeDialog() {

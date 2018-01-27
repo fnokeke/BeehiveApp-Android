@@ -40,6 +40,7 @@ public class Constants {
     public static final String TYPE_EMA = "typeEMA";
     public static final String EMA_RESPONSE = "emaResponse";
     public static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
+    public static final String KEY_USER_COMPLETED_STEPS = "keyUserCompletedSteps";
 
     public static final String NOTIF_LOGS_CSV = "notifLogs.csv";
     public static final String ANALYTICS_LOG_CSV = "analytics.csv";

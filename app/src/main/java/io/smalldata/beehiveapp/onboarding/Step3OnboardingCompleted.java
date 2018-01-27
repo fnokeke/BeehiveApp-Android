@@ -40,6 +40,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProfile.indicateUserCompletedSteps();
                 InAppAnalytics.add(mContext, Constants.CLICKED_CONGRATS_FINISH_BUTTON);
 
                 if (!alreadyAppliedTodayIntv()) {

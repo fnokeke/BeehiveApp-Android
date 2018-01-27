@@ -5,6 +5,7 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -355,6 +356,48 @@ public class Profile {
         return Store.getString(mContext, Constants.KEY_FIRST_DAY_OF_STUDY);
     }
 
+    public boolean hasValidTimeEntry() {
+        long weekdayWakeMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_WAKE));
+        long weekdaySleepMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_SLEEP));
+
+        long weekendWakeMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_WAKE));
+        long weekendSleepMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_SLEEP));
+
+        return (weekdayWakeMillis != -1 && weekdaySleepMillis != -1 &&
+                weekendWakeMillis != -1 && weekendSleepMillis != -1);
+    }
+
+    public boolean hasMinimumTimeDiff() {
+        long weekdayWakeMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_WAKE));
+        long weekdaySleepMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKDAY_SLEEP));
+
+        long weekendWakeMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_WAKE));
+        long weekendSleepMillis = toMillis(getSavedTimeIn24HourClock(Constants.KEY_WEEKEND_SLEEP));
+
+        long minimumDiff = 3 * 60 * 60 * 1000; // 3 hours
+        return Math.abs(weekdaySleepMillis - weekdayWakeMillis) >= minimumDiff &&
+                Math.abs(weekendSleepMillis - weekendWakeMillis) >= minimumDiff;
+    }
+
+    long toMillis(String hrMinStr) {
+        if (hrMinStr.equals("")) return -1;
+
+        String[] timeArr = hrMinStr.split(":");
+        Calendar cal = Calendar.getInstance(); // TODO: 1/3/18 refactor code here
+        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArr[0]));
+        cal.set(Calendar.MINUTE, Integer.parseInt(timeArr[1]));
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
+    public void indicateUserCompletedSteps() {
+        Store.setBoolean(mContext, Constants.KEY_USER_COMPLETED_STEPS, true);
+    }
+
+    public boolean userCompletedAllSteps() {
+        return Store.getBoolean(mContext, Constants.KEY_USER_COMPLETED_STEPS);
+    }
 }
 
 // TODO: 1/3/18 implement halfNotify

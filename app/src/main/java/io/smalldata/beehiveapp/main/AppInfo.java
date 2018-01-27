@@ -50,6 +50,12 @@ public class AppInfo extends AppCompatActivity {
 
         TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
         tvParticipantSince.setText(mProfile.getFirstDayOfStudy());
+
+        String weekdayTime = mProfile.getUserTimeWindow("weekday");
+        String weekendTime = mProfile.getUserTimeWindow("weekend");
+        String times = String.format("Weekday: %s. \nWeekend: %s.", weekdayTime, weekendTime);
+        TextView tvSelectedTimes = (TextView) findViewById(R.id.tv_selected_times);
+        tvSelectedTimes.setText(times);
     }
 
     @Override

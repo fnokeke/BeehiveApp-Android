@@ -19,13 +19,16 @@ import io.smalldata.beehiveapp.utils.Network;
 
 public class Step0AWelcomeStudyCode extends AppCompatActivity {
     Context mContext;
+    Profile mProfile;
     Button btnContinue;
     TextView tvContinueResponse;
     EditText etWelcomeCode;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
+        mProfile = new Profile(mContext);
         super.onCreate(savedInstanceState);
     }
 
@@ -44,7 +47,11 @@ public class Step0AWelcomeStudyCode extends AppCompatActivity {
     }
 
     private void showAppInfo() {
-        startActivity(new Intent(mContext, AppInfo.class));
+        if (!mProfile.userCompletedAllSteps()) {
+            startActivity(new Intent(mContext, Step1SleepWakeTime.class));
+        } else {
+            startActivity(new Intent(mContext, AppInfo.class));
+        }
     }
 
     private void startOnBoarding() {
