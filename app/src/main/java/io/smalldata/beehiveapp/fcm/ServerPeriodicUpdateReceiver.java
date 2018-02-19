@@ -29,8 +29,7 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
                 .setService(AppJobService.class)
                 .setReplaceCurrent(true)
                 .setLifetime(Lifetime.FOREVER)
-//                .setTrigger(Trigger.executionWindow(0, 60))
-                .setTrigger(Trigger.executionWindow(0, 5))
+                .setTrigger(Trigger.executionWindow(0, 180))
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .setTag(TAG)
@@ -45,8 +44,8 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
         if (am == null) {
             throw new UnsupportedOperationException("Repeating alarmManager should not be null");
         }
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pi);
 //        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pi);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 60000, pi);
     }
 
 }

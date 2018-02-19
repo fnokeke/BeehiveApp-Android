@@ -28,10 +28,6 @@ public class TriggerIntervention {
     }
 
     public static void startDaily3amTask(Context context, boolean isUserTriggered) {
-        AlarmHelper.showInstantNotif(context, "Start 3am Task",
-                DateHelper.getFormattedTimestamp(),
-                "", 7711); // FIXME: 1/15/18 remove debug
-
         if (isUserTriggered) {
             resetLastSavedIntvDate(context);
         }
@@ -43,14 +39,14 @@ public class TriggerIntervention {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pi = PendingIntent.getBroadcast(context, alarmId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Calendar cal4am = Calendar.getInstance();
-        cal4am.set(Calendar.HOUR_OF_DAY, 3);
-        cal4am.set(Calendar.MINUTE, 0);
-        cal4am.set(Calendar.SECOND, 0);
-        cal4am.set(Calendar.MILLISECOND, 0);
+        Calendar calTime = Calendar.getInstance();
+        calTime.set(Calendar.HOUR_OF_DAY, 3);
+        calTime.set(Calendar.MINUTE, 0);
+        calTime.set(Calendar.SECOND, 0);
+        calTime.set(Calendar.MILLISECOND, 0);
 
         if (am != null) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, cal4am.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, calTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
         }
     }
 
@@ -71,8 +67,8 @@ public class TriggerIntervention {
     }
 
     private boolean todayIsFirstDayOfStudy() {
-        return false;
-//        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
+//        return false;
+        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
     }
 
     private boolean isNewDay() {

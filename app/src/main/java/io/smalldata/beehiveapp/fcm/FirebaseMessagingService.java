@@ -53,7 +53,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String url = data.get("url");
             switch (type) {
                 case SERVER_SYNC:
-                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext);
+                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(getApplicationContext());
                     break;
                 case NOTIFY_USER:
                     if (title != null || content != null) {

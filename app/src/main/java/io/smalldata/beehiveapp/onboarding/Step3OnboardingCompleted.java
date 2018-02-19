@@ -53,9 +53,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
                             "at: " + DateHelper.getFormattedTimestamp(),
                             "",
                             9060);
-
                 }
-                ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext); // FIXME: 1/25/18 only call this if user actually resets account
                 startActivity(new Intent(mContext, AppInfo.class));
             }
         });

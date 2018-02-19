@@ -12,6 +12,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
+import io.smalldata.beehiveapp.fcm.ServerPeriodicUpdateReceiver;
 
 public class Step0BLoginUser extends Activity {
 
@@ -47,6 +48,7 @@ public class Step0BLoginUser extends Activity {
             mProfile.saveUsername(dataParts[2]);
             mProfile.setTodayAsFirstDay();
             LocalStorage.prepareAllStorageFiles(mContext);
+            ServerPeriodicUpdateReceiver.startRepeatingServerTask(getApplicationContext()); // FIXME: 1/25/18 only call this if user actually resets account
             onboardUserTimePref();
         }
     }
