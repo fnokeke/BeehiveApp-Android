@@ -10,7 +10,6 @@ import android.widget.Button;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
-import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.fcm.ServerPeriodicUpdateReceiver;
 
@@ -70,7 +69,7 @@ public class Step0BLoginUser extends Activity {
     }
 
     private void openGoogleLoginURL() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_NO_OHMAGE_URL));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_URL));
         startActivity(browserIntent);
     }
 }

@@ -15,10 +15,6 @@ public class DailyTaskReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AlarmHelper.showInstantNotif(context, "Started 3am Task",
-                DateHelper.getFormattedTimestamp(),
-                "", 7711); // FIXME: 1/15/18 remove debug
-
         new TriggerIntervention(context).startIntvForToday();
     }
 }

@@ -35,15 +35,6 @@ public class NewAlarmHelper {
         int alarmId = notif.optInt("alarmId");
         singleIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
         singleIntent.putExtra("alarmId", alarmId);
-
-
-        AlarmHelper.showInstantNotif(context,
-                "Today Intv Applied",
-                "at: " + DateHelper.getFormattedTimestamp(),
-                "",
-                9063 + alarmId);
-
-
         singleIntent.putExtra(Constants.ALARM_NOTIF_TITLE, notif.optString("title"));
         singleIntent.putExtra(Constants.ALARM_NOTIF_CONTENT, notif.optString("content"));
         singleIntent.putExtra(Constants.ALARM_APP_ID, notif.optString("appIdToLaunch"));

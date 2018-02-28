@@ -45,7 +45,6 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
 
                 if (!alreadyAppliedTodayIntv()) {
                     TriggerIntervention.startDaily3amTask(mContext, true);
-//                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext);
                 } else {
                     // FIXME: 1/24/18 remove debug code
                     AlarmHelper.showInstantNotif(mContext,

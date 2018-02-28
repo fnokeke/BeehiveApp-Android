@@ -67,11 +67,11 @@ public class AppJobService extends JobService {
                 LocalStorage.resetFile(context, filenameToReset);
 
                 // FIXME: 1/24/18 remove debug code
-                AlarmHelper.showInstantNotif(context,
-                        "Successfully sent all local data!",
-                        "at: " + DateHelper.getFormattedTimestamp(),
-                        "",
-                        8960);
+//                AlarmHelper.showInstantNotif(context,
+//                        "Successfully sent all local data!",
+//                        "at: " + DateHelper.getFormattedTimestamp(),
+//                        "",
+//                        8960);
 
             }
 

@@ -57,17 +57,22 @@ public class TriggerIntervention {
 
     public void startIntvForToday() {
         if (todayIsFirstDayOfStudy()) {
-            Toast.makeText(mContext, "Your first reminder begins tomorrow.", Toast.LENGTH_SHORT).show();
-            return;
+            Toast.makeText(mContext, "Expect your first reminder tomorrow.", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!todayIntvExists()) { // FIXME: 1/15/18 remove debug
+            AlarmHelper.showInstantNotif(mContext, "No intv for today.",
+                    DateHelper.getFormattedTimestamp(),
+                    "", 7011);
         }
 
         if (isNewDay() && todayIntvExists()) {
             mProfile.applyIntvForToday();
         }
+
     }
 
     private boolean todayIsFirstDayOfStudy() {
-//        return false;
         return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
     }
 

@@ -28,7 +28,7 @@ public class CallAPI {
     final static private String RT_CHECK_CONN_URL = BASE_URL + "/mobile/check/rescuetime";
     final static private String RT_ACTIVITY_URL = BASE_URL + "/rescuetime/realtime";
     final static private String CAL_EVENTS_URL = BASE_URL + "/mobile/calendar/events";
-    final static public String GOOGLE_LOGIN_NO_OHMAGE_URL = CallAPI.BASE_URL + "/android_google_no_ohmage";
+    final static public String GOOGLE_LOGIN_URL = CallAPI.BASE_URL + "/android_google_login_participant";
 
     private static final String BEEHIVE_NOTIF_LOGS_URL = BASE_URL + "/mobile/add/notif";
     private static final String BEEHIVE_ANALYTICS_URL = BASE_URL + "/mobile/add/analytics";
