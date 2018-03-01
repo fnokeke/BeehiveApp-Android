@@ -53,7 +53,7 @@ public class AppJobService extends JobService {
 
     private static JSONObject getLocalData(Context context, String filename) {
         JSONObject params = new JSONObject();
-        JsonHelper.setJSONValue(params, "username", Profile.getCurrentUsername(context));
+        JsonHelper.setJSONValue(params, "email", Profile.getCurrentUsername(context));
         JsonHelper.setJSONValue(params, "code", Profile.getCurrentCode(context));
         JsonHelper.setJSONValue(params, "logs", LocalStorage.readFromFile(context, filename));
         return params;
@@ -77,7 +77,7 @@ public class AppJobService extends JobService {
 
             @Override
             public void onConnectFailure(VolleyError error) {
-                String msg = "Stats submit error: " + error.toString();
+                String msg = "Contact researcher: " + error.toString();
                 Log.e(TAG, filenameToReset + " StatsError: " + msg);
                 // FIXME: 1/24/18 remove debug code
                 AlarmHelper.showInstantNotif(context,

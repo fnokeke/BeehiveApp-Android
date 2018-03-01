@@ -34,6 +34,7 @@ public class AlarmHelper {
                 .setAutoCancel(true)
                 .setContentTitle(title)
                 .setSound(getDefaultSound())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setContentText(message);
 
         if (!appIdToLaunch.equals("")) {
