@@ -11,6 +11,7 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -52,6 +53,7 @@ public class Profile {
         }
         return code;
     }
+
     void saveUsername(String username) {
         Store.setString(mContext, Constants.USERNAME, username);
     }
@@ -210,16 +212,39 @@ public class Profile {
     }
 
     private void extractThenScheduleNotif(JSONObject protocol) {
+        String notifDetailsPairs = protocol.optString("notif_details");
+        String[] chosenTitleContent = chooseTitleContent(notifDetailsPairs);
+
+        String notifAppIdsList = protocol.optString("notif_appid");
+        String chosenAppId = chooseAppId(notifAppIdsList);
+
         JSONObject notif = new JSONObject();
         JsonHelper.setJSONValue(notif, Constants.ALARM_ID, getNotifId(protocol));
-        JsonHelper.setJSONValue(notif, "title", protocol.optString("notif_title"));
-        JsonHelper.setJSONValue(notif, "content", protocol.optString("notif_content"));
-        JsonHelper.setJSONValue(notif, "appIdToLaunch", protocol.optString("notif_appid"));
+        JsonHelper.setJSONValue(notif, "method", protocol.optString("method"));
+        JsonHelper.setJSONValue(notif, "title", chosenTitleContent[0]);
+        JsonHelper.setJSONValue(notif, "content", chosenTitleContent[1]);
+        JsonHelper.setJSONValue(notif, "appIdToLaunch", chosenAppId);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type")); // FIXME: 1/16/18 rename to NOTIF_TYPE; STOP USING RAW STRING
         NewAlarmHelper.scheduleIntvReminder(mContext, notif);
         markTodayAsIntvApplied();
         saveToNotifAppliedToday(notif);
+    }
+
+    private String chooseAppId(String notifAppIdsList) {
+        String[] pairs = notifAppIdsList.split("\n");
+        return pairs[getRandom(pairs.length)];
+
+    }
+
+    private String[] chooseTitleContent(String notifDetailsPairs) {
+        String[] pairs = notifDetailsPairs.split("\n");
+        String chosen = pairs[getRandom(pairs.length)];
+        return chosen.split(",");
+    }
+
+    private int getRandom(int limit) {
+        return new Random().nextInt(limit);
     }
 
     private void markTodayAsIntvApplied() {
@@ -249,6 +274,7 @@ public class Profile {
      * if probable_half_notify is false then it means that user should always see notification
      * but if probable_half_notify is true then fair coin must be tossed and if the result is
      * above 0.5 then user can see notification for that day otherwise notification isn't shown
+     *
      * @param protocol containing field 'probable_half_notify'
      * @return boolean indicating if notification should happen (true) or not (false)
      */
