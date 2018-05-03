@@ -23,4 +23,60 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="Widget.RS.IconTabLayout" parent="@style/Widget.Backbone.IconTabLayout">
+        <item name="tabIconColor">@android:color/white</item>
+        <item name="tabIconIndicatorColor">@color/rsb_error</item>
+        <item name="tabTextColor">@color/tab_text_color</item>
+    </style>
+
+    <style name="Widget.RS.SubmitBar" parent="@style/Widget.Backbone.SubmitBar"/>
+
+    <style name="Base.Widget.RS.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Widget.RS.Toolbar.Title</item>
+    </style>
+
+    <style name="Widget.RS.Toolbar" parent="@style/Base.Widget.RS.Toolbar">
+        <item name="android:elevation">4dp</item>
+        <item name="android:outlineProvider">bounds</item>
+    </style>
+
+    <style name="Widget.RS.Toolbar.Transparent" parent="@style/Base.Widget.RS.Toolbar">
+        <item name="android:elevation">0dp</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Widget.RS.Toolbar.Title.Transparent</item>
+    </style>
+
+    <style name="Widget.RS.ActionButton.Overflow"
+        parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
+    <style name="Widget.RS.Onboarding.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.RS.EmptyView" parent="@style/Widget.Backbone.EmptyView">
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="TextAppearance.Widget.RS.Toolbar.Title"
+        parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextAppearance.Widget.RS.Toolbar.Title.Transparent">
+        <item name="android:textColor">@color/rsb_warm_gray</item>
+    </style>
+
+    <style name="PreferenceFragment.RS" parent="@style/PreferenceFragment.Material">
+        <item name="android:divider">@null</item>
+    </style>
+
+
 </resources>

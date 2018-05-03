@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="Theme.RS" parent="Theme.Backbone">
+        <item name="android:windowBackground">@android:color/white</item>
+        <!-- Text Color for ActionBar and Text -->
+        <item name="alertDialogTheme">@style/Theme.RS.Dialog</item>
+        <item name="android:alertDialogTheme">@style/Theme.RS.Dialog</item>
+
+        <item name="android:textColor">@color/rsb_warm_gray</item>
+        <item name="android:textColorPrimary">@color/rsb_warm_gray</item>
+        <item name="android:textColorSecondary">@color/rsb_warm_gray</item>
+
+        <item name="colorControlNormal">@color/rsb_warm_gray</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:listDivider">@color/rsb_list_divider</item>
+
+        <item name="toolbarTheme">@style/Theme.RS.Toolbar</item>
+        <item name="passcodeTheme">@style/Theme.AppCompat.Light.NoActionBar</item>
+        <item name="icontablayoutStyle">@style/Widget.RS.IconTabLayout</item>
+        <item name="submitbarStyle">@style/Widget.RS.SubmitBar</item>
+        <item name="emptyviewStyle">@style/Widget.RS.EmptyView</item>
+    </style>
+
+    <style name="Theme.RS.Toolbar">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="toolbarStyle">@style/Widget.RS.Toolbar</item>
+    </style>
+
+    <style name="Theme.RS.Survey">
+        <item name="toolbarTheme">@style/Theme.RS.Toolbar.Transparent</item>
+        <item name="colorPrimaryDark">@color/dark_gray</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.RS.Toolbar.Transparent">
+        <item name="colorControlNormal">@color/rsb_warm_gray</item>
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="toolbarStyle">@style/Widget.RS.Toolbar.Transparent</item>
+    </style>
+
+    <style name="Theme.RS.Main">
+        <item name="toolbarTheme">@style/Theme.RS.Toolbar.Main</item>
+    </style>
+
+    <style name="Theme.RS.Toolbar.Main">
+        <item name="toolbarStyle">@style/Base.Widget.RS.Toolbar</item>
+    </style>
+
+    <style name="Theme.RS.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/rsb_warm_gray</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="Theme.RS.Settings">
+        <item name="android:textColor">@color/text_color_settings_title</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@color/text_color_settings_summary</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="preferenceTheme">@style/Theme.RS.Settings.Preference</item>
+    </style>
+
+    <style name="Theme.RS.Settings.Preference"
+        parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceFragmentCompatStyle">@style/PreferenceFragment.RS</item>
+        <item name="preferenceFragmentStyle">@style/PreferenceFragment.RS</item>
+    </style>
+
+    <style name="Theme.RS.Splash">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="colorPrimaryDark">@color/rsb_warm_gray</item>
+    </style>
+
+    <style name="Theme.RS.Onboarding">
+        <item name="android:windowBackground">@color/gray</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/dark_gray</item>
+    </style>
+
+    <style name="Theme.RS.Video">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+    </style>
+
+
+</resources>
