@@ -1,3 +1,5 @@
+apply plugin: 'me.tatarka.retrolambda'
+
 buildscript {
     repositories {
 //        maven { url 'https://maven.fabric.io/public' }
@@ -20,7 +22,7 @@ android {
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "io.smalldata.beehiveapp"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.5"
@@ -50,6 +52,19 @@ dependencies {
 //    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
 //        transitive = true;
 //    }
+    compile 'org.researchstack:backbone:1.1.2'
+    compile 'org.researchstack:skin:1.1.2'
+    compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
+    compile 'com.madgag.spongycastle:core:1.54.0.0'
+    compile 'com.madgag.spongycastle:prov:1.54.0.0'
+    compile 'com.madgag.spongycastle:pkix:1.54.0.0'
+    compile 'edu.cornell.tech.foundry:sdl_rsx:0.0.7'
+    compile 'edu.cornell.tech.foundry:sdl_rsx_rstbsupport:0.0.1'
+    compile 'edu.cornell.tech.foundry:sdl_rsx_rsrpsupport:0.0.3'
+    compile 'edu.cornell.tech.foundry:sdl_rsx_rsrpohmagebackend:0.0.3'
+    annotationProcessor 'co.touchlab.squeaky:squeaky-processor:0.4.0.0'
+    compile 'edu.cornell.tech.foundry:researchsuitetaskbuilder:0.0.5'
+    compile 'edu.cornell.tech.foundry:researchsuiteresultsprocessor:0.0.5'
 }
 
 

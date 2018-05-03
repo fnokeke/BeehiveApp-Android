@@ -3,6 +3,8 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
@@ -11,12 +13,19 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath "com.neenbedankt.gradle.plugins:android-apt:1.4"
+
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
+        maven { url "https://dl.bintray.com/edu-cornell-tech-foundry/SDLRSX" }
+        maven { url "https://dl.bintray.com/researchstack/ResearchStack" }
+        maven { url "https://dl.bintray.com/edu-cornell-tech-foundry/ResearchSuiteAppFramework" }
     }
 }
 
