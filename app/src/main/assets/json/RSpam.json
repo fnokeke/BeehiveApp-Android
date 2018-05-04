@@ -1,0 +1,37 @@
+{
+  "type": "recurring",
+  "identifier": "PAM",
+  "title": "Notification Date",
+  "guid": "notification_date-1",
+  "activity": {
+    "type"      : "elementList",
+    "identifier": "pam",
+    "elements"   : [
+      {
+        "identifier"   : "PAM",
+        "type"         : "PAM",
+        "optional":true
+      },
+      {
+        "identifier"   : "results",
+        "type"         : "instruction",
+        "title"        : "Thanks!",
+        "text"         : ""
+      }
+    ]
+  },
+  "resultTransforms": [
+    {
+      "transform": "PAMCSVEncodable",
+      "inputMapping": [
+        {"parameter":"result", "stepIdentifier":"PAM"},
+        {"parameter": "schemaID", "constant":{
+          "namespace": "Cornell",
+          "name": "cornell",
+          "version": "1.0"
+        }
+        }
+      ]
+    }
+  ]
+}

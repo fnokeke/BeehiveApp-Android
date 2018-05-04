@@ -27,6 +27,7 @@ android {
         versionCode 1
         versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -65,6 +66,7 @@ dependencies {
     annotationProcessor 'co.touchlab.squeaky:squeaky-processor:0.4.0.0'
     compile 'edu.cornell.tech.foundry:researchsuitetaskbuilder:0.0.5'
     compile 'edu.cornell.tech.foundry:researchsuiteresultsprocessor:0.0.5'
+    compile project(':rsrp')
 }
 
 

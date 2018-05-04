@@ -1,7 +1,11 @@
 package io.smalldata.beehiveapp.onboarding;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,10 +18,12 @@ import org.json.JSONObject;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.main.Experiment;
+import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
+import io.smalldata.beehiveapp.studyManagement.RSActivity;
 import io.smalldata.beehiveapp.utils.ConnectBeehive;
 import io.smalldata.beehiveapp.utils.Network;
 
-public class Step0AWelcomeStudyCode extends AppCompatActivity {
+public class Step0AWelcomeStudyCode extends  RSActivity {
     Context mContext;
     Profile mProfile;
     Button btnContinue;
@@ -33,12 +39,71 @@ public class Step0AWelcomeStudyCode extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        if (userIsLoggedIn()) {
-            showAppInfo();
-        } else {
-            startOnBoarding();
+
+        if (isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()) {
+            RSActivityManager.get().queueActivity(this, "RSpam", true);
+            RSActivityManager.get().queueActivity(this, "demography", true);
+            RSActivityManager.get().queueActivity(this, "planner", true);
+            RSActivityManager.get().queueActivity(this, "productivity", true);
+        }
+
+//        if (userIsLoggedIn()) {
+//            showAppInfo();
+//        } else {
+//            startOnBoarding();
+//        }
+    }
+
+
+    public boolean isReadStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            return true;
+        }
+    }
+
+    public boolean isWriteStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 2:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                }
+                break;
+
+            case 3:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                }
+                break;
         }
     }
 

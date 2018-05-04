@@ -1,2 +1,2 @@
-org.researchsuite.pamdemo.RSRPBackendSupport.PAMCSVTransformer
-org.researchsuite.pamdemo.RSRPBackendSupport.BeehiveCSVTransformer
+io.smalldata.beehiveapp.RSRPBackendSupport.PAMCSVTransformer
+io.smalldata.beehiveapp.RSRPBackendSupport.BeehiveCSVTransformer

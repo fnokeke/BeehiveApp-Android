@@ -5,6 +5,7 @@ buildscript {
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
 
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
@@ -26,6 +27,7 @@ allprojects {
         maven { url "https://dl.bintray.com/edu-cornell-tech-foundry/SDLRSX" }
         maven { url "https://dl.bintray.com/researchstack/ResearchStack" }
         maven { url "https://dl.bintray.com/edu-cornell-tech-foundry/ResearchSuiteAppFramework" }
+        google()
     }
 }
 

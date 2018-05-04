@@ -1,0 +1,45 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 25
+        buildToolsVersion '25.0.0'
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    //noinspection GradleCompatible
+    compile 'com.android.support:appcompat-v7:25.1.0'
+
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.researchstack:backbone:1.1.2'
+
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+    compile 'org.apache.commons:commons-lang3:3.6'
+
+    //compile group: 'org.apache.http' , name: 'httpclient-android' , version: '4.3.5.1'
+}
+
+//apply from: rootProject.file('release-bintray.gradle')

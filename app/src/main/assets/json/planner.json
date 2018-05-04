@@ -1,0 +1,56 @@
+{
+  "type": "recurring",
+  "identifier": "Planner",
+  "title": "Planner",
+  "guid": "planner-1",
+  "activity": {
+    "type"      : "elementList",
+    "identifier": "sample_list",
+    "elements"   : [
+      {
+        "identifier"   : "introduction",
+        "type"         : "instruction",
+        "title"        : "Welcome to the Planner Assessment"
+      },
+      {
+        "identifier": "one goal do you plan to achieve today",
+        "type": "textfield",
+        "text": "What one goal do you plan to achieve today?"
+      },
+      {
+        "identifier":"when do you plan to stop using your phone",
+        "type":"timePicker",
+        "text":"When do you plan to stop using your phone?"
+      },
+      {
+        "identifier"   : "results",
+        "type"         : "instruction",
+        "title"        : "Thanks!",
+        "text"         : ""
+      }
+    ]
+  },
+  "resultTransforms":[
+    {
+      "transform": "BeehiveCSVEncodable",
+      "inputMapping":[
+        {
+          "stepIdentifier":"one goal do you plan to achieve today",
+          "parameter":"one goal do you plan to achieve today"
+        },
+        {
+          "stepIdentifier":"when do you plan to stop using your phone",
+          "parameter":"when do you plan to stop using your phone"
+        },
+        {"parameter": "schemaID", "constant":{
+          "namespace": "Cornell",
+          "name": "cornell",
+          "version": "1.0"
+        }
+        }
+      ]
+    }
+
+  ]
+
+}

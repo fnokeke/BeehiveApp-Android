@@ -1,0 +1,76 @@
+{
+  "type": "recurring",
+  "identifier": "Demography",
+  "title": "Demography",
+  "guid": "demography-1",
+  "activity": {
+    "type"      : "elementList",
+    "identifier": "sample_list",
+    "elements"   : [
+      {
+        "identifier"   : "introduction",
+        "type"         : "instruction",
+        "title"        : "Welcome to the Demography Assessment"
+      },
+      {
+        "identifier": "gender",
+        "type": "singleChoiceText",
+        "text": "Gender",
+        "items": [
+          {
+            "prompt": "Male",
+            "value": "male"
+          },
+          {
+            "prompt": "Female",
+            "value": "female"
+          },
+          {
+            "prompt": "Other",
+            "value": "other"
+          }
+        ]
+      },
+      {
+        "identifier": "age",
+        "type": "numericInteger",
+        "text": "Age",
+        "range": {
+          "min": 18,
+          "max": 99,
+          "unitLabel": "years"
+        }
+      }
+
+    ]
+  },
+  "resultTransforms":[
+    {
+      "transform": "BeehiveCSVEncodable",
+      "inputMapping":[
+        {
+          "stepIdentifier":"gender",
+          "parameter":"gender"
+        },
+        {
+          "stepIdentifier":"age",
+          "parameter":"age"
+        },
+        {
+          "identifier"   : "results",
+          "type"         : "instruction",
+          "title"        : "Thanks!",
+          "text"         : ""
+        },
+        {"parameter": "schemaID", "constant":{
+          "namespace": "Cornell",
+          "name": "cornell",
+          "version": "1.0"
+        }
+        }
+      ]
+    }
+
+  ]
+
+}

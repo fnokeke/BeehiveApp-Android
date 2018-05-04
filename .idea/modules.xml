@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BeehiveApp.iml" filepath="$PROJECT_DIR$/BeehiveApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rsrp/rsrp.iml" filepath="$PROJECT_DIR$/rsrp/rsrp.iml" />
     </modules>
   </component>
 </project>
