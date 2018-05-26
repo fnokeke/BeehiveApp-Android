@@ -31,7 +31,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.main.Experiment;
-import io.smalldata.beehiveapp.utils.ConnectBeehive;
+//import io.smalldata.beehiveapp.utils.ConnectBeehive;
 import io.smalldata.beehiveapp.utils.OldConstants;
 import io.smalldata.beehiveapp.utils.Display;
 import io.smalldata.beehiveapp.utils.JsonHelper;
@@ -72,7 +72,7 @@ public class ConnectFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initView();
+//        initView();
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ConnectFragment extends Fragment {
 
         Display.clear(howToConnTV);
         JSONObject userInfo = getFormInput();
-        new ConnectBeehive(mContext, formTitleTV).connectToBeehive(userInfo);
+//        new ConnectBeehive(mContext, formTitleTV).connectToBeehive(userInfo);
         logCrashAnalyticsUser(userInfo);
     }
 

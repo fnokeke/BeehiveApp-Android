@@ -36,24 +36,19 @@ public class Step0AWelcomeStudyCode extends  RSActivity {
         mContext = this;
         mProfile = new Profile(mContext);
         super.onCreate(savedInstanceState);
+//        if (isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()) {
+//            RSActivityManager.get().queueActivity(this, "demography", true);
+//        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        if (isReadStoragePermissionGranted() && isWriteStoragePermissionGranted()) {
-            RSActivityManager.get().queueActivity(this, "RSpam", true);
-            RSActivityManager.get().queueActivity(this, "demography", true);
-            RSActivityManager.get().queueActivity(this, "planner", true);
-            RSActivityManager.get().queueActivity(this, "productivity", true);
+        if (userIsLoggedIn()) {
+            showAppInfo();
+        } else {
+            startOnBoarding();
         }
-
-//        if (userIsLoggedIn()) {
-//            showAppInfo();
-//        } else {
-//            startOnBoarding();
-//        }
     }
 
 

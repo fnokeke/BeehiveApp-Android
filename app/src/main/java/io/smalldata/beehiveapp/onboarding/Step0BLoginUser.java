@@ -47,6 +47,7 @@ public class Step0BLoginUser extends Activity {
             mProfile.saveUsername(dataParts[2]);
             mProfile.setTodayAsFirstDay();
             LocalStorage.prepareAllStorageFiles(mContext);
+            ServerPeriodicUpdateReceiver.registerUserOnLoginComplete(mContext);
             ServerPeriodicUpdateReceiver.startRepeatingServerTask(getApplicationContext()); // FIXME: 1/25/18 only call this if user actually resets account
             onboardUserTimePref();
         }

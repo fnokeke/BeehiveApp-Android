@@ -15,6 +15,7 @@ import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
+import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 
 public class AppJobService extends JobService {
@@ -41,6 +42,15 @@ public class AppJobService extends JobService {
         sendInAppAnalytics(context);
     }
 
+    public static void registerMobileUserOnLoginComplete(Context context) {
+        JSONObject data = new JSONObject();
+        JsonHelper.setJSONValue(data, "email", Profile.getCurrentUsername(context));
+        JsonHelper.setJSONValue(data, "code", Profile.getCurrentCode(context));
+        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(context);
+        JsonHelper.copy(fromPhoneDetails, data);
+        CallAPI.registerMobileUser(context, data, getLogResponseHandler(context, null));
+    }
+
     private void sendNotifLogs(Context context) {
         JSONObject data = getLocalData(context, Constants.NOTIF_LOGS_CSV);
         CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, Constants.NOTIF_LOGS_CSV));
@@ -64,15 +74,9 @@ public class AppJobService extends JobService {
             @Override
             public void onConnectSuccess(JSONObject result) {
                 Log.i(TAG, filenameToReset + " Submit Response: " + result.toString());
-                LocalStorage.resetFile(context, filenameToReset);
-
-                // FIXME: 1/24/18 remove debug code
-//                AlarmHelper.showInstantNotif(context,
-//                        "Successfully sent all local data!",
-//                        "at: " + DateHelper.getFormattedTimestamp(),
-//                        "",
-//                        8960);
-
+                if (filenameToReset != null) {
+                    LocalStorage.resetFile(context, filenameToReset);
+                }
             }
 
             @Override
@@ -81,7 +85,7 @@ public class AppJobService extends JobService {
                 Log.e(TAG, filenameToReset + " StatsError: " + msg);
                 // FIXME: 1/24/18 remove debug code
                 AlarmHelper.showInstantNotif(context,
-                        "At "+ DateHelper.getFormattedTimestamp() + " sent failed!",
+                        "At " + DateHelper.getFormattedTimestamp() + " sent failed!",
                         "Error: " + msg,
                         "",
                         8961);
@@ -89,4 +93,5 @@ public class AppJobService extends JobService {
         };
 
     }
+
 }

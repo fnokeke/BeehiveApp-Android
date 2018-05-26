@@ -48,4 +48,7 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
 //        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pi);
     }
 
+    public static void registerUserOnLoginComplete(Context context) {
+        AppJobService.registerMobileUserOnLoginComplete(context);
+    }
 }

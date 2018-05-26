@@ -35,7 +35,9 @@ public class AppInfo extends AppCompatActivity {
     protected void onResume() {
         setAppInfo();
         super.onResume();
-        InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
+        if (mProfile.userCompletedAllSteps()) {
+            InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
+        }
     }
 
     private void setAppInfo() {

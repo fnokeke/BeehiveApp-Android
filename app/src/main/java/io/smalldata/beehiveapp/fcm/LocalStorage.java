@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class LocalStorage {
         LocalStorage.appendToFile(context, Constants.NOTIF_LOGS_CSV, "");
         LocalStorage.appendToFile(context, Constants.ANALYTICS_LOG_CSV, "");
     }
+
 
     public static void appendToFile(Context context, String filename, String data) {
         try {

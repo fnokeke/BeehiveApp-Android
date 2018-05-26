@@ -55,7 +55,7 @@ public class Profile {
     }
 
     void saveUsername(String username) {
-        Store.setString(mContext, Constants.USERNAME, username);
+        Store.setString(mContext, Constants.USERNAME, username.split("#")[0]);
     }
 
     public String getUsername() {

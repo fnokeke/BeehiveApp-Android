@@ -30,7 +30,7 @@ public class SilentRefresh {
     public void syncExperiment() {
         JSONObject fullUserDetails = Experiment.getFullUserDetails(mContext);
         AlarmHelper.showInstantNotif(mContext, "Beehive Study Update", DateHelper.getFormattedTimestamp(), "", 7778);
-        CallAPI.connectStudy(mContext, fullUserDetails, silentConnectHandler);
+//        CallAPI.connectStudy(mContext, fullUserDetails, silentConnectHandler);
     }
 
     private VolleyJsonCallback silentConnectHandler = new VolleyJsonCallback() {

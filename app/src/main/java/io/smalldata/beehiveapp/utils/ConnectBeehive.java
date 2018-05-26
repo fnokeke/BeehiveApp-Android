@@ -74,61 +74,61 @@ public class ConnectBeehive {
 
 
     // TODO: 12/16/17 remove dead code (connectToBeehive)
-    public void connectToBeehive(JSONObject userInfo) {
-        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
-        JsonHelper.copy(fromPhoneDetails, userInfo);
-        Display.showBusy(mContext, "Transferring your bio...");
-        CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
-    }
+//    public void connectToBeehive(JSONObject userInfo) {
+//        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
+//        JsonHelper.copy(fromPhoneDetails, userInfo);
+//        Display.showBusy(mContext, "Transferring your bio...");
+//        CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
+//    }
 
-    private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
-        @Override
-        public void onConnectSuccess(JSONObject jsonResult) {
-            Log.i(TAG, "onConnectStudySuccess: " + jsonResult.toString());
-
-            JSONObject jsonExperimentInfo = jsonResult.optJSONObject("experiment");
-            Display.dismissBusy();
-            if (jsonExperimentInfo.length() == 0) {
-                experiment.enableSettings(false);
-                Display.showError(tvFeedback, "Invalid code.");
-                return;
-            }
-            experiment.enableSettings(true);
-            Display.showSuccess(tvFeedback, "Successfully connected!");
-            experiment.saveConfigs(jsonExperimentInfo);
-
-            JSONObject user = jsonResult.optJSONObject("user");
-            experiment.saveUserInfo(user);
-            FirebaseMessaging.getInstance().subscribeToTopic(user.optString("code"));
-
-            JSONObject response = jsonResult.optJSONObject("response");
-            Store.setString(mContext, "formInputResponse", response.toString());
-            Store.setString(mContext, "formInputUser", user.toString());
-
-            Intent intent = new Intent("ui-form-update");
-            intent.putExtra("formInputResponse", response.toString());
-            intent.putExtra("formInputUser", user.toString());
-            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-
-            Display.dismissBusy();
-            new AutoUpdateAlarm().setAlarmForPeriodicUpdate(mContext);
-
-            showSettingsTip();
-        }
-
-        @Override
-        public void onConnectFailure(VolleyError error) {
-            experiment.enableSettings(false);
-            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
-            Log.e("onConnectFailure: ", error.toString());
-
-            Display.showError(tvFeedback, "Cannot submit your bio.");
-            String msg = String.format(OldConstants.LOCALE, "Error, submitting info. %s", error.toString());
-            Display.showError(tvFeedback, msg);
-            Display.dismissBusy();
-            error.printStackTrace();
-        }
-    };
+//    private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
+//        @Override
+//        public void onConnectSuccess(JSONObject jsonResult) {
+//            Log.i(TAG, "onConnectStudySuccess: " + jsonResult.toString());
+//
+//            JSONObject jsonExperimentInfo = jsonResult.optJSONObject("experiment");
+//            Display.dismissBusy();
+//            if (jsonExperimentInfo.length() == 0) {
+//                experiment.enableSettings(false);
+//                Display.showError(tvFeedback, "Invalid code.");
+//                return;
+//            }
+//            experiment.enableSettings(true);
+//            Display.showSuccess(tvFeedback, "Successfully connected!");
+//            experiment.saveConfigs(jsonExperimentInfo);
+//
+//            JSONObject user = jsonResult.optJSONObject("user");
+//            experiment.saveUserInfo(user);
+//            FirebaseMessaging.getInstance().subscribeToTopic(user.optString("code"));
+//
+//            JSONObject response = jsonResult.optJSONObject("response");
+//            Store.setString(mContext, "formInputResponse", response.toString());
+//            Store.setString(mContext, "formInputUser", user.toString());
+//
+//            Intent intent = new Intent("ui-form-update");
+//            intent.putExtra("formInputResponse", response.toString());
+//            intent.putExtra("formInputUser", user.toString());
+//            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+//
+//            Display.dismissBusy();
+//            new AutoUpdateAlarm().setAlarmForPeriodicUpdate(mContext);
+//
+//            showSettingsTip();
+//        }
+//
+//        @Override
+//        public void onConnectFailure(VolleyError error) {
+//            experiment.enableSettings(false);
+//            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
+//            Log.e("onConnectFailure: ", error.toString());
+//
+//            Display.showError(tvFeedback, "Cannot submit your bio.");
+//            String msg = String.format(OldConstants.LOCALE, "Error, submitting info. %s", error.toString());
+//            Display.showError(tvFeedback, msg);
+//            Display.dismissBusy();
+//            error.printStackTrace();
+//        }
+//    };
 
     private void showSettingsTip() {
         String title = "Select Preference";
