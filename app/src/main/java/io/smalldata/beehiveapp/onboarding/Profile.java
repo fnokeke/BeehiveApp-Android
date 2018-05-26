@@ -1,6 +1,8 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,7 +13,6 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -201,46 +202,81 @@ public class Profile {
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    void applyIntvForToday() {
+    public void applyIntvForToday() {
+        Toast.makeText(mContext, "Apply Intv for today", Toast.LENGTH_SHORT).show();
         JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
-            if (coversToday(p) && canContinueAfterCoinToss(p)) {
-                extractThenScheduleNotif(p);
+            if (coversToday(p) ) {
+                if (canContinueAfterCoinToss(p)) {
+                    extractThenScheduleNotif(p);
+                } else {
+                    Toast.makeText(mContext, "Coin fail: " + p.optString("label"), Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
+    public JSONObject getTodayProtocol(long alarmMillis) {
+        JSONObject p;
+        JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
+        for (int i = 0; i < protocols.length(); i++) {
+            p = protocols.optJSONObject(i);
+            if (coversToday(p) && alarmMillis == getAlarmMillis(p)) {
+                if (canContinueAfterCoinToss(p)) {
+                    return p;
+                } else {
+                    Log.i("Profile.class", "Coin toss for protocol is no intv");
+                }
+            }
+        }
+        return null;
+
+    }
+
     private void extractThenScheduleNotif(JSONObject protocol) {
-        String notifDetailsPairs = protocol.optString("notif_details");
-        String[] chosenTitleContent = chooseTitleContent(notifDetailsPairs);
-
-        String notifAppIdsList = protocol.optString("notif_appid");
-        String chosenAppId = chooseAppId(notifAppIdsList);
-
+        // There could be multiple notifcations available (one per line) so randomly select one to show
+        // There could be multiple app ids so randomly select one to launch
+        String[] chosen = chooseTitleContentAppId(protocol);
         JSONObject notif = new JSONObject();
         JsonHelper.setJSONValue(notif, Constants.ALARM_ID, getNotifId(protocol));
         JsonHelper.setJSONValue(notif, "method", protocol.optString("method"));
-        JsonHelper.setJSONValue(notif, "title", chosenTitleContent[0]);
-        JsonHelper.setJSONValue(notif, "content", chosenTitleContent[1]);
-        JsonHelper.setJSONValue(notif, "appIdToLaunch", chosenAppId);
+        JsonHelper.setJSONValue(notif, "title", chosen[0]);
+        JsonHelper.setJSONValue(notif, "content", chosen[1]);
+        JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type")); // FIXME: 1/16/18 rename to NOTIF_TYPE; STOP USING RAW STRING
         NewAlarmHelper.scheduleIntvReminder(mContext, notif);
-        markTodayAsIntvApplied();
+//        markTodayAsIntvApplied(); // fixme: undo comment remove debug
         saveToNotifAppliedToday(notif);
+        Toast.makeText(mContext, "Coin success:" + protocol.optString("label"), Toast.LENGTH_SHORT).show();
+        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // fixme: remove debug
     }
 
-    private String chooseAppId(String notifAppIdsList) {
-        String[] pairs = notifAppIdsList.split("\n");
-        return pairs[getRandom(pairs.length)];
+    private String[] chooseTitleContentAppId(JSONObject protocol) {
+        switch (protocol.optString("method")) {
+            case Constants.TYPE_PAM:
+                return new String[]{"New PAM survey.", "Tap here to see.", "pam"};
 
-    }
+            case Constants.TYPE_PUSH_SURVEY:
+                return new String[]{"You have a new survey.", "Tap here to view.", "push_survey"};
 
-    private String[] chooseTitleContent(String notifDetailsPairs) {
-        String[] pairs = notifDetailsPairs.split("\n");
-        String chosen = pairs[getRandom(pairs.length)];
-        return chosen.split(",");
+            case Constants.TYPE_PUSH_NOTIFICATION:
+                // get title - content
+                String notifDetailsPairs = protocol.optString("notif_details");
+                String[] pairs = notifDetailsPairs.split("\n");
+                String tmpChosen = pairs[getRandom(pairs.length)];
+                String titleContentArr[] = tmpChosen.split(",");
+                // get app id
+                String notifAppIdsList = protocol.optString("notif_appid");
+                String[] pairsAppId = notifAppIdsList.split("\n");
+                String chosenAppId = pairsAppId[getRandom(pairsAppId.length)];
+                return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId};
+
+            default:
+                throw new UnsupportedOperationException("Protocol type does not exist");
+
+        }
     }
 
     private int getRandom(int limit) {
@@ -289,9 +325,9 @@ public class Profile {
      */
     private static double tossFairCoin() {
         int min = 1;
-        int max = 100;
+        int max = 10;
         int range = max - min + 1;
-        return (new Random().nextInt(range) + min) / 100;
+        return (new Random().nextInt(range) + min) / max;
     }
 
     // FIXME: 1/7/18 push 2am alarm next day

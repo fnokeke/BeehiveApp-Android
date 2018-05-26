@@ -6,14 +6,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import org.json.JSONObject;
+
 import io.smalldata.beehiveapp.onboarding.Constants;
+import io.smalldata.beehiveapp.onboarding.Profile;
+import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 
 /**
  * Handle broadcast notification
  * Created by fnokeke on 1/25/17.
  */
 
-public class SingleAlarmReceiver extends BroadcastReceiver {
+public class ProtocolAlarmReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -24,6 +28,7 @@ public class SingleAlarmReceiver extends BroadcastReceiver {
         Notification notification = intent.getParcelableExtra(Constants.NOTIFICATION);
         int id = intent.getIntExtra(Constants.NOTIFICATION_ID, 1);
         notificationManager.notify(id, notification);
+
     }
 }
 

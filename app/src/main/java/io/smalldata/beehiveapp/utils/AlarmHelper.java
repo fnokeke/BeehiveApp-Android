@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.notification.NotifEventReceiver;
-import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.notification.ProtocolAlarmReceiver;
 import io.smalldata.beehiveapp.onboarding.Constants;
 
 /**
@@ -48,7 +48,7 @@ public class AlarmHelper {
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmMillis, String alarmType) {
-        Intent singleIntent = new Intent(context, SingleAlarmReceiver.class);
+        Intent singleIntent = new Intent(context, ProtocolAlarmReceiver.class);
         Notification notification = createNotification(context, alarmId, title, content, appIdToLaunch, alarmMillis, alarmType);
         singleIntent.putExtra(Constants.NOTIFICATION, notification);
         singleIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);

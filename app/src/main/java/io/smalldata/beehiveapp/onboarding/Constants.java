@@ -16,6 +16,7 @@ public class Constants {
     public final static String ALARM_APP_ID = "app_id";
     public final static String ALARM_MILLIS_SET = "alarm_millis";
     public final static String ALARM_NOTIF_WAS_DISMISSED = "was_dismissed";
+    public static final String ALARM_NOTIF_METHOD = "method";
 
     public final static String NOTIFICATION_ID = "notification-id";
     public final static String NOTIFICATION = "notification";
@@ -71,6 +72,9 @@ public class Constants {
     public static final java.lang.String VALUE_OF_CHANGED_WEEKEND_SLEEP = "value-changed-weekend-sleep";
     public static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKEND = "value-changed-user-window-weekend";
     public static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKDAY = "value-changed-user-window-weekday";
+    public static final String TYPE_PAM = "pam";
+    public static final String TYPE_PUSH_SURVEY = "push_survey";
+    public static final String TYPE_PUSH_NOTIFICATION = "push_notification";
 
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";

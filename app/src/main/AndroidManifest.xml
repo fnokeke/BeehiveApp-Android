@@ -82,7 +82,7 @@
         <activity android:name=".login.BeginStudy" />
 
         <receiver
-            android:name=".notification.SingleAlarmReceiver"
+            android:name=".notification.ProtocolAlarmReceiver"
             android:process=":singleReceiver" />
         <receiver
             android:name=".main.StartMyServiceAtBootReceiver"

@@ -16,8 +16,7 @@ import java.util.Calendar;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.onboarding.Constants;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
-import io.smalldata.beehiveapp.utils.DateHelper;
+import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 
 /**
  * Created by fnokeke on 1/3/18.
@@ -26,15 +25,28 @@ import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class NewAlarmHelper {
 
-    public static void scheduleIntvReminder(Context context, JSONObject notif) {
+//    public static void scheduleProtocolIntv(Context context, int alarmId, long alarmMillis) {
+//        Notification notification = createNewNotif(context, notif);
+//        Intent singleIntent = new Intent(context, ProtocolAlarmReceiver.class);
+//        singleIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
+//        singleIntent.putExtra("alarmMillis", alarmMillis);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmId, singleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        if (alarmManager == null) {
+//            throw new UnsupportedOperationException("alarmManager should not be null");
+//        }
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmMillis, pendingIntent);
+//    }
 
+    public static void scheduleIntvReminder(Context context, JSONObject notif) {
         Notification notification = createNewNotif(context, notif);
-        Intent singleIntent = new Intent(context, SingleAlarmReceiver.class);
+        Intent singleIntent = new Intent(context, ProtocolAlarmReceiver.class);
         singleIntent.putExtra(Constants.NOTIFICATION, notification);
 
         int alarmId = notif.optInt("alarmId");
         singleIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
         singleIntent.putExtra("alarmId", alarmId);
+        singleIntent.putExtra(Constants.ALARM_NOTIF_METHOD, notif.optString("method"));
         singleIntent.putExtra(Constants.ALARM_NOTIF_TITLE, notif.optString("title"));
         singleIntent.putExtra(Constants.ALARM_NOTIF_CONTENT, notif.optString("content"));
         singleIntent.putExtra(Constants.ALARM_APP_ID, notif.optString("appIdToLaunch"));
@@ -48,6 +60,37 @@ public class NewAlarmHelper {
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, notif.optLong("alarmMillis"), pendingIntent);
     }
+
+//    private static Notification latestCreateNewNotif(Context context, int notif) {
+//        final int CONTENT_PREFIX = 16;// make requestCode unique
+//        final int DELETE_PREFIX = 32; // make requestCode unique
+//        int alarmId = notif.optInt("alarmId");
+//
+//        Intent launchedIntent = new Intent(context, NotifEventReceiver.class);
+//        launchedIntent.putExtra(Constants.ALARM_NOTIF_WAS_DISMISSED, false);
+//        PendingIntent launchedPendingIntent = PendingIntent.getBroadcast(context, CONTENT_PREFIX + alarmId, launchedIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//        Intent deletedIntent = new Intent(context, NotifEventReceiver.class);
+//        deletedIntent.putExtra(Constants.ALARM_NOTIF_WAS_DISMISSED, true);
+//        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context,  + DELETE_PREFIX + alarmId, deletedIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+//        builder.setContentIntent(launchedPendingIntent);
+//        builder.setContentTitle(notif.optString("title"))
+//                .setContentText(notif.optString("content"))
+//                .setAutoCancel(true)
+//                .setSound(getDefaultSound())
+//                .setDeleteIntent(deletePendingIntent)
+//                .setSmallIcon(android.R.drawable.ic_popup_reminder)
+//                .setWhen(notif.optLong("alarmMillis"))
+//                .setShowWhen(true);
+//
+//        if (notif.optString(Constants.NOTIF_TYPE).equals("sleep_wake")) {
+//            builder.setSmallIcon(R.drawable.end_of_day_reminder);
+//        }
+//
+//        return builder.build();
+//    }
 
     private static Notification createNewNotif(Context context, JSONObject notif) {
         Intent appLauncherIntent = createNewOnClickIntent(context, notif, false);
@@ -66,12 +109,24 @@ public class NewAlarmHelper {
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)
                 .setWhen(notif.optLong("alarmMillis"))
                 .setShowWhen(true);
 
-        if (notif.optString(Constants.NOTIF_TYPE).equals("sleep_wake")) {
-            builder.setSmallIcon(R.drawable.end_of_day_reminder);
+        switch (notif.optString("method")) {
+            case Constants.TYPE_PAM:
+                builder.setSmallIcon(R.drawable.end_of_day_reminder);
+                break;
+
+            case Constants.TYPE_PUSH_SURVEY:
+                builder.setSmallIcon(android.R.drawable.ic_dialog_email);
+                break;
+
+            case Constants.TYPE_PUSH_NOTIFICATION:
+                builder.setSmallIcon(R.drawable.end_of_day_reminder);
+                break;
+
+            default:
+                builder.setSmallIcon(android.R.drawable.ic_popup_reminder);
         }
 
         return builder.build();

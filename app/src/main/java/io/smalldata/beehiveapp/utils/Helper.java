@@ -22,7 +22,7 @@ import java.util.TimeZone;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.main.MainActivity;
-import io.smalldata.beehiveapp.notification.SingleAlarmReceiver;
+import io.smalldata.beehiveapp.notification.ProtocolAlarmReceiver;
 import io.smalldata.beehiveapp.onboarding.Constants;
 
 /**
@@ -68,7 +68,7 @@ public class Helper {
     }
 
     public static void scheduleSingleAlarm(Context context, int alarmId, String title, String content, String appIdToLaunch, long alarmTime) {
-        Intent notificationIntent = new Intent(context, SingleAlarmReceiver.class);
+        Intent notificationIntent = new Intent(context, ProtocolAlarmReceiver.class);
         Notification notification = createNotification(context, title, content, appIdToLaunch);
         notificationIntent.putExtra(Constants.NOTIFICATION, notification);
         notificationIntent.putExtra(Constants.NOTIFICATION_ID, alarmId);
