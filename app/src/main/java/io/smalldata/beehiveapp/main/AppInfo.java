@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
+import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -46,6 +48,10 @@ public class AppInfo extends RSActivity {
             mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
         }
         requestStoragePermission();
+        String answer = LocalStorage.readFromFile(mContext, Constants.PAM_LOGS_CSV);
+        Log.i("PAM.csv: ", answer);
+        answer = LocalStorage.readFromFile(mContext, Constants.ANALYTICS_LOG_CSV);
+        Log.i("Analytics.csv: ", answer);
     }
 
     private void requestStoragePermission() {

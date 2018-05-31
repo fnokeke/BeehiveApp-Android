@@ -5,10 +5,10 @@
   "guid": "survey-1",
   "activity": {
     "type": "elementList",
-    "identifier": "mindful_list",
+    "identifier": "survey_list",
     "elements": [
       {
-        "identifier": "id-survey-q",
+        "identifier": "q1-mindful-engage",
         "type": "singleChoiceText",
         "text": "Did you engage in any mindful activity today?",
         "items": [
@@ -29,8 +29,8 @@
       "transform": "BeehiveCSVEncodable",
       "inputMapping": [
         {
-          "stepIdentifier": "survey-q",
-          "parameter": "survey-q"
+          "stepIdentifier": "q1-mindful-engage",
+          "parameter": "q1-mindful-engage"
         },
         {
           "parameter": "schemaID",

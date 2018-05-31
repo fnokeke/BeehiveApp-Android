@@ -1,6 +1,7 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
+import android.os.Environment;
 
 import io.smalldata.beehiveapp.utils.JsonHelper;
 
@@ -44,6 +45,9 @@ public class Constants {
 
     public static final String NOTIF_LOGS_CSV = "notifLogs.csv";
     public static final String ANALYTICS_LOG_CSV = "analytics.csv";
+    public static final String SURVEY_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/Survey.csv";
+    public static final String PAM_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/PAM.csv";
+//    public static final String PAM_LOGS_CSV = "/PAM.csv";
 
     public static final String VIEWED_SCREEN_USERTIMERS = "viewed-screen-usertimers";
     public static final String VIEWED_SCREEN_USERWINDOWS = "viewed-screen-userwindows";

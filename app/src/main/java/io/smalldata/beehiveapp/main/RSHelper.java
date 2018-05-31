@@ -20,6 +20,7 @@ public class RSHelper extends RSActivity {
                 break;
             case Constants.TYPE_PUSH_SURVEY:
                 RSActivityManager.get().queueActivity(context, "survey", true);
+//                RSActivityManager.get().queueActivity(context, getSurvey(), true);
                 break;
             default:
         }

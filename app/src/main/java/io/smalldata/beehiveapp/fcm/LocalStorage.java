@@ -1,10 +1,13 @@
 package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,15 +45,15 @@ public class LocalStorage {
         }
     }
 
-    static String readFromFile(Context context, String filename) {
-
+    public static String readFromFile(Context context, String filename) {
         String ret = "";
 
         try {
-            InputStream inputStream = context.openFileInput(filename);
 
-            if (inputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            if (filename.contains("/")) { // in external storage
+                FileInputStream fis = new FileInputStream(filename);
+                DataInputStream dataInputStream = new DataInputStream(fis);
+                InputStreamReader inputStreamReader = new InputStreamReader(dataInputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String receiveString = "";
                 StringBuilder stringBuilder = new StringBuilder();
@@ -59,8 +62,25 @@ public class LocalStorage {
                     stringBuilder.append(receiveString);
                 }
 
-                inputStream.close();
+                dataInputStream.close();
                 ret = stringBuilder.toString();
+
+            } else {
+                InputStream inputStream = context.openFileInput(filename);
+
+                if (inputStream != null) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String receiveString = "";
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ((receiveString = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(receiveString);
+                    }
+
+                    inputStream.close();
+                    ret = stringBuilder.toString();
+                }
             }
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File not found: " + e.toString());

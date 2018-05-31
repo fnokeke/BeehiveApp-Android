@@ -39,6 +39,8 @@ public class AppJobService extends JobService {
 
     private void sendAllLocalData(Context context) {
         sendNotifLogs(context);
+        sendPAMLogs(context);
+        sendSurveyLogs(context);
         sendInAppAnalytics(context);
     }
 
@@ -52,13 +54,27 @@ public class AppJobService extends JobService {
     }
 
     private void sendNotifLogs(Context context) {
-        JSONObject data = getLocalData(context, Constants.NOTIF_LOGS_CSV);
-        CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, Constants.NOTIF_LOGS_CSV));
+        String filename = Constants.NOTIF_LOGS_CSV;
+        JSONObject data = getLocalData(context, filename);
+        CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, filename));
+    }
+
+    private void sendPAMLogs(Context context) {
+        String filename = Constants.PAM_LOGS_CSV;
+        JSONObject data = getLocalData(context, filename);
+        CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
+    }
+
+    private void sendSurveyLogs(Context context) {
+        String filename = Constants.SURVEY_LOGS_CSV;
+        JSONObject data = getLocalData(context, filename);
+        CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
     }
 
     private void sendInAppAnalytics(Context context) {
-        JSONObject data = getLocalData(context, Constants.ANALYTICS_LOG_CSV);
-        CallAPI.submitAnalytics(context, data, getLogResponseHandler(context, Constants.ANALYTICS_LOG_CSV));
+        String filename = Constants.ANALYTICS_LOG_CSV;
+        JSONObject data = getLocalData(context, filename);
+        CallAPI.submitAnalytics(context, data, getLogResponseHandler(context, filename));
     }
 
     private static JSONObject getLocalData(Context context, String filename) {

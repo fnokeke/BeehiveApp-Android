@@ -30,6 +30,8 @@ public class CallAPI {
     final static private String CAL_EVENTS_URL = BASE_URL + "/mobile/calendar/events";
     final static public String GOOGLE_LOGIN_URL = CallAPI.BASE_URL + "/android_google_login_participant";
     final static public String MOBILE_REGISTER_URL = CallAPI.BASE_URL + "/mobile/register";
+    final static public String PAM_LOG_URL = CallAPI.BASE_URL + "/mobile/pam-logs";
+    final static public String SURVEY_LOG_URL = CallAPI.BASE_URL + "/mobile/survey-logs";
     private static final String BEEHIVE_NOTIF_LOGS_URL = BASE_URL + "/mobile/add/notif";
     private static final String BEEHIVE_ANALYTICS_URL = BASE_URL + "/mobile/add/analytics";
 
@@ -92,6 +94,13 @@ public class CallAPI {
         addRequestToQueue(context, BEEHIVE_ANALYTICS_URL, params, callback);
     }
 
+    public static void submitPAMLog(Context context, JSONObject params, VolleyJsonCallback callback) {
+        addRequestToQueue(context, PAM_LOG_URL, params, callback);
+    }
+
+    public static void submitSurveyLog(Context context, JSONObject params, VolleyJsonCallback callback) {
+        addRequestToQueue(context, SURVEY_LOG_URL, params, callback);
+    }
     public static void registerMobileUser(Context context, JSONObject params, VolleyJsonCallback callback) {
         addRequestToQueue(context, MOBILE_REGISTER_URL, params, callback);
     }
