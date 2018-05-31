@@ -25,10 +25,9 @@ public class ProtocolAlarmReceiver extends BroadcastReceiver {
             throw new UnsupportedOperationException("Your notification manager should not be null");
         }
 
-        Notification notification = intent.getParcelableExtra(Constants.NOTIFICATION);
         int id = intent.getIntExtra(Constants.NOTIFICATION_ID, 1);
+        Notification notification = intent.getParcelableExtra(Constants.NOTIFICATION);
         notificationManager.notify(id, notification);
-
     }
 }
 

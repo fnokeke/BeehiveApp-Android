@@ -11,12 +11,6 @@
         "identifier"   : "PAM",
         "type"         : "PAM",
         "optional":true
-      },
-      {
-        "identifier"   : "results",
-        "type"         : "instruction",
-        "title"        : "Thanks!",
-        "text"         : ""
       }
     ]
   },

@@ -208,7 +208,8 @@ public class Profile {
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
             if (coversToday(p) ) {
-                if (canContinueAfterCoinToss(p)) {
+//                if (canContinueAfterCoinToss(p)) {
+                    if (true) { // fixme: remove this
                     extractThenScheduleNotif(p);
                 } else {
                     Toast.makeText(mContext, "Coin fail: " + p.optString("label"), Toast.LENGTH_SHORT).show();
@@ -217,25 +218,8 @@ public class Profile {
         }
     }
 
-    public JSONObject getTodayProtocol(long alarmMillis) {
-        JSONObject p;
-        JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
-        for (int i = 0; i < protocols.length(); i++) {
-            p = protocols.optJSONObject(i);
-            if (coversToday(p) && alarmMillis == getAlarmMillis(p)) {
-                if (canContinueAfterCoinToss(p)) {
-                    return p;
-                } else {
-                    Log.i("Profile.class", "Coin toss for protocol is no intv");
-                }
-            }
-        }
-        return null;
-
-    }
-
     private void extractThenScheduleNotif(JSONObject protocol) {
-        // There could be multiple notifcations available (one per line) so randomly select one to show
+        // There could be multiple notifications available (one per line) so randomly select one to show
         // There could be multiple app ids so randomly select one to launch
         String[] chosen = chooseTitleContentAppId(protocol);
         JSONObject notif = new JSONObject();
@@ -244,22 +228,29 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "title", chosen[0]);
         JsonHelper.setJSONValue(notif, "content", chosen[1]);
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
+        JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-        JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type")); // FIXME: 1/16/18 rename to NOTIF_TYPE; STOP USING RAW STRING
+        JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
+
+
+        if (protocol.optString("label").contains("headspace")) { // FIXME: 5/30/18 debug remove
+            Toast.makeText(mContext, "Coin success:" + protocol.optString("label"), Toast.LENGTH_SHORT).show();
+        }
+        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // fixme: remove debug
+
+
         NewAlarmHelper.scheduleIntvReminder(mContext, notif);
 //        markTodayAsIntvApplied(); // fixme: undo comment remove debug
-        saveToNotifAppliedToday(notif);
-        Toast.makeText(mContext, "Coin success:" + protocol.optString("label"), Toast.LENGTH_SHORT).show();
-        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // fixme: remove debug
+//        saveToNotifAppliedToday(notif); // fixme: undo comment remove debug
     }
 
     private String[] chooseTitleContentAppId(JSONObject protocol) {
         switch (protocol.optString("method")) {
             case Constants.TYPE_PAM:
-                return new String[]{"New PAM survey.", "Tap here to see.", "pam"};
+                return new String[]{"New PAM survey.", "Tap here to see.", "pam", "4004"};
 
             case Constants.TYPE_PUSH_SURVEY:
-                return new String[]{"You have a new survey.", "Tap here to view.", "push_survey"};
+                return new String[]{"You have a new survey.", "Tap here to view.", "push_survey", "5005"};
 
             case Constants.TYPE_PUSH_NOTIFICATION:
                 // get title - content
@@ -271,7 +262,7 @@ public class Profile {
                 String notifAppIdsList = protocol.optString("notif_appid");
                 String[] pairsAppId = notifAppIdsList.split("\n");
                 String chosenAppId = pairsAppId[getRandom(pairsAppId.length)];
-                return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId};
+                return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId, "6006"};
 
             default:
                 throw new UnsupportedOperationException("Protocol type does not exist");

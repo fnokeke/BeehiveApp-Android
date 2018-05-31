@@ -1,9 +1,14 @@
 package io.smalldata.beehiveapp.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,8 +21,9 @@ import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
+import io.smalldata.beehiveapp.studyManagement.RSActivity;
 
-public class AppInfo extends AppCompatActivity {
+public class AppInfo extends RSActivity {
 
     private Profile mProfile;
     private Context mContext;
@@ -32,12 +38,36 @@ public class AppInfo extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         setAppInfo();
         super.onResume();
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
             mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
+        }
+        requestStoragePermission();
+    }
+
+    private void requestStoragePermission() {
+        requestReadStoragePermission();
+        requestWriteStoragePermission();
+    }
+
+    public void requestReadStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+            }
+        }
+    }
+
+    public void requestWriteStoragePermission() {
+        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+            }
         }
     }
 
@@ -50,6 +80,7 @@ public class AppInfo extends AppCompatActivity {
 
         TextView tvIntv = (TextView) findViewById(R.id.tv_interventions);
         tvIntv.setText(mProfile.getAllAppliedNotifForToday());
+        tvIntv.setMovementMethod(new ScrollingMovementMethod());
 
         TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
         tvParticipantSince.setText(mProfile.getFirstDayOfStudy());

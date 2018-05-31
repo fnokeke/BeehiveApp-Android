@@ -1,21 +1,18 @@
 package io.smalldata.beehiveapp.notification;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.util.Locale;
 
-import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
+import io.smalldata.beehiveapp.main.RSHelper;
 import io.smalldata.beehiveapp.onboarding.Constants;
-import io.smalldata.beehiveapp.onboarding.EMA;
 import io.smalldata.beehiveapp.onboarding.Profile;
-import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
@@ -37,39 +34,33 @@ public class NotifEventReceiver extends BroadcastReceiver {
 
     private void handleBundle(Bundle bundle) {
         if (bundle == null) return;
-        String method = bundle.getString(Constants.ALARM_NOTIF_METHOD);
-        if (method != null) {
-            switch (method) {
-                case Constants.TYPE_PAM:
-                    RSActivityManager.get().queueActivity(mContext, "pam", true);
-                    break;
+        saveNotifToLocalStorage(bundle);
 
-                case Constants.TYPE_PUSH_SURVEY:
-                    RSActivityManager.get().queueActivity(mContext, "demography", true);
-                    break;
-
-                case Constants.TYPE_PUSH_NOTIFICATION:
-                    launchNonDismissedApp(bundle);
-                    break;
-
-                default:
-                    throw new UnsupportedOperationException("Protocol type does not exist");
-            }
-            saveNotifToLocalStorage(bundle);
-        }
-    }
-
-    private void launchNonDismissedApp(Bundle bundle) {
         String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
         boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
         if (wasDismissed) {
-            Toast.makeText(mContext, "Dismissed app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Dismissed " + appIdToLaunch, Toast.LENGTH_SHORT).show();
+            return;
         } else {
-            IntentLauncher.launchApp(mContext, appIdToLaunch);
             Toast.makeText(mContext, "Launching app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
         }
-    }
 
+        String method = bundle.getString(Constants.ALARM_PROTOCOL_METHOD);
+        if (method != null) {
+            switch (method) {
+                case Constants.TYPE_PAM:
+                case Constants.TYPE_PUSH_SURVEY:
+                    RSHelper.showTask(mContext, method);
+                    break;
+                case Constants.TYPE_PUSH_NOTIFICATION:
+                    IntentLauncher.launchApp(mContext, appIdToLaunch);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Protocol type does not exist");
+            }
+        }
+
+    }
 
     private void saveNotifToLocalStorage(Bundle bundle) {
         long alarmTimeMillis = bundle.getLong(Constants.ALARM_MILLIS_SET);
@@ -82,7 +73,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
         String title = bundle.getString(Constants.ALARM_NOTIF_TITLE);
         String content = bundle.getString(Constants.ALARM_NOTIF_CONTENT);
         String appId = bundle.getString(Constants.ALARM_APP_ID);
-        String method = bundle.getString(Constants.ALARM_NOTIF_METHOD);
+        String method = bundle.getString(Constants.ALARM_PROTOCOL_METHOD);
         long timeOfClickOrDismiss = System.currentTimeMillis();
         boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
 

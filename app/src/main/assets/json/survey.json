@@ -1,0 +1,46 @@
+{
+  "type": "recurring",
+  "identifier": "Survey",
+  "title": "Survey",
+  "guid": "survey-1",
+  "activity": {
+    "type": "elementList",
+    "identifier": "mindful_list",
+    "elements": [
+      {
+        "identifier": "id-survey-q",
+        "type": "singleChoiceText",
+        "text": "Did you engage in any mindful activity today?",
+        "items": [
+          {
+            "prompt": "Yes",
+            "value": "yes"
+          },
+          {
+            "prompt": "No",
+            "value": "no"
+          }
+        ]
+      }
+    ]
+  },
+  "resultTransforms": [
+    {
+      "transform": "BeehiveCSVEncodable",
+      "inputMapping": [
+        {
+          "stepIdentifier": "survey-q",
+          "parameter": "survey-q"
+        },
+        {
+          "parameter": "schemaID",
+          "constant": {
+            "namespace": "Cornell",
+            "name": "cornell",
+            "version": "1.0"
+          }
+        }
+      ]
+    }
+  ]
+}

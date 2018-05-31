@@ -16,7 +16,7 @@ public class Constants {
     public final static String ALARM_APP_ID = "app_id";
     public final static String ALARM_MILLIS_SET = "alarm_millis";
     public final static String ALARM_NOTIF_WAS_DISMISSED = "was_dismissed";
-    public static final String ALARM_NOTIF_METHOD = "method";
+    public static final String ALARM_PROTOCOL_METHOD = "method";
 
     public final static String NOTIFICATION_ID = "notification-id";
     public final static String NOTIFICATION = "notification";
@@ -38,9 +38,6 @@ public class Constants {
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
 
     public static final int DAILY_TASK_ALARM_ID = 9991;
-    public static final String NOTIF_TYPE = "keyNotifType";
-    public static final String ALARM_ID = "alarmId";
-    public static final String TYPE_EMA = "typeEMA";
     public static final String EMA_RESPONSE = "emaResponse";
     public static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
     public static final String KEY_USER_COMPLETED_STEPS = "keyUserCompletedSteps";
@@ -75,6 +72,9 @@ public class Constants {
     public static final String TYPE_PAM = "pam";
     public static final String TYPE_PUSH_SURVEY = "push_survey";
     public static final String TYPE_PUSH_NOTIFICATION = "push_notification";
+
+    public static final String NOTIF_TYPE = "notif_type";
+    public static final String ALARM_ID = "alarmId";
 
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
