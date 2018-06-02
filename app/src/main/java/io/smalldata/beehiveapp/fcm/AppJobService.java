@@ -33,15 +33,15 @@ public class AppJobService extends JobService {
         return false;
     }
 
-    private void updateServerRecords(Context context) {
+    public void updateServerRecords(Context context) {
         sendAllLocalData(context);
     }
 
     private void sendAllLocalData(Context context) {
-        sendNotifLogs(context);
+//        sendNotifLogs(context);
         sendPAMLogs(context);
         sendSurveyLogs(context);
-        sendInAppAnalytics(context);
+//        sendInAppAnalytics(context);
     }
 
     public static void registerMobileUserOnLoginComplete(Context context) {
@@ -62,13 +62,31 @@ public class AppJobService extends JobService {
     private void sendPAMLogs(Context context) {
         String filename = Constants.PAM_LOGS_CSV;
         JSONObject data = getLocalData(context, filename);
-        CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
+        if (!data.optString("logs").equals("")) {
+            CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
+        } else {
+            AlarmHelper.showInstantNotif(context,
+                    "At " + DateHelper.getFormattedTimestamp() + " Log!",
+                    "Empty PAM not sent",
+                    "",
+                    8962);
+
+        }
     }
 
     private void sendSurveyLogs(Context context) {
         String filename = Constants.SURVEY_LOGS_CSV;
         JSONObject data = getLocalData(context, filename);
-        CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
+        if (!data.optString("logs").equals("")) {
+            CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
+        } else {
+            AlarmHelper.showInstantNotif(context,
+                    "At " + DateHelper.getFormattedTimestamp() + " Log!",
+                    "Empty Survey not sent",
+                    "",
+                    8944);
+
+        }
     }
 
     private void sendInAppAnalytics(Context context) {

@@ -1,6 +1,6 @@
 {
   "type": "recurring",
-  "identifier": "PAM",
+  "identifier": "BeehivePAM",
   "title": "Notification Date",
   "guid": "notification_date-1",
   "activity": {

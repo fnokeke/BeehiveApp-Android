@@ -50,6 +50,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
             switch (method) {
                 case Constants.TYPE_PAM:
                 case Constants.TYPE_PUSH_SURVEY:
+                    IntentLauncher.launchApp(mContext, "io.smalldata.beehiveapp");
                     RSHelper.showTask(mContext, method);
                     break;
                 case Constants.TYPE_PUSH_NOTIFICATION:
@@ -77,7 +78,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
         long timeOfClickOrDismiss = System.currentTimeMillis();
         boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
 
-        String data = String.format(locale, "%s, %s, %d, %s, %s, %s, %s, %s, %s, %d;\n",
+        String data = String.format(locale, "%s, %s, %d, %s, %s, %s, %s, %s, %s, %d\n",
                 username,
                 studyCode,
                 alarmTimeMillis,

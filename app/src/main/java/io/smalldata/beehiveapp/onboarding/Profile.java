@@ -203,16 +203,13 @@ public class Profile {
     }
 
     public void applyIntvForToday() {
-        Toast.makeText(mContext, "Apply Intv for today", Toast.LENGTH_SHORT).show();
         JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
-            if (coversToday(p) ) {
+            if (coversToday(p)) {
 //                if (canContinueAfterCoinToss(p)) {
-                    if (true) { // fixme: remove this
+                if (true) { // fixme: remove this
                     extractThenScheduleNotif(p);
-                } else {
-                    Toast.makeText(mContext, "Coin fail: " + p.optString("label"), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -241,7 +238,7 @@ public class Profile {
 
         NewAlarmHelper.scheduleIntvReminder(mContext, notif);
 //        markTodayAsIntvApplied(); // fixme: undo comment remove debug
-//        saveToNotifAppliedToday(notif); // fixme: undo comment remove debug
+        saveToNotifAppliedToday(notif);
     }
 
     private String[] chooseTitleContentAppId(JSONObject protocol) {
@@ -285,7 +282,7 @@ public class Profile {
     private void saveToNotifAppliedToday(JSONObject notif) {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-        allNotif = String.format("%s; %s", allNotif, infoFromNewNotif);
+        allNotif = String.format("%s; %s\n\n", allNotif, infoFromNewNotif);
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
     }
 

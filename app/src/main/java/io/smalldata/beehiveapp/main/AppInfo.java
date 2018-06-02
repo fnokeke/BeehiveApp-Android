@@ -14,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.AppJobService;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
@@ -43,15 +45,11 @@ public class AppInfo extends RSActivity {
     public void onResume() {
         setAppInfo();
         super.onResume();
+        requestStoragePermission();
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
             mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
         }
-        requestStoragePermission();
-        String answer = LocalStorage.readFromFile(mContext, Constants.PAM_LOGS_CSV);
-        Log.i("PAM.csv: ", answer);
-        answer = LocalStorage.readFromFile(mContext, Constants.ANALYTICS_LOG_CSV);
-        Log.i("Analytics.csv: ", answer);
     }
 
     private void requestStoragePermission() {

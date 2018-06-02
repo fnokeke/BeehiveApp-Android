@@ -1,6 +1,6 @@
 {
   "type": "recurring",
-  "identifier": "Survey",
+  "identifier": "BeehiveSurvey",
   "title": "Survey",
   "guid": "survey-1",
   "activity": {

@@ -45,7 +45,7 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
             throw new UnsupportedOperationException("Repeating alarmManager should not be null");
         }
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pi);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HOUR, pi); // fixme debug: change to interval day
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi); // fixme debug: change to interval day
     }
 
     public static void registerUserOnLoginComplete(Context context) {
