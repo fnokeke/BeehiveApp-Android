@@ -26,7 +26,7 @@ class CheckActiveStream {
         mProfile = new Profile(mContext);
     }
 
-    void prompt() {
+    void promptForMonitoringApp() {
         JSONObject experiment = mProfile.getStudyConfig().optJSONObject("experiment");
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
             final String MONITORINIG_APP = "io.smalldata.goodvibe";
@@ -48,5 +48,16 @@ class CheckActiveStream {
         }
     }
 
+
+    void promptForMeditationApp() {
+        final String HEADSPACE_APP = "com.getsomeheadspace.android";
+        if (!Helper.isPackageInstalled(mContext, HEADSPACE_APP)) {
+            final String APPLINK = "https://play.google.com/store/apps/details?id=com.getsomeheadspace.android&hl=en_US";
+            NewAlarmHelper.showInstantNotif(mContext, "This study requires Headspace App",
+                    "Tap here to install.",
+                    APPLINK, 2012);
+            Toast.makeText(mContext, "Please install Headspace for meditation.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }

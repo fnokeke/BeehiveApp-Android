@@ -26,11 +26,13 @@ public class AppInfo extends RSActivity {
 
     private Profile mProfile;
     private Context mContext;
+    CheckActiveStream checkActiveStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         mProfile = new Profile(mContext);
+        checkActiveStream = new CheckActiveStream(mContext);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
@@ -45,7 +47,8 @@ public class AppInfo extends RSActivity {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
             mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
         }
-        new CheckActiveStream(mContext).prompt();
+        checkActiveStream.promptForMonitoringApp();
+        checkActiveStream.promptForMeditationApp();
     }
 
     private void requestStoragePermission() {
