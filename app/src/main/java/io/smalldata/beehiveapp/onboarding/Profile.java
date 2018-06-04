@@ -36,7 +36,7 @@ public class Profile {
         Store.setString(mContext, Constants.STUDY_CONFIG_KEY, jsonResult.toString());
     }
 
-    private JSONObject getStudyConfig() {
+    public JSONObject getStudyConfig() {
         return JsonHelper.strToJsonObject(Store.getString(mContext, Constants.STUDY_CONFIG_KEY));
     }
 

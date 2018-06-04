@@ -7,19 +7,14 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.fcm.AppJobService;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
-import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -50,6 +45,7 @@ public class AppInfo extends RSActivity {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
             mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
         }
+        new CheckActiveStream(mContext).prompt();
     }
 
     private void requestStoragePermission() {

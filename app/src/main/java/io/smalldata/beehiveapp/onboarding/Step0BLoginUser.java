@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.view.View;
 import android.widget.Button;
 
@@ -12,6 +13,7 @@ import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.fcm.ServerPeriodicUpdateReceiver;
+import io.smalldata.beehiveapp.utils.Helper;
 
 public class Step0BLoginUser extends Activity {
 
@@ -64,13 +66,9 @@ public class Step0BLoginUser extends Activity {
         btnGoogleLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openGoogleLoginURL();
+                Helper.openURL(mContext, CallAPI.GOOGLE_LOGIN_URL);
             }
         });
     }
 
-    private void openGoogleLoginURL() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(CallAPI.GOOGLE_LOGIN_URL));
-        startActivity(browserIntent);
-    }
 }

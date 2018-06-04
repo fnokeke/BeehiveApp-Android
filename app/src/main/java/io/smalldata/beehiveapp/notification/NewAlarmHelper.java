@@ -16,6 +16,7 @@ import java.util.Calendar;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.onboarding.Constants;
+import io.smalldata.beehiveapp.utils.IntentLauncher;
 
 /**
  * Created by fnokeke on 1/3/18.
@@ -23,6 +24,25 @@ import io.smalldata.beehiveapp.onboarding.Constants;
  */
 
 public class NewAlarmHelper {
+
+    public static void showInstantNotif(Context context, String title, String message, String appIdToLaunch, Integer NOTIF_ID) {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(R.drawable.info_tip)
+                .setAutoCancel(true)
+                .setContentTitle(title)
+                .setSound(getDefaultSound())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setContentText(message);
+
+        if (!appIdToLaunch.equals("")) {
+            Intent launchAppIntent = IntentLauncher.getLaunchIntent(context, appIdToLaunch);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, launchAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            mBuilder.setContentIntent(contentIntent);
+        }
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIF_ID, mBuilder.build());
+    }
 
     public static void scheduleIntvReminder(Context context, JSONObject notif) {
         Notification notification = createNewNotif(context, notif);
