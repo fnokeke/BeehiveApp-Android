@@ -1,7 +1,6 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -207,15 +206,13 @@ public class Profile {
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
             if (coversToday(p)) {
-//                if (canContinueAfterCoinToss(p)) {
-                if (true) { // fixme: remove this
-                    extractThenScheduleNotif(p);
-                }
+                boolean coinSuccess = canContinueAfterCoinFlip(p);
+                extractThenScheduleNotif(p, coinSuccess);
             }
         }
     }
 
-    private void extractThenScheduleNotif(JSONObject protocol) {
+    private void extractThenScheduleNotif(JSONObject protocol, boolean coinSuccess) {
         // There could be multiple notifications available (one per line) so randomly select one to show
         // There could be multiple app ids so randomly select one to launch
         String[] chosen = chooseTitleContentAppId(protocol);
@@ -228,17 +225,15 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
-
-
-        if (protocol.optString("label").contains("headspace")) { // FIXME: 5/30/18 debug remove
-            Toast.makeText(mContext, "Coin success:" + protocol.optString("label"), Toast.LENGTH_SHORT).show();
-        }
         JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // fixme: remove debug
 
+        if (coinSuccess) {
+            NewAlarmHelper.scheduleIntvReminder(mContext, notif);
+        }
+        saveToNotifAppliedToday(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
 
-        NewAlarmHelper.scheduleIntvReminder(mContext, notif);
 //        markTodayAsIntvApplied(); // fixme: undo comment remove debug
-        saveToNotifAppliedToday(notif);
+//        saveToNotifAppliedToday(notif, probableHalfNotify, coinSuccess);
     }
 
     private String[] chooseTitleContentAppId(JSONObject protocol) {
@@ -282,7 +277,21 @@ public class Profile {
     private void saveToNotifAppliedToday(JSONObject notif) {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-        allNotif = String.format("%s; %s\n\n", allNotif, infoFromNewNotif);
+        allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
+        Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
+    }
+
+    private void saveToNotifAppliedToday(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
+        String allNotif = getAllAppliedNotifForToday();
+        String infoFromNewNotif = "missed :/";
+        if (!probableHalfNotify) {
+            infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+        } else if (probableHalfNotify && coinSuccess) {
+            infoFromNewNotif = String.format("success - %s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+        } else if (probableHalfNotify && !coinSuccess) {
+            infoFromNewNotif = String.format("fail - %s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+        }
+        allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
     }
 
@@ -295,27 +304,25 @@ public class Profile {
     }
 
     /**
-     * if probable_half_notify is false then it means that user should always see notification
+     * if probable_half_notify is false/inactive then it means that user should always see notification
      * but if probable_half_notify is true then fair coin must be tossed and if the result is
-     * above 0.5 then user can see notification for that day otherwise notification isn't shown
+     * 1 (HEADS) then user can see notification for that day otherwise notification isn't shown
      *
      * @param protocol containing field 'probable_half_notify'
      * @return boolean indicating if notification should happen (true) or not (false)
      */
-    private boolean canContinueAfterCoinToss(JSONObject protocol) {
-        boolean probableNotify = protocol.optBoolean("probable_half_notify");
-        if (!probableNotify) return true;
-        return tossFairCoin() > 0.5;
+    private boolean canContinueAfterCoinFlip(JSONObject protocol) {
+        boolean shouldFlipCoin = protocol.optBoolean("probable_half_notify");
+        return !shouldFlipCoin || flipCoin() == 1; // same as: shouldFlipCoin ? flipCoin() == 1 : true;
     }
 
     /**
+     * Returns 0: Tail or 1: Head
+     *
      * @return generate double between 0 and 1
      */
-    private static double tossFairCoin() {
-        int min = 1;
-        int max = 10;
-        int range = max - min + 1;
-        return (new Random().nextInt(range) + min) / max;
+    private static int flipCoin() {
+        return new Random().nextInt(2);
     }
 
     // FIXME: 1/7/18 push 2am alarm next day

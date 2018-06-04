@@ -32,13 +32,6 @@ public class NewAlarmHelper {
         int notifId = Integer.parseInt(notif.optString("notifId"));
         singleIntent.putExtra(Constants.NOTIFICATION_ID, notifId);
 
-//        singleIntent.putExtra(Constants.ALARM_ID, notif.optInt("alarmId"));
-//        singleIntent.putExtra(Constants.ALARM_PROTOCOL_METHOD, notif.optString("method"));
-//        singleIntent.putExtra(Constants.ALARM_NOTIF_TITLE, notif.optString("title"));
-//        singleIntent.putExtra(Constants.ALARM_NOTIF_CONTENT, notif.optString("content"));
-//        singleIntent.putExtra(Constants.ALARM_APP_ID, notif.optString("appIdToLaunch"));
-//        singleIntent.putExtra(Constants.ALARM_MILLIS_SET, notif.optLong("alarmMillis")); // FIXME: 6/5/17 debug code
-
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notifId, singleIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
