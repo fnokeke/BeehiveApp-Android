@@ -1,7 +1,6 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -475,6 +474,14 @@ public class Profile {
             key = Constants.KEY_ITEM_POSITION_WEEKEND;
         }
         return Store.getInt(mContext, key);
+    }
+
+    public void setPromptedForMonitoringApp() {
+        Store.setBoolean(mContext, Store.HAS_PROMPTED_MONITORING_APP, true);
+    }
+
+    public boolean hasAlreadyPrompted() {
+        return Store.getBoolean(mContext, Store.HAS_PROMPTED_MONITORING_APP);
     }
 }
 

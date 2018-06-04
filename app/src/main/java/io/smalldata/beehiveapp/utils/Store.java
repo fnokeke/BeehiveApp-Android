@@ -52,6 +52,7 @@ public class Store {
     public static final String GEN_BEDTIME_REMINDER = "genBedTimeReminder";
     public static final String FIRST_EVER_DAILY_REMINDER_SET = "isFirstEverDailyReminder";
     public static final String FIRST_EVER_BED_REMINDER_SET = "isFirstEverBedReminder";
+    public static final String HAS_PROMPTED_MONITORING_APP = "hasSetMonitoringApp";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

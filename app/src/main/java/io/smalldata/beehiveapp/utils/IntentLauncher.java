@@ -1,15 +1,13 @@
 package io.smalldata.beehiveapp.utils;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.Toast;
+
+import org.json.JSONObject;
+
+import java.util.Iterator;
 
 /**
  * Created by fnokeke on 2/14/17.
@@ -18,6 +16,10 @@ import android.widget.Toast;
 public class IntentLauncher {
 
     public static Intent getLaunchIntent(Context context, String appPackageName) {
+        return getLaunchIntent(context, appPackageName, null);
+    }
+
+    public static Intent getLaunchIntent(Context context, String appPackageName, JSONObject dataToTransfer) {
         if (appPackageName.contains("/")) {
             return getURLIntent(appPackageName);
         }
@@ -26,6 +28,19 @@ public class IntentLauncher {
         if (appStartIntent == null) {
             appStartIntent = pm.getLaunchIntentForPackage(context.getPackageName());
         }
+
+        if (dataToTransfer != null) {
+            String key, value;
+            Iterator<?> keys = dataToTransfer.keys();
+            while (keys.hasNext()) {
+                key = (String) keys.next();
+                value = dataToTransfer.optString(key);
+                if (appStartIntent != null) {
+                    appStartIntent.putExtra(key, value);
+                }
+            }
+        }
+
         return appStartIntent;
     }
 
@@ -34,10 +49,15 @@ public class IntentLauncher {
     }
 
     public static void launchApp(Context context, String appPackageName) {
+        launchApp(context, appPackageName, null);
+    }
+
+    public static void launchApp(Context context, String appPackageName, JSONObject dataToTransfer) {
         if (appPackageName.contains("/")) {
             Helper.openURL(context, appPackageName);
         } else {
-            context.startActivity(getLaunchIntent(context, appPackageName));
+            context.startActivity(getLaunchIntent(context, appPackageName, dataToTransfer));
         }
     }
+
 }
