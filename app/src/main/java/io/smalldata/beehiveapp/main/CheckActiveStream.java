@@ -31,7 +31,7 @@ class CheckActiveStream {
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
             final String MONITORINIG_APP = "io.smalldata.goodvibe";
             if (!Helper.isPackageInstalled(mContext, MONITORINIG_APP)) {
-                final String appLink = "https://slm.smalldata.io/static/downloads/goodvibe-2.5.apk";
+                final String appLink = "https://slm.smalldata.io/static/downloads/goodvibe.apk";
                 NewAlarmHelper.showInstantNotif(mContext, "This study requires Goodvibe app",
                         "Tap here to install.",
                         appLink, 2011);
