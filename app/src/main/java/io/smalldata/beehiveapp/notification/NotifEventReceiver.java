@@ -1,16 +1,14 @@
 package io.smalldata.beehiveapp.notification;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.util.Locale;
 
 import io.smalldata.beehiveapp.fcm.LocalStorage;
-import io.smalldata.beehiveapp.main.RSHelper;
+import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
@@ -36,28 +34,16 @@ public class NotifEventReceiver extends BroadcastReceiver {
         if (bundle == null) return;
         saveNotifToLocalStorage(bundle);
 
-        String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
-        boolean wasDismissed = bundle.getBoolean(AlarmHelper.ALARM_NOTIF_WAS_DISMISSED);
-        if (wasDismissed) {
-            Toast.makeText(mContext, "Dismissed " + appIdToLaunch, Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            Toast.makeText(mContext, "Launching app: " + appIdToLaunch, Toast.LENGTH_SHORT).show();
-        }
-
         String method = bundle.getString(Constants.ALARM_PROTOCOL_METHOD);
-        if (method != null) {
-            switch (method) {
-                case Constants.TYPE_PAM:
-                case Constants.TYPE_PUSH_SURVEY:
-                    IntentLauncher.launchApp(mContext, "io.smalldata.beehiveapp");
-                    RSHelper.showTask(mContext, method);
-                    break;
-                case Constants.TYPE_PUSH_NOTIFICATION:
-                    IntentLauncher.launchApp(mContext, appIdToLaunch);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Protocol type does not exist");
+        boolean wasDismissed = bundle.getBoolean("was_dismissed");
+        if (method != null && !wasDismissed) {
+            if (method.equals(Constants.TYPE_PUSH_NOTIFICATION)) {
+                String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
+                IntentLauncher.launchApp(mContext, appIdToLaunch);
+            } else {
+                Intent rsIntent = new Intent(mContext, AppInfo.class);
+                rsIntent.putExtra(Constants.RS_TYPE, method);
+                mContext.startActivity(rsIntent);
             }
         }
 

@@ -161,7 +161,6 @@
         <receiver android:name=".fcm.ServerPeriodicUpdateReceiver" />
 
         <activity android:name=".onboarding.EMA" />
-        <activity android:name=".main.RSHelper" />
 
         <service
             android:exported="false"

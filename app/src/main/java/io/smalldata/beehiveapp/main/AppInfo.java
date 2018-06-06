@@ -21,6 +21,7 @@ import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
 import io.smalldata.beehiveapp.studyManagement.RSActivity;
+import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 
 public class AppInfo extends RSActivity {
 
@@ -36,6 +37,7 @@ public class AppInfo extends RSActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
+        handleRSTask(getIntent().getExtras());
     }
 
     @Override
@@ -49,6 +51,17 @@ public class AppInfo extends RSActivity {
         }
         checkActiveStream.promptForMonitoringApp();
         checkActiveStream.promptForMeditationApp();
+    }
+
+    private void handleRSTask(Bundle bundle) {
+        if (bundle != null) {
+            String rsType = bundle.getString(Constants.RS_TYPE);
+            if (Constants.TYPE_PAM.equals(rsType)) {
+                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
+            } else if (Constants.TYPE_PUSH_SURVEY.equals(rsType)) {
+                RSActivityManager.get().queueActivity(mContext, "survey", true);
+            }
+        }
     }
 
     private void requestStoragePermission() {
