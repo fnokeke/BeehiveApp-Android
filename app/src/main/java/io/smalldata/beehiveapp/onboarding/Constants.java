@@ -76,6 +76,7 @@ public class Constants {
     public static final String NOTIF_TYPE = "notif_type";
     static final String ALARM_ID = "alarmId";
     public static final String RS_TYPE = "rs_type";
+    public static final String NOTIF_CONTENTS_SHOWED = "notifContentsShowed";
 
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";

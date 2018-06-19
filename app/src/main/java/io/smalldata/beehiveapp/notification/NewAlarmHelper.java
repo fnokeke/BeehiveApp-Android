@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -91,7 +93,10 @@ public class NewAlarmHelper {
                 break;
 
             default:
-                builder.setSmallIcon(android.R.drawable.ic_popup_reminder);
+                builder.setSmallIcon(R.drawable.bee);
+//                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.end_of_day_reminder));
+//                builder.setSmallIcon(android.R.drawable.ic_popup_reminder);
+//                builder.setSmallIcon(R.drawable.new_beehive_logo);
         }
 
         return builder.build();

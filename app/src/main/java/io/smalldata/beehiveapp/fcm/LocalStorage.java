@@ -114,16 +114,28 @@ public class LocalStorage {
     static void resetFile(Context context, String filename) {
         try {
             FileOutputStream fileOutputStream;
+            String headerBackup = "";
+
+            // delete everything except header
+//            String[] pamHeader = new String[]{"timestamp","affect_arousal","affect_valence","positive_affect","mood","negative_affect"};
+            if (filename.contains(Constants.PAM_LOGS_CSV) || filename.contains(Constants.SURVEY_LOGS_CSV)) { // in external storage
+                headerBackup = readFromFile(context, filename);
+                String[] rows = headerBackup.split("\n");
+                if (rows.length > 0) {
+                    headerBackup = rows[0] + "\n";
+                }
+            }
+
             if (filename.contains("/")) { // in external storage
                 File file = new File(filename);
                 fileOutputStream = new FileOutputStream(file);
             } else {
                 fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
             }
-            new OutputStreamWriter(fileOutputStream).close();
-//            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-//            outputStreamWriter.write("");
-//            outputStreamWriter.close();
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write(headerBackup);
+            outputStreamWriter.close();
+//            new OutputStreamWriter(fileOutputStream).close();
         } catch (IOException e) {
             Log.e(TAG, "resetFile: error" + e.toString());
             AlarmHelper.showInstantNotif(context, "resetFile error", e.toString(), "", 5333);

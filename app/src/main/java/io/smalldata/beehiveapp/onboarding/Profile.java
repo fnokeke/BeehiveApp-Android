@@ -5,6 +5,7 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -214,6 +215,7 @@ public class Profile {
     private void extractThenScheduleNotif(JSONObject protocol, boolean coinSuccess) {
         // There could be multiple notifications available (one per line) so randomly select one to show
         // There could be multiple app ids so randomly select one to launch
+        // By default this selects notification 'content' without replacement
         String[] chosen = chooseTitleContentAppId(protocol);
         JSONObject notif = new JSONObject();
         JsonHelper.setJSONValue(notif, Constants.ALARM_ID, getNotifId(protocol));
@@ -246,19 +248,68 @@ public class Profile {
             case Constants.TYPE_PUSH_NOTIFICATION:
                 // get title - content
                 String notifDetailsPairs = protocol.optString("notif_details");
-                String[] pairs = notifDetailsPairs.split("\n");
-                String tmpChosen = pairs[getRandom(pairs.length)];
-                String titleContentArr[] = tmpChosen.split(",");
+                String titleContentArr[] = generateTitleContentWithoutReplacement(notifDetailsPairs);
+
                 // get app id
                 String notifAppIdsList = protocol.optString("notif_appid");
                 String[] pairsAppId = notifAppIdsList.split("\n");
                 String chosenAppId = pairsAppId[getRandom(pairsAppId.length)];
+
+
                 return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId, "6006"};
 
             default:
                 throw new UnsupportedOperationException("Protocol type does not exist");
 
         }
+    }
+
+    /**
+     * @param notifDetailsPairs: title1, content1
+     *                           title2, content2
+     *                           ...
+     * @return titleX, contentX
+     */
+    private String[] generateTitleContentWithoutReplacement(String notifDetailsPairs) {
+        String[] pairs = notifDetailsPairs.split("\n");
+        pairs = getValidPairs(pairs);
+
+        String tmpChosen = pairs[getRandom(pairs.length)];
+        String[] titleContentArr = tmpChosen.split(",");
+
+        updateContentsShowed(titleContentArr[1]);
+        return titleContentArr;
+    }
+
+    private String[] getValidPairs(String[] pairs) {
+        String contentsAlreadyShowed = Store.getString(mContext, Constants.NOTIF_CONTENTS_SHOWED);
+        StringBuilder validPairsStr = new StringBuilder();
+        String potentialContent;
+
+        for (String pair : pairs) {
+            potentialContent = pair.split(",")[1];
+            if (!contentsAlreadyShowed.contains(potentialContent)) {
+                validPairsStr.append(pair).append("\n");
+            }
+        }
+
+        if (validPairsStr.toString().equals("")) {
+            resetContentShowed(pairs);
+            return pairs;
+        } else {
+            return validPairsStr.toString().split("\n");
+        }
+
+    }
+
+    private void resetContentShowed(String[] pairs) {
+        Store.setString(mContext, Arrays.toString(pairs), Constants.NOTIF_CONTENTS_SHOWED);
+    }
+
+    private void updateContentsShowed(String upcomingContent) {
+        String contentsShowed = Store.getString(mContext, Constants.NOTIF_CONTENTS_SHOWED);
+        contentsShowed += "\n" + upcomingContent;
+        Store.setString(mContext, contentsShowed, Constants.NOTIF_CONTENTS_SHOWED);
     }
 
     private int getRandom(int limit) {
