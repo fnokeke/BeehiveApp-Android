@@ -117,13 +117,15 @@ public class LocalStorage {
             String headerBackup = "";
 
             // delete everything except header
-//            String[] pamHeader = new String[]{"timestamp","affect_arousal","affect_valence","positive_affect","mood","negative_affect"};
-            if (filename.contains(Constants.PAM_LOGS_CSV) || filename.contains(Constants.SURVEY_LOGS_CSV)) { // in external storage
-                headerBackup = readFromFile(context, filename);
-                String[] rows = headerBackup.split("\n");
-                if (rows.length > 0) {
-                    headerBackup = rows[0] + "\n";
-                }
+            if (filename.equals(Constants.PAM_LOGS_CSV)) {
+                headerBackup = "timestamp,affect_arousal,affect_valence,positive_affect,mood,negative_affect\n";
+            } else if (filename.equals(Constants.SURVEY_LOGS_CSV)) { // in external storage
+                headerBackup = "timestamp, q1-mindful-engage\n";
+//                headerBackup = readFromFile(context, filename);
+//                String[] rows = headerBackup.split("\n");
+//                if (rows.length > 0) {
+//                    headerBackup = rows[0] + "\n";
+//                }
             }
 
             if (filename.contains("/")) { // in external storage

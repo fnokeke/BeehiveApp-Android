@@ -93,7 +93,7 @@ public class NewAlarmHelper {
                 break;
 
             default:
-                builder.setSmallIcon(R.drawable.bee);
+                builder.setSmallIcon(R.drawable.mindfulness);
 //                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.end_of_day_reminder));
 //                builder.setSmallIcon(android.R.drawable.ic_popup_reminder);
 //                builder.setSmallIcon(R.drawable.new_beehive_logo);
