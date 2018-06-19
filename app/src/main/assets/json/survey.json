@@ -10,11 +10,15 @@
       {
         "identifier": "q1-mindful-engage",
         "type": "singleChoiceText",
-        "text": "Did you engage in any mindful activity today?",
+        "text": "Did you do a mindfulness-based activity today?",
         "items": [
           {
-            "prompt": "Yes",
-            "value": "yes"
+            "prompt": "Yes - with app",
+            "value": "yes-with-app"
+          },
+          {
+            "prompt": "Yes - on my own",
+            "value": "yes-on-my-own"
           },
           {
             "prompt": "No",
