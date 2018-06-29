@@ -15,6 +15,6 @@ public class DailyTaskReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        new TriggerIntervention(context).startIntvForToday(); fixme: remove comment after debug is over
+        new TriggerIntervention(context).startIntvForToday();
     }
 }

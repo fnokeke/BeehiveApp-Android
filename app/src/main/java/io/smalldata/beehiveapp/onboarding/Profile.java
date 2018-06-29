@@ -226,7 +226,6 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
-        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // fixme: remove debug
 
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
@@ -535,6 +534,3 @@ public class Profile {
         return Store.getBoolean(mContext, Store.HAS_PROMPTED_MONITORING_APP);
     }
 }
-
-// TODO: 1/3/18 implement halfNotify
-// TODO: 1/3/18 what happens when someone schedules alarm at 12:05am from previous day but your intv resets at midnight

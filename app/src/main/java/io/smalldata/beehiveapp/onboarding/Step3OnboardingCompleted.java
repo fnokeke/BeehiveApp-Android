@@ -47,11 +47,11 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
                     TriggerIntervention.startDaily3amTask(mContext, true);
                 } else {
                     // FIXME: 1/24/18 remove debug code
-                    AlarmHelper.showInstantNotif(mContext,
-                            "Sorry, intv already applied today.",
-                            "at: " + DateHelper.getFormattedTimestamp(),
-                            "",
-                            9060);
+//                    AlarmHelper.showInstantNotif(mContext,
+//                            "Sorry, intv already applied today.",
+//                            "at: " + DateHelper.getFormattedTimestamp(),
+//                            "",
+//                            9060);
                 }
                 startActivity(new Intent(mContext, AppInfo.class));
             }

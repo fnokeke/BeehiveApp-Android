@@ -130,7 +130,7 @@ public class ExtractAlarmMillis {
     }
 
     private static Calendar getTodayCalendarTime(int hour, int minutes) {
-        Calendar cal = Calendar.getInstance(); // TODO: 1/3/18 refactor code here
+        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minutes);
         cal.set(Calendar.SECOND, 0);
@@ -140,5 +140,3 @@ public class ExtractAlarmMillis {
 
 
 }
-
-// TODO: 1/3/18 check ifAlarmAlreadySeen

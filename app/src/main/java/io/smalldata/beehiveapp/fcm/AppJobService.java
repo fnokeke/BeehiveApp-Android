@@ -64,13 +64,6 @@ public class AppJobService extends JobService {
         JSONObject data = getLocalData(context, filename);
         if (!data.optString("logs").equals("")) {
             CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
-        } else {
-            AlarmHelper.showInstantNotif(context,
-                    "At " + DateHelper.getFormattedTimestamp() + " Log!",
-                    "Empty PAM not sent",
-                    "",
-                    8962);
-
         }
     }
 
@@ -79,13 +72,6 @@ public class AppJobService extends JobService {
         JSONObject data = getLocalData(context, filename);
         if (!data.optString("logs").equals("")) {
             CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
-        } else {
-            AlarmHelper.showInstantNotif(context,
-                    "At " + DateHelper.getFormattedTimestamp() + " Log!",
-                    "Empty Survey not sent",
-                    "",
-                    8944);
-
         }
     }
 

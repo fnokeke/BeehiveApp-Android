@@ -47,7 +47,6 @@ public class AppInfo extends RSActivity {
         requestStoragePermission();
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
-            mProfile.applyIntvForToday(); // FIXME: 5/26/18 remove debug!
         }
         checkActiveStream.promptForMonitoringApp();
         checkActiveStream.promptForMeditationApp();

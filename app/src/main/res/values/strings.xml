@@ -105,12 +105,11 @@
     <string name="weekday_instruction">On <i>weekdays (Mon - Fri)</i>, when do you typically sleep, wakeup? Indicate your most convenient notification window.</string>
     <string name="weekend_instruction">On <i>weekends (Sat, Sun)</i>, when do you typically sleep, wakeup? Indicate your most convenient notification window.</string>
     <string name="tap_to_set_time">tap to set time</string>
-    <string name="beehive_about">Beehive app is a mobile companion to Beehive Platform,
-        a research system for behavioral researchers to design field experiments that rely on smartphones.
+    <string name="beehive_about">Beehive Mobile is a companion app to Beehive Framework,
+        a tool for behavioral researchers to design field experiments using mobile phones.
     </string>
     <string name="beehive_participant_msg">
-        As a participant, you contribute to the advancement of scientific research that study human behavior
-        at a deeper level.
+        You contribute to the advancement of scientific research that focuses on understanding human behaviors at a deeper level.
     </string>
     <string name="about_sdl_lab">Beehive is designed by Small Data Lab at Cornell Tech, New York, USA. More info about the lab at https://smalldata.io</string>
 
