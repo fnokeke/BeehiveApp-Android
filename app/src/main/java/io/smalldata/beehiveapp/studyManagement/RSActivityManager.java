@@ -5,10 +5,15 @@ package io.smalldata.beehiveapp.studyManagement;
  */
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 import org.researchstack.backbone.ResourcePathManager;
 import org.researchstack.backbone.result.TaskResult;
@@ -16,13 +21,18 @@ import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.task.OrderedTask;
 import org.researchstack.backbone.task.Task;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import io.smalldata.beehiveapp.utils.AlarmHelper;
-import io.smalldata.beehiveapp.utils.DateHelper;
+import io.smalldata.beehiveapp.onboarding.Profile;
 
 /**
  * Created by jameskizer on 4/21/17.
@@ -73,16 +83,6 @@ public class RSActivityManager {
         }
     }
 
-    @Nullable
-    private CTFScheduleItem getScheduleItem(Context context, String filename) {
-        ResourcePathManager.Resource resource = new ResourcePathManager.Resource(ResourcePathManager.Resource.TYPE_JSON,
-                RSResourcePathManager.BASE_PATH_JSON,
-                filename,
-                CTFScheduleItem.class);
-
-        return resource.create(context);
-    }
-
     public void readyToLaunchActivity(Context context) {
         this.tryToLaunchActivity(context);
     }
@@ -121,14 +121,62 @@ public class RSActivityManager {
         }
     }
 
-    public void queueActivity(Context context, String filename, boolean tryToLaunch) {
+    public void queueActivity(Context context, String jsonString) {
+        Gson gson = new GsonBuilder().setDateFormat("MMM yyyy").create();
+        CTFScheduleItem scheduleItem = gson.fromJson(jsonString, CTFScheduleItem.class);
+        CTFActivityRun activityRun = activityRunForItem(scheduleItem);
+        this.activityQueue.add(activityRun);
+        this.tryToLaunchActivity(context);
+    }
 
-        CTFScheduleItem scheduleItem = this.getScheduleItem(context, filename);
+    // RSpam should be json/RSpam.json
+    public void queueActivity(Context context, String filename, boolean tryToLaunch) {
+        CTFScheduleItem scheduleItem = this.getScheduleItemEnhanced(context, filename, true);
         CTFActivityRun activityRun = activityRunForItem(scheduleItem);
 
         this.activityQueue.add(activityRun);
         this.tryToLaunchActivity(context);
     }
+
+    @Nullable
+    private CTFScheduleItem getScheduleItem(Context context, String filename) {
+        ResourcePathManager.Resource resource = new ResourcePathManager.Resource(ResourcePathManager.Resource.TYPE_JSON,
+                RSResourcePathManager.BASE_PATH_JSON,
+                filename,
+                CTFScheduleItem.class);
+
+        return resource.create(context);
+    }
+
+
+     // Extends old functionality and now returns JSON files from Assets, internal Storage and external storage
+    private CTFScheduleItem getScheduleItemEnhanced(Context context, String filename, boolean isAppAsset) {
+        InputStream inputStream;
+
+        try {
+            if (isAppAsset) {
+                String filepath = String.format("json/%s.json", filename);
+                AssetManager assetManager = context.getAssets();
+                inputStream = assetManager.open(filepath);
+            } else if (filename.contains("/")) { // in external storage
+                FileInputStream fis = new FileInputStream(filename);
+                inputStream = new DataInputStream(fis);
+            } else { // in internal stage
+                inputStream = context.openFileInput(filename);
+            }
+
+            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+            Gson gson = new GsonBuilder().setDateFormat("MMM yyyy").create();
+            return gson.fromJson(reader, CTFScheduleItem.class);
+
+        } catch (IOException e) {
+            Log.e(TAG, "getInputStream()", e);
+            return null;
+        }
+    }
+
+
+
 
     public CTFActivityRun activityRunForItem(CTFScheduleItem item) {
 
@@ -149,23 +197,20 @@ public class RSActivityManager {
         List<Step> stepList = null;
         try {
             stepList = RSTaskBuilderManager.getBuilder().stepsForElement(activityRun.activity);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             Log.w(this.TAG, "could not create steps from task json", e);
             return null;
         }
         if (stepList != null && stepList.size() > 0) {
             return new OrderedTask(activityRun.identifier, stepList);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public void completeActivity(Context context, TaskResult taskResult, CTFActivityRun activityRun) {
 
-        assert(activityRun != null);
-
+        assert (activityRun != null);
 
 
         RSResultsProcessorManager.getResultsProcessor().processResult(
@@ -184,10 +229,9 @@ public class RSActivityManager {
 //        }
 
 
-            this.tryToLaunchActivity(context);
+        this.tryToLaunchActivity(context);
 
     }
-
 
 
 }

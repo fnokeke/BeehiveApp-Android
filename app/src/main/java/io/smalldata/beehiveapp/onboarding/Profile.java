@@ -546,4 +546,91 @@ public class Profile {
         }
         return String.format("Version %s - July 2018", versionName);
     }
+
+    public String getJsonSurvey() {
+//        return Store.getString(context, Store.JSON_SURVEY);
+        return
+                "{\n" +
+                        "  \"type\": \"recurring\",\n" +
+                        "  \"identifier\": \"Demography\",\n" +
+                        "  \"title\": \"Demography\",\n" +
+                        "  \"guid\": \"demography-1\",\n" +
+                        "  \"activity\": {\n" +
+                        "    \"type\"      : \"elementList\",\n" +
+                        "    \"identifier\": \"sample_list\",\n" +
+                        "    \"elements\"   : [\n" +
+                        "      {\n" +
+                        "        \"identifier\"   : \"introduction\",\n" +
+                        "        \"type\"         : \"instruction\",\n" +
+                        "        \"title\"        : \"Welcome to the Demography Assessment\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "        \"identifier\": \"gender\",\n" +
+                        "        \"type\": \"singleChoiceText\",\n" +
+                        "        \"text\": \"Gender\",\n" +
+                        "        \"items\": [\n" +
+                        "          {\n" +
+                        "            \"prompt\": \"Male\",\n" +
+                        "            \"value\": \"male\"\n" +
+                        "          },\n" +
+                        "          {\n" +
+                        "            \"prompt\": \"Female\",\n" +
+                        "            \"value\": \"female\"\n" +
+                        "          },\n" +
+                        "          {\n" +
+                        "            \"prompt\": \"Other\",\n" +
+                        "            \"value\": \"other\"\n" +
+                        "          }\n" +
+                        "        ]\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "        \"identifier\": \"age\",\n" +
+                        "        \"type\": \"numericInteger\",\n" +
+                        "        \"text\": \"Age\",\n" +
+                        "        \"range\": {\n" +
+                        "          \"min\": 18,\n" +
+                        "          \"max\": 99,\n" +
+                        "          \"unitLabel\": \"years\"\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "\n" +
+                        "    ]\n" +
+                        "  },\n" +
+                        "  \"resultTransforms\":[\n" +
+                        "    {\n" +
+                        "      \"transform\": \"BeehiveCSVEncodable\",\n" +
+                        "      \"inputMapping\":[\n" +
+                        "        {\n" +
+                        "          \"stepIdentifier\":\"gender\",\n" +
+                        "          \"parameter\":\"gender\"\n" +
+                        "        },\n" +
+                        "        {\n" +
+                        "          \"stepIdentifier\":\"age\",\n" +
+                        "          \"parameter\":\"age\"\n" +
+                        "        },\n" +
+                        "        {\n" +
+                        "          \"identifier\"   : \"results\",\n" +
+                        "          \"type\"         : \"instruction\",\n" +
+                        "          \"title\"        : \"Thanks!\",\n" +
+                        "          \"text\"         : \"\"\n" +
+                        "        },\n" +
+                        "        {\"parameter\": \"schemaID\", \"constant\":{\n" +
+                        "          \"namespace\": \"Cornell\",\n" +
+                        "          \"name\": \"cornell\",\n" +
+                        "          \"version\": \"1.0\"\n" +
+                        "        }\n" +
+                        "        }\n" +
+                        "      ]\n" +
+                        "    }\n" +
+                        "\n" +
+                        "  ]\n" +
+                        "\n" +
+                        "}\n"
+                ;
+
+    }
+
+    public static void setJsonSurvey(Context context, String value) {
+        Store.setString(context, Store.JSON_SURVEY, value);
+    }
 }

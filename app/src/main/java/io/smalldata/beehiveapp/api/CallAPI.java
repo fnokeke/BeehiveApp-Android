@@ -21,6 +21,7 @@ import io.smalldata.beehiveapp.utils.Network;
 public class CallAPI {
 
 //        final static private String BASE_URL = "http://10.0.2.2:5000";
+//    https://jsonplaceholder.typicode.com/posts/1/comments
     final static private String BASE_URL = "http://slm.smalldata.io";
 //    final static private String CONNECT_URL = BASE_URL + "/mobile/connect/study";
     final static private String CAL_CHECK_CONN_URL = BASE_URL + "/mobile/check/calendar";
@@ -34,6 +35,7 @@ public class CallAPI {
     final static public String SURVEY_LOG_URL = CallAPI.BASE_URL + "/mobile/survey-logs";
     private static final String BEEHIVE_NOTIF_LOGS_URL = BASE_URL + "/mobile/add/notif";
     private static final String BEEHIVE_ANALYTICS_URL = BASE_URL + "/mobile/add/analytics";
+    final static public String MOBILE_JSON_URL = BASE_URL + "/mobile/json";
 
 
 
@@ -101,8 +103,13 @@ public class CallAPI {
     public static void submitSurveyLog(Context context, JSONObject params, VolleyJsonCallback callback) {
         addRequestToQueue(context, SURVEY_LOG_URL, params, callback);
     }
+
     public static void registerMobileUser(Context context, JSONObject params, VolleyJsonCallback callback) {
         addRequestToQueue(context, MOBILE_REGISTER_URL, params, callback);
+    }
+
+    public static void getJSONData(Context context, JSONObject params, VolleyJsonCallback callback) {
+        addRequestToQueue(context, MOBILE_JSON_URL, params, callback);
     }
 }
 

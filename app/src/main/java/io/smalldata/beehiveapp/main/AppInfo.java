@@ -52,6 +52,7 @@ public class AppInfo extends RSActivity {
         checkActiveStream.confirmMonitorAppSetUp();
         checkActiveStream.confirmMeditationAppSetUp();
         handleRSTask();
+        RSActivityManager.get().queueActivity(mContext, mProfile.getJsonSurvey());
     }
 
     private void handleRSTask() {

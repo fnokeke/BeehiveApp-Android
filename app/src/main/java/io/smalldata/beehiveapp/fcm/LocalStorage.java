@@ -103,6 +103,7 @@ public class LocalStorage {
                 Log.i(TAG, "Already exists: " + filename);
             }
         } catch (IOException e) {
+            Log.e(TAG, "makeSureFileExists()", e);
             e.printStackTrace();
         }
     }
