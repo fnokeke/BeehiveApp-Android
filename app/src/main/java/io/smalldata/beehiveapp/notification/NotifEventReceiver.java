@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -11,7 +12,9 @@ import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
+import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
 import io.smalldata.beehiveapp.utils.IntentLauncher;
 
@@ -31,21 +34,50 @@ public class NotifEventReceiver extends BroadcastReceiver {
     }
 
     private void handleBundle(Bundle bundle) {
-        if (bundle == null) return;
+        if (bundle == null) {
+            AlarmHelper.showInstantNotif(mContext, "Error: handleBundle is null.", DateHelper.getFormattedTimestamp(), "", 2025);
+            return;
+        }
         saveNotifToLocalStorage(bundle);
 
         String method = bundle.getString(Constants.ALARM_PROTOCOL_METHOD);
+        if (method == null) {
+            AlarmHelper.showInstantNotif(mContext, "Error: method == null.", DateHelper.getFormattedTimestamp(), "", 2025);
+            return;
+        }
+
         boolean wasDismissed = bundle.getBoolean("was_dismissed");
-        if (method != null && !wasDismissed) {
+        if (wasDismissed) {
+            Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(mContext, "Launching " + method, Toast.LENGTH_SHORT).show();
             if (method.equals(Constants.TYPE_PUSH_NOTIFICATION)) {
+                mContext.startActivity(new Intent(mContext, AppInfo.class));
                 String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
                 IntentLauncher.launchApp(mContext, appIdToLaunch);
             } else {
-                Intent rsIntent = new Intent(mContext, AppInfo.class);
-                rsIntent.putExtra(Constants.RS_TYPE, method);
-                mContext.startActivity(rsIntent);
+                Intent intentAppInfo = new Intent(mContext, AppInfo.class);
+                intentAppInfo.putExtra(Constants.RS_TYPE, method);
+                mContext.startActivity(intentAppInfo);
             }
         }
+
+//            switch (method) {
+//                case Constants.TYPE_PUSH_NOTIFICATION:
+//                    String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
+//                    IntentLauncher.launchApp(mContext, appIdToLaunch);
+//                    break;
+//                case Constants.TYPE_PAM:
+//                    AlarmHelper.showInstantNotif(mContext, "NotifEvent 4 PAM", DateHelper.getFormattedTimestamp(), "", 2021);
+//                    mContext.startActivity(new Intent(mContext, AppInfo.class));
+//                    RSActivityManager.get().queueActivity(mContext, "RSpam", true);
+//                    break;
+//                case Constants.TYPE_PUSH_SURVEY:
+//                    AlarmHelper.showInstantNotif(mContext, "NotifEvent 4 Survey", DateHelper.getFormattedTimestamp(), "", 2020);
+//                    mContext.startActivity(new Intent(mContext, AppInfo.class));
+//                    RSActivityManager.get().queueActivity(mContext, "survey", true);
+//                    break;
+//            }
 
     }
 
@@ -76,7 +108,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
                 wasDismissed,
                 timeOfClickOrDismiss);
 
-        LocalStorage.appendToFile(mContext, Constants.NOTIF_LOGS_CSV, data);
+        LocalStorage.appendToFile(mContext, Constants.NOTIF_EVENT_LOGS_CSV, data);
     }
 
 }

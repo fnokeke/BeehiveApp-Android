@@ -3,11 +3,9 @@ package io.smalldata.beehiveapp.fcm;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,9 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URI;
 
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
@@ -35,7 +31,7 @@ public class LocalStorage {
         createBeehiveDirectory();
         LocalStorage.resetFile(context, Constants.PAM_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.SURVEY_LOGS_CSV);
-        LocalStorage.resetFile(context, Constants.NOTIF_LOGS_CSV);
+        LocalStorage.resetFile(context, Constants.NOTIF_EVENT_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.ANALYTICS_LOG_CSV);
     }
 

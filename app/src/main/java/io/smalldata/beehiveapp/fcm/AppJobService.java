@@ -38,10 +38,10 @@ public class AppJobService extends JobService {
     }
 
     private void sendAllLocalData(Context context) {
-//        sendNotifLogs(context);
+        sendNotifLogs(context);
         sendPAMLogs(context);
         sendSurveyLogs(context);
-//        sendInAppAnalytics(context);
+        sendInAppAnalytics(context);
     }
 
     public static void registerMobileUserOnLoginComplete(Context context) {
@@ -54,7 +54,7 @@ public class AppJobService extends JobService {
     }
 
     private void sendNotifLogs(Context context) {
-        String filename = Constants.NOTIF_LOGS_CSV;
+        String filename = Constants.NOTIF_EVENT_LOGS_CSV;
         JSONObject data = getLocalData(context, filename);
         CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, filename));
     }

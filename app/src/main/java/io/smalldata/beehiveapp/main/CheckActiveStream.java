@@ -26,7 +26,7 @@ class CheckActiveStream {
         mProfile = new Profile(mContext);
     }
 
-    void promptForMonitoringApp() {
+    void confirmMonitorAppSetUp() {
         JSONObject experiment = mProfile.getStudyConfig().optJSONObject("experiment");
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
             final String MONITORINIG_APP = "io.smalldata.goodvibe";
@@ -49,7 +49,7 @@ class CheckActiveStream {
     }
 
 
-    void promptForMeditationApp() {
+    void confirmMeditationAppSetUp() {
         final String HEADSPACE_APP = "com.getsomeheadspace.android";
         if (!Helper.isPackageInstalled(mContext, HEADSPACE_APP)) {
             final String APPLINK = "https://play.google.com/store/apps/details?id=com.getsomeheadspace.android&hl=en_US";

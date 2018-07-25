@@ -105,8 +105,8 @@ public class ExtractAlarmMillis {
         int alarmHour = getClockHour(userWindowArr[0]);
         int alarmMinutes = getRandomInt(userWindowDurationInHour * 60);
         Calendar cal = getTodayCalendarTime(alarmHour, alarmMinutes);
-        return cal.getTimeInMillis();
-//        return extendToNextDayIfBehindNow(cal.getTimeInMillis());
+//        return cal.getTimeInMillis();
+        return extendToNextDayIfBehindNow(cal.getTimeInMillis());
     }
 
     private static int getRandomInt(int limit) {

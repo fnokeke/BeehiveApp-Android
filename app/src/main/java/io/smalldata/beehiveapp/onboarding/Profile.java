@@ -1,6 +1,7 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -225,15 +227,17 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
+//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
+//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis() + new Random().nextInt(180000) + 60000); // FIXME: 7/7/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
+//            String message = String.format("%s @ %s", notif.optString("method"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+//            AlarmHelper.showInstantNotif(mContext, message, DateHelper.getFormattedTimestamp(), "", notif.optInt("notifId") + 500);
         }
-        saveToNotifAppliedToday(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
-
-//        markTodayAsIntvApplied(); // fixme: undo comment remove debug
-//        saveToNotifAppliedToday(notif, probableHalfNotify, coinSuccess);
+        markTodayAsIntvApplied();
+        saveToAppInfoNotifAppliedToday(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
     }
 
     private String[] chooseTitleContentAppId(JSONObject protocol) {
@@ -253,7 +257,6 @@ public class Profile {
                 String notifAppIdsList = protocol.optString("notif_appid");
                 String[] pairsAppId = notifAppIdsList.split("\n");
                 String chosenAppId = pairsAppId[getRandom(pairsAppId.length)];
-
 
                 return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId, "6006"};
 
@@ -323,17 +326,17 @@ public class Profile {
         return Store.getString(context, Constants.KEY_LAST_SAVED_DATE);
     }
 
-    private void saveToNotifAppliedToday(JSONObject notif) {
+    private void saveToAppInfoNotifAppliedToday(JSONObject notif) {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
         allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
     }
 
-    private void saveToNotifAppliedToday(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
+    private void saveToAppInfoNotifAppliedToday(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = "missed :/";
-        if (!probableHalfNotify) {
+        if (!probableHalfNotify && coinSuccess) {
             infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
         } else if (probableHalfNotify && coinSuccess) {
             infoFromNewNotif = String.format("success - %s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
@@ -532,5 +535,15 @@ public class Profile {
 
     public boolean hasAlreadyPrompted() {
         return Store.getBoolean(mContext, Store.HAS_PROMPTED_MONITORING_APP);
+    }
+
+    public String getAppVersion() {
+        String versionName = "3.14159";
+        try {
+            versionName = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return String.format("Version %s - July 2018", versionName);
     }
 }

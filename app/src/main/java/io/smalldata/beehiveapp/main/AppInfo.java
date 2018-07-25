@@ -22,6 +22,8 @@ import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
 import io.smalldata.beehiveapp.studyManagement.RSActivity;
 import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class AppInfo extends RSActivity {
 
@@ -37,7 +39,6 @@ public class AppInfo extends RSActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
-        handleRSTask(getIntent().getExtras());
     }
 
     @Override
@@ -48,18 +49,24 @@ public class AppInfo extends RSActivity {
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
         }
-        checkActiveStream.promptForMonitoringApp();
-        checkActiveStream.promptForMeditationApp();
+        checkActiveStream.confirmMonitorAppSetUp();
+        checkActiveStream.confirmMeditationAppSetUp();
+        handleRSTask();
     }
 
-    private void handleRSTask(Bundle bundle) {
+    private void handleRSTask() {
+        Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String rsType = bundle.getString(Constants.RS_TYPE);
             if (Constants.TYPE_PAM.equals(rsType)) {
                 RSActivityManager.get().queueActivity(mContext, "RSpam", true);
             } else if (Constants.TYPE_PUSH_SURVEY.equals(rsType)) {
                 RSActivityManager.get().queueActivity(mContext, "survey", true);
+            } else {
+                AlarmHelper.showInstantNotif(mContext, "Error. Contact researcher ASAP.", "rsType: " + rsType + " " + DateHelper.getFormattedTimestamp(), "", 2021);
             }
+            // use getIntent.removeExtra() not bundle.remove() because the latter makes a copy of the intent
+            getIntent().removeExtra(Constants.RS_TYPE);
         }
     }
 
@@ -100,6 +107,9 @@ public class AppInfo extends RSActivity {
         TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
         tvParticipantSince.setText(mProfile.getFirstDayOfStudy());
 
+        TextView tvAppVersion = (TextView) findViewById(R.id.tv_app_version);
+        tvAppVersion.setText(mProfile.getAppVersion());
+
         String weekdayTime = mProfile.getUserTimeWindow("weekday");
         String weekendTime = mProfile.getUserTimeWindow("weekend");
         String times = String.format("Weekday: %s. \nWeekend: %s.", weekdayTime, weekendTime);
@@ -124,6 +134,7 @@ public class AppInfo extends RSActivity {
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
+//                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
                 break;
             case R.id.action_reset_app:
                 InAppAnalytics.add(mContext, Constants.CLICKED_RESET_APP_BUTTON);

@@ -11,6 +11,7 @@
         "identifier": "q1-mindful-engage",
         "type": "singleChoiceText",
         "text": "Did you do a mindfulness-based activity today?",
+        "optional": false,
         "items": [
           {
             "prompt": "Yes - with app",

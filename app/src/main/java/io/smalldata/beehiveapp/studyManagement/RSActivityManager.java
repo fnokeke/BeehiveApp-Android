@@ -21,6 +21,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.DateHelper;
+
 /**
  * Created by jameskizer on 4/21/17.
  */
@@ -102,6 +105,9 @@ public class RSActivityManager {
             boolean launched = delegate.tryToLaunchRSActivity(this, activityRun);
             if (launched) {
                 this.activityQueue.poll();
+//                AlarmHelper.showInstantNotif(context, "RSTask Launched!", DateHelper.getFormattedTimestamp(), "", 2022);
+//            } else {
+//                AlarmHelper.showInstantNotif(context, "RSTask Failed!", DateHelper.getFormattedTimestamp(), "", 2023);
             }
 
             Task task = loadTask(context, activityRun);

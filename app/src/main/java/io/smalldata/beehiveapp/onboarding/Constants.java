@@ -40,7 +40,7 @@ public class Constants {
     static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
     static final String KEY_USER_COMPLETED_STEPS = "keyUserCompletedSteps";
 
-    public static final String NOTIF_LOGS_CSV = "notifLogs.csv";
+    public static final String NOTIF_EVENT_LOGS_CSV = "notifLogs.csv";
     public static final String ANALYTICS_LOG_CSV = "analytics.csv";
     public static final String SURVEY_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/BeehiveSurvey.csv";
     public static final String PAM_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/BeehivePAM.csv";
@@ -77,6 +77,8 @@ public class Constants {
     static final String ALARM_ID = "alarmId";
     public static final String RS_TYPE = "rs_type";
     public static final String NOTIF_CONTENTS_SHOWED = "notifContentsShowed";
+    public static final String LAST_DATE_PAM_SEEN = "lastDatePamSeen";
+    public static final String LAST_DATE_SURVEY_SEEN = "lastDateSurveySeen";
 
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";

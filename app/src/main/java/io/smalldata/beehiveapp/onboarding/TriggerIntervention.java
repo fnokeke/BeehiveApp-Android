@@ -56,12 +56,12 @@ public class TriggerIntervention {
 
 
     public void startIntvForToday() {
-        if (todayIsFirstDayOfStudy()) {
-            Toast.makeText(mContext, "Expect your first reminder tomorrow.", Toast.LENGTH_SHORT).show();
-        }
-
         if (isNewDay() && todayIntvExists()) {
-            mProfile.applyIntvForToday();
+            if (todayIsFirstDayOfStudy()) {
+                Toast.makeText(mContext, "Expect your first reminder tomorrow.", Toast.LENGTH_SHORT).show();
+            } else {
+                mProfile.applyIntvForToday();
+            }
         }
 
     }
