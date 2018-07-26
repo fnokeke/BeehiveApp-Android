@@ -36,9 +36,11 @@ public class LocalStorage {
     }
 
     private static void createBeehiveDirectory() {
-        String beehiveDir = Environment.getExternalStorageDirectory().getPath() + "/beehive";
-        File dir = new File(beehiveDir);
-        Log.i(TAG, "Beehive directory exists:" + dir.exists());
+        File dir = new File(Environment.getExternalStorageDirectory() + Constants.BEEHIVE_DIR);
+        if (!dir.exists() || !dir.isDirectory()) {
+            boolean status = dir.mkdir();
+            Log.d(TAG,"createBeehiveDirectory() = " + status);
+        }
     }
 
     public static void appendToFile(Context context, String filename, String data) {

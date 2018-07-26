@@ -3,6 +3,7 @@ package org.researchsuite.rsrp.CSVBackend;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 import org.researchsuite.rsrp.Core.RSRPBackEnd;
 import org.researchsuite.rsrp.Core.RSRPIntermediateResult;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 public class RSRPCSVBackend implements RSRPBackEnd {
+    final String TAG = "RSRPBackend";
 
     public URI outputDirectory;
 
@@ -58,11 +60,9 @@ public class RSRPCSVBackend implements RSRPBackEnd {
 
     private void createDirectory(URI directory){
         File dir = new File(Environment.getExternalStorageDirectory() + directory.getPath());
-        try {
-            dir.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //            dir.createNewFile();
+        boolean status = dir.mkdir();
+        Log.d(TAG, "createDirectory():  " + status);
     }
 
     private void removeDirectory(URI directory){

@@ -43,8 +43,10 @@ public class Constants {
 
     public static final String NOTIF_EVENT_LOGS_CSV = "notifLogs.csv";
     public static final String ANALYTICS_LOG_CSV = "analytics.csv";
-    public static final String SURVEY_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/BeehiveSurvey.csv";
-    public static final String PAM_LOGS_CSV = Environment.getExternalStorageDirectory().getPath() + "/BeehivePAM.csv";
+    public static final String BEEHIVE_DIR = "/beehive/";
+    private static String BASE_DIR = Environment.getExternalStorageDirectory().getPath() + Constants.BEEHIVE_DIR;
+    public static final String SURVEY_LOGS_CSV =  BASE_DIR + "/BeehiveSurvey.csv";
+    public static final String PAM_LOGS_CSV = BASE_DIR + "/BeehivePAM.csv";
 
     static final String VIEWED_SCREEN_USERTIMERS = "viewed-screen-usertimers";
     static final String VIEWED_SCREEN_USERWINDOWS = "viewed-screen-userwindows";

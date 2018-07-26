@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import edu.cornell.tech.foundry.ohmageomhsdk.OhmageOMHManager;
+import io.smalldata.beehiveapp.onboarding.Constants;
 import rx.Single;
 import rx.SingleSubscriber;
 
@@ -67,7 +68,7 @@ public class RSApplication extends Application {
 //                getString(R.string.ohmage_queue_directory)
 //        );
 
-        String testDirectory = "/";
+        String testDirectory = Constants.BEEHIVE_DIR;
         URI directoryURI = null;
         try {
             directoryURI = new URI(testDirectory);

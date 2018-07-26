@@ -17,6 +17,7 @@ import com.google.gson.JsonElement;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
+import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -45,9 +46,9 @@ public class AppInfo extends RSActivity {
 
     @Override
     public void onResume() {
+        requestStoragePermission();
         setAppInfo();
         super.onResume();
-        requestStoragePermission();
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
         }
