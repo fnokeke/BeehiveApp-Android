@@ -57,9 +57,6 @@ public class AppInfo extends RSActivity {
         handleRSTask();
     }
 
-    //                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
-//                RSActivityManager.get().queueActivity(mContext, "survey", true);
-    // use getIntent.removeExtra() not bundle.remove() because the latter makes a copy of the intent
     private void handleRSTask() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -138,11 +135,13 @@ public class AppInfo extends RSActivity {
             case R.id.action_set_time:
                 InAppAnalytics.add(mContext, Constants.CLICKED_TIMER_BUTTON);
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
+//                LocalStorage.resetFile(mContext, Constants.SURVEY_LOGS_CSV);  // FIXME: 7/26/18 remove debug statement
+//                LocalStorage.resetFile(mContext, Constants.PAM_LOGS_CSV);  // FIXME: 7/26/18 remove debug statement
                 break;
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
-                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
+//                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
                 break;
             case R.id.action_reset_app:
                 InAppAnalytics.add(mContext, Constants.CLICKED_RESET_APP_BUTTON);

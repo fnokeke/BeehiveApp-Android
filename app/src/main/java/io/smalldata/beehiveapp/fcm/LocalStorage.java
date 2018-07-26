@@ -29,8 +29,8 @@ public class LocalStorage {
 
     public static void initAllStorageFiles(Context context) {
         createBeehiveDirectory();
-        LocalStorage.resetFile(context, Constants.PAM_LOGS_CSV);
-        LocalStorage.resetFile(context, Constants.SURVEY_LOGS_CSV);
+//        LocalStorage.resetFile(context, Constants.PAM_LOGS_CSV);
+//        LocalStorage.resetFile(context, Constants.SURVEY_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.NOTIF_EVENT_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.ANALYTICS_LOG_CSV);
     }
@@ -39,7 +39,7 @@ public class LocalStorage {
         File dir = new File(Environment.getExternalStorageDirectory() + Constants.BEEHIVE_DIR);
         if (!dir.exists() || !dir.isDirectory()) {
             boolean status = dir.mkdir();
-            Log.d(TAG,"createBeehiveDirectory() = " + status);
+            Log.d(TAG, "createBeehiveDirectory() = " + status);
         }
     }
 
@@ -110,21 +110,20 @@ public class LocalStorage {
         }
     }
 
-    static void resetFile(Context context, String filename) {
+    public static void resetFile(Context context, String filename) {
         try {
+            if (!new File(filename).exists()) return;
+
             FileOutputStream fileOutputStream;
             String headerBackup = "";
 
             // delete everything except header
-            if (filename.equals(Constants.PAM_LOGS_CSV)) {
-                headerBackup = "timestamp,affect_arousal,affect_valence,positive_affect,mood,negative_affect\n";
-            } else if (filename.equals(Constants.SURVEY_LOGS_CSV)) { // in external storage
-                headerBackup = "timestamp, q1-mindful-engage\n";
-//                headerBackup = readFromFile(context, filename);
-//                String[] rows = headerBackup.split("\n");
-//                if (rows.length > 0) {
-//                    headerBackup = rows[0] + "\n";
-//                }
+            if (filename.equals(Constants.PAM_LOGS_CSV) || filename.equals(Constants.SURVEY_LOGS_CSV)) {
+                headerBackup = readFromFile(context, filename);
+                String[] rows = headerBackup.split("\n");
+                if (rows.length > 0) {
+                    headerBackup = rows[0] + "\n";
+                }
             }
 
             if (filename.contains("/")) { // in external storage
@@ -136,7 +135,6 @@ public class LocalStorage {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
             outputStreamWriter.write(headerBackup);
             outputStreamWriter.close();
-//            new OutputStreamWriter(fileOutputStream).close();
         } catch (IOException e) {
             Log.e(TAG, "resetFile: error" + e.toString());
             AlarmHelper.showInstantNotif(context, "resetFile error", e.toString(), "", 5333);
