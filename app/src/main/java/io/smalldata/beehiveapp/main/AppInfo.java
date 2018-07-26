@@ -13,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
@@ -52,21 +54,24 @@ public class AppInfo extends RSActivity {
         checkActiveStream.confirmMonitorAppSetUp();
         checkActiveStream.confirmMeditationAppSetUp();
         handleRSTask();
-        RSActivityManager.get().queueActivity(mContext, mProfile.getJsonSurvey());
     }
 
+    //                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
+//                RSActivityManager.get().queueActivity(mContext, "survey", true);
+    // use getIntent.removeExtra() not bundle.remove() because the latter makes a copy of the intent
     private void handleRSTask() {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String rsType = bundle.getString(Constants.RS_TYPE);
             if (Constants.TYPE_PAM.equals(rsType)) {
-                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
+                //                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
+                RSActivityManager.get().queueActivity(mContext, mProfile.generatePAMSurveyString());
             } else if (Constants.TYPE_PUSH_SURVEY.equals(rsType)) {
-                RSActivityManager.get().queueActivity(mContext, "survey", true);
-            } else {
-                AlarmHelper.showInstantNotif(mContext, "Error. Contact researcher ASAP.", "rsType: " + rsType + " " + DateHelper.getFormattedTimestamp(), "", 2021);
+                String surveyJsonStr = bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS);
+                RSActivityManager.get().queueActivity(mContext, mProfile.generateJSONSurveyString(surveyJsonStr));
+//            } else {
+//                AlarmHelper.showInstantNotif(mContext, "Error. Contact researcher ASAP.", "rsType: " + rsType + " " + DateHelper.getFormattedTimestamp(), "", 2021);
             }
-            // use getIntent.removeExtra() not bundle.remove() because the latter makes a copy of the intent
             getIntent().removeExtra(Constants.RS_TYPE);
         }
     }
@@ -75,6 +80,7 @@ public class AppInfo extends RSActivity {
         requestReadStoragePermission();
         requestWriteStoragePermission();
     }
+
 
     public void requestReadStoragePermission() {
         if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
@@ -135,7 +141,7 @@ public class AppInfo extends RSActivity {
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
-//                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
+                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
                 break;
             case R.id.action_reset_app:
                 InAppAnalytics.add(mContext, Constants.CLICKED_RESET_APP_BUTTON);

@@ -106,6 +106,7 @@ public class NewAlarmHelper {
         Intent intent = new Intent(context, NotifEventReceiver.class);
         intent.putExtra(Constants.NOTIF_TYPE, notif.optString(Constants.NOTIF_TYPE));
         intent.putExtra(Constants.ALARM_PROTOCOL_METHOD, notif.optString("method"));
+        intent.putExtra(Constants.ALARM_PROTOCOL_NOTIF_DETAILS, notif.optString("notif_details"));
         intent.putExtra(Constants.ALARM_NOTIF_TITLE, notif.optString("title"));
         intent.putExtra(Constants.ALARM_NOTIF_CONTENT, notif.optString("content"));
         intent.putExtra(Constants.ALARM_APP_ID, notif.optString("appIdToLaunch"));

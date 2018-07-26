@@ -58,6 +58,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
             } else {
                 Intent intentAppInfo = new Intent(mContext, AppInfo.class);
                 intentAppInfo.putExtra(Constants.RS_TYPE, method);
+                intentAppInfo.putExtra(Constants.ALARM_PROTOCOL_NOTIF_DETAILS, bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS));
                 mContext.startActivity(intentAppInfo);
             }
         }

@@ -4,13 +4,13 @@
   "title": "Productivity",
   "guid": "productivity-1",
   "activity": {
-    "type"      : "elementList",
+    "type": "elementList",
     "identifier": "sample_list",
-    "elements"   : [
+    "elements": [
       {
-        "identifier"   : "introduction",
-        "type"         : "instruction",
-        "title"        : "Welcome to the Productivity Assessment"
+        "identifier": "introduction",
+        "type": "instruction",
+        "title": "Welcome to the Productivity Assessment"
       },
       {
         "identifier": "productivity",
@@ -45,34 +45,34 @@
         "text": "How was your day today?"
       },
       {
-        "identifier"   : "results",
-        "type"         : "instruction",
-        "title"        : "Thanks!",
-        "text"         : ""
+        "identifier": "results",
+        "type": "instruction",
+        "title": "Thanks!",
+        "text": ""
       }
     ]
   },
-  "resultTransforms":[
+  "resultTransforms": [
     {
       "transform": "BeehiveCSVEncodable",
-      "inputMapping":[
+      "inputMapping": [
         {
-          "stepIdentifier":"how was your day today",
-          "parameter":"how was your day today"
+          "stepIdentifier": "how was your day today",
+          "parameter": "how was your day today"
         },
         {
-          "stepIdentifier":"rate your productivity today",
-          "parameter":"rate your productivity today"
+          "stepIdentifier": "rate your productivity today",
+          "parameter": "rate your productivity today"
         },
-        {"parameter": "schemaID", "constant":{
-          "namespace": "Cornell",
-          "name": "cornell",
-          "version": "1.0"
-        }
+        {
+          "parameter": "schemaID",
+          "constant": {
+            "namespace": "Cornell",
+            "name": "cornell",
+            "version": "1.0"
+          }
         }
       ]
     }
-
   ]
-
 }

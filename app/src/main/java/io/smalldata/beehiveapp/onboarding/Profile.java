@@ -2,8 +2,10 @@ package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -13,10 +15,11 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
+
+import static org.spongycastle.dvcs.DVCSRequestInfo.validate;
 
 /**
  * Created by fnokeke on 12/17/17.
@@ -25,6 +28,7 @@ import io.smalldata.beehiveapp.utils.Store;
 
 public class Profile {
     private Context mContext;
+    private String TAG = "Profile.class";
 
     public Profile(Context context) {
         mContext = context;
@@ -222,12 +226,13 @@ public class Profile {
         JSONObject notif = new JSONObject();
         JsonHelper.setJSONValue(notif, Constants.ALARM_ID, getNotifId(protocol));
         JsonHelper.setJSONValue(notif, "method", protocol.optString("method"));
+        JsonHelper.setJSONValue(notif, "notif_details", protocol.optString("notif_details"));
         JsonHelper.setJSONValue(notif, "title", chosen[0]);
         JsonHelper.setJSONValue(notif, "content", chosen[1]);
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
+        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
 //        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis() + new Random().nextInt(180000) + 60000); // FIXME: 7/7/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
@@ -547,90 +552,99 @@ public class Profile {
         return String.format("Version %s - July 2018", versionName);
     }
 
-    public String getJsonSurvey() {
-//        return Store.getString(context, Store.JSON_SURVEY);
-        return
-                "{\n" +
-                        "  \"type\": \"recurring\",\n" +
-                        "  \"identifier\": \"Demography\",\n" +
-                        "  \"title\": \"Demography\",\n" +
-                        "  \"guid\": \"demography-1\",\n" +
-                        "  \"activity\": {\n" +
-                        "    \"type\"      : \"elementList\",\n" +
-                        "    \"identifier\": \"sample_list\",\n" +
-                        "    \"elements\"   : [\n" +
-                        "      {\n" +
-                        "        \"identifier\"   : \"introduction\",\n" +
-                        "        \"type\"         : \"instruction\",\n" +
-                        "        \"title\"        : \"Welcome to the Demography Assessment\"\n" +
-                        "      },\n" +
-                        "      {\n" +
-                        "        \"identifier\": \"gender\",\n" +
-                        "        \"type\": \"singleChoiceText\",\n" +
-                        "        \"text\": \"Gender\",\n" +
-                        "        \"items\": [\n" +
-                        "          {\n" +
-                        "            \"prompt\": \"Male\",\n" +
-                        "            \"value\": \"male\"\n" +
-                        "          },\n" +
-                        "          {\n" +
-                        "            \"prompt\": \"Female\",\n" +
-                        "            \"value\": \"female\"\n" +
-                        "          },\n" +
-                        "          {\n" +
-                        "            \"prompt\": \"Other\",\n" +
-                        "            \"value\": \"other\"\n" +
-                        "          }\n" +
-                        "        ]\n" +
-                        "      },\n" +
-                        "      {\n" +
-                        "        \"identifier\": \"age\",\n" +
-                        "        \"type\": \"numericInteger\",\n" +
-                        "        \"text\": \"Age\",\n" +
-                        "        \"range\": {\n" +
-                        "          \"min\": 18,\n" +
-                        "          \"max\": 99,\n" +
-                        "          \"unitLabel\": \"years\"\n" +
-                        "        }\n" +
-                        "      }\n" +
-                        "\n" +
-                        "    ]\n" +
-                        "  },\n" +
-                        "  \"resultTransforms\":[\n" +
-                        "    {\n" +
-                        "      \"transform\": \"BeehiveCSVEncodable\",\n" +
-                        "      \"inputMapping\":[\n" +
-                        "        {\n" +
-                        "          \"stepIdentifier\":\"gender\",\n" +
-                        "          \"parameter\":\"gender\"\n" +
-                        "        },\n" +
-                        "        {\n" +
-                        "          \"stepIdentifier\":\"age\",\n" +
-                        "          \"parameter\":\"age\"\n" +
-                        "        },\n" +
-                        "        {\n" +
-                        "          \"identifier\"   : \"results\",\n" +
-                        "          \"type\"         : \"instruction\",\n" +
-                        "          \"title\"        : \"Thanks!\",\n" +
-                        "          \"text\"         : \"\"\n" +
-                        "        },\n" +
-                        "        {\"parameter\": \"schemaID\", \"constant\":{\n" +
-                        "          \"namespace\": \"Cornell\",\n" +
-                        "          \"name\": \"cornell\",\n" +
-                        "          \"version\": \"1.0\"\n" +
-                        "        }\n" +
-                        "        }\n" +
-                        "      ]\n" +
-                        "    }\n" +
-                        "\n" +
-                        "  ]\n" +
-                        "\n" +
-                        "}\n"
-                ;
+    // example of surveyJsonStr = "[...]"
+    public String generateJSONSurveyString(String surveyJsonArrStr) {
+        String jsonSurvey = "{\n" +
+                "  \"type\": \"recurring\",\n" +
+                "  \"identifier\": \"BeehiveSurvey\",\n" +
+                "  \"title\": \"Survey\",\n" +
+                "  \"guid\": \"survey-1\",\n" +
+                "  \"activity\": {\n" +
+                "    \"type\": \"elementList\",\n" +
+                "    \"identifier\": \"survey_list\",\n" +
+                "    \"elements\": " + surveyJsonArrStr +
+                "    }," +
+                "    \"resultTransforms\": " + getResultsTransform(surveyJsonArrStr) +
+                "}";
 
+        if (isValidSurvey(jsonSurvey)) {
+            return jsonSurvey;
+        }
+        return null;
     }
 
-    public static void setJsonSurvey(Context context, String value) {
-        Store.setString(context, Store.JSON_SURVEY, value);
+    private boolean isValidSurvey(String jsonSurvey) {
+        try {
+            new JSONObject(jsonSurvey);
+            return true;
+        } catch (JSONException e) {
+            Log.e(TAG, "isValidString failed.", e);
+            return false;
+        }
+    }
+
+    // example of getResultsTransform returns = "[...]"
+    private String getResultsTransform(String surveyJsonArrStr) {
+        JSONObject jo = new JSONObject();
+        JsonHelper.setJSONValue(jo, "transform", "BeehiveCSVEncodable");
+        JsonHelper.setJSONValue(jo, "inputMapping", generateInputMapping(surveyJsonArrStr));
+        return "[" + jo.toString() + "]";
+    }
+
+    private JSONArray generateInputMapping(String surveyJsonArrStr) {
+        JSONArray mappedArrInput = new JSONArray();
+        JSONObject jo = new JSONObject();
+
+        JSONArray surveyQuestions = JsonHelper.strToJsonArray(surveyJsonArrStr);
+        JSONObject question;
+
+        for (int i = 0; i < surveyQuestions.length(); i++) {
+            question = surveyQuestions.optJSONObject(i);
+            if (!question.optString("type").equals("instruction")) {
+                JsonHelper.setJSONValue(jo, "stepIdentifier", question.optString("identifier"));
+                JsonHelper.setJSONValue(jo, "parameter", question.optString("identifier"));
+                mappedArrInput.put(jo);
+            }
+        }
+
+        String namespace = "{ \"parameter\": \"schemaID\", \"constant\": { \"namespace\": \"Cornell\", \"name\": \"cornell\", \"version\": \"1.0\" } }";
+        mappedArrInput.put(JsonHelper.strToJsonObject(namespace));
+
+        return mappedArrInput;
+    }
+
+
+    public String generatePAMSurveyString() {
+        return "{\n" +
+                "  \"type\": \"recurring\",\n" +
+                "  \"identifier\": \"BeehivePAM\",\n" +
+                "  \"title\": \"Notification Date\",\n" +
+                "  \"guid\": \"notification_date-1\",\n" +
+                "  \"activity\": {\n" +
+                "    \"type\"      : \"elementList\",\n" +
+                "    \"identifier\": \"pam\",\n" +
+                "    \"elements\"   : [\n" +
+                "      {\n" +
+                "        \"identifier\"   : \"PAM\",\n" +
+                "        \"type\"         : \"PAM\",\n" +
+                "        \"optional\":true\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  },\n" +
+                "  \"resultTransforms\": [\n" +
+                "    {\n" +
+                "      \"transform\": \"PAMCSVEncodable\",\n" +
+                "      \"inputMapping\": [\n" +
+                "        {\"parameter\":\"result\", \"stepIdentifier\":\"PAM\"},\n" +
+                "        {\"parameter\": \"schemaID\", \"constant\":{\n" +
+                "          \"namespace\": \"Cornell\",\n" +
+                "          \"name\": \"cornell\",\n" +
+                "          \"version\": \"1.0\"\n" +
+                "        }\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
     }
 }

@@ -15,6 +15,7 @@ public class Constants {
     public final static String ALARM_MILLIS_SET = "alarm_millis";
     public final static String ALARM_NOTIF_WAS_DISMISSED = "was_dismissed";
     public static final String ALARM_PROTOCOL_METHOD = "method";
+    public static final String ALARM_PROTOCOL_NOTIF_DETAILS = "notif_details";
 
     public final static String NOTIFICATION_ID = "notification-id";
     public final static String NOTIFICATION = "notification";
