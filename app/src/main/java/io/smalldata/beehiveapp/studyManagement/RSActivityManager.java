@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 
 import org.researchstack.backbone.ResourcePathManager;
 import org.researchstack.backbone.result.TaskResult;
@@ -31,8 +30,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import io.smalldata.beehiveapp.onboarding.Profile;
 
 /**
  * Created by jameskizer on 4/21/17.

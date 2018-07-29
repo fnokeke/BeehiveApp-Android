@@ -118,7 +118,7 @@ public class LocalStorage {
             String headerBackup = "";
 
             // delete everything except header
-            if (filename.equals(Constants.PAM_LOGS_CSV) || filename.equals(Constants.SURVEY_LOGS_CSV)) {
+            if (filename.contains(Constants.BEEHIVE_DIR)) {
                 headerBackup = readFromFile(context, filename);
                 String[] rows = headerBackup.split("\n");
                 if (rows.length > 0) {
@@ -132,9 +132,11 @@ public class LocalStorage {
             } else {
                 fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
             }
+
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
             outputStreamWriter.write(headerBackup);
             outputStreamWriter.close();
+
         } catch (IOException e) {
             Log.e(TAG, "resetFile: error" + e.toString());
             AlarmHelper.showInstantNotif(context, "resetFile error", e.toString(), "", 5333);

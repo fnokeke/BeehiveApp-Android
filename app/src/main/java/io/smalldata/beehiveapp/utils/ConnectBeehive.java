@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -27,14 +28,18 @@ public class ConnectBeehive {
     private final static String TAG = "ConnectBeehive";
     private Context mContext;
     private TextView tvFeedback;
-    private Experiment experiment;
+//    private Experiment experiment;
     private Profile mProfile;
 
     public ConnectBeehive(Context context, TextView feedback) {
         mContext = context;
         mProfile = new Profile(context);
         tvFeedback = feedback;
-        experiment = new Experiment(context);
+//        experiment = new Experiment(context);
+    }
+
+    public ConnectBeehive(Context context) {
+        mContext = context;
     }
 
     public void fetchStudyUsingCode(String code) {
@@ -44,7 +49,14 @@ public class ConnectBeehive {
         CallAPI.fetchStudy(mContext, data, fetchStudyResponseHandler);
     }
 
-    private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() { 
+    public void updateStudy(Context context, String code) {
+        JSONObject data = new JSONObject();
+        JsonHelper.setJSONValue(data, "code", code);
+        mProfile = new Profile(context);
+        CallAPI.updateStudy(context, data, updateStudyResponseHandler);
+    }
+
+    private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
             Display.dismissBusy();
@@ -66,11 +78,23 @@ public class ConnectBeehive {
         }
     };
 
+    private VolleyJsonCallback updateStudyResponseHandler = new VolleyJsonCallback() {
+        @Override
+        public void onConnectSuccess(JSONObject jsonResult) {
+            mProfile.saveStudyConfig(jsonResult);
+            Toast.makeText(mContext, "Successfully updated study.", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onConnectFailure(VolleyError error) {
+            Log.i(TAG, "updateStudyFailure: " + error.toString());
+            AlarmHelper.showInstantNotif(mContext, "Error updating study: " + error.toString(), DateHelper.getFormattedTimestamp(), "", 2023);
+        }
+    };
+
     private void beginLoginProcess() {
         mContext.startActivity(new Intent(mContext, Step0BLoginUser.class));
     }
-
-
 
 
     // TODO: 12/16/17 remove dead code (connectToBeehive)

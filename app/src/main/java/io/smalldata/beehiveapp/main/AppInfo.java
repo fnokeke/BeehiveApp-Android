@@ -12,10 +12,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 
 import io.smalldata.beehiveapp.R;
+import io.smalldata.beehiveapp.fcm.AppJobService;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
@@ -26,11 +28,13 @@ import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
 import io.smalldata.beehiveapp.studyManagement.RSActivity;
 import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.ConnectBeehive;
 import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class AppInfo extends RSActivity {
 
     private Profile mProfile;
+    private ConnectBeehive mConnectBeehive;
     private Context mContext;
     CheckActiveStream checkActiveStream;
 
@@ -38,6 +42,7 @@ public class AppInfo extends RSActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         mProfile = new Profile(mContext);
+        mConnectBeehive = new ConnectBeehive(mContext);
         checkActiveStream = new CheckActiveStream(mContext);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
@@ -71,6 +76,10 @@ public class AppInfo extends RSActivity {
 //                AlarmHelper.showInstantNotif(mContext, "Error. Contact researcher ASAP.", "rsType: " + rsType + " " + DateHelper.getFormattedTimestamp(), "", 2021);
             }
             getIntent().removeExtra(Constants.RS_TYPE);
+            Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
+//            finish();
+        } else {
+            Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -135,19 +144,26 @@ public class AppInfo extends RSActivity {
             case R.id.action_set_time:
                 InAppAnalytics.add(mContext, Constants.CLICKED_TIMER_BUTTON);
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
-//                LocalStorage.resetFile(mContext, Constants.SURVEY_LOGS_CSV);  // FIXME: 7/26/18 remove debug statement
-//                LocalStorage.resetFile(mContext, Constants.PAM_LOGS_CSV);  // FIXME: 7/26/18 remove debug statement
+                AppJobService.sendAllSurveyLogs(mContext);
                 break;
+
+            case R.id.action_update:
+                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
+                mConnectBeehive.updateStudy(mContext, mProfile.getStudyCode());
+                break;
+
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
-//                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
+                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
                 break;
+
             case R.id.action_reset_app:
                 InAppAnalytics.add(mContext, Constants.CLICKED_RESET_APP_BUTTON);
                 mProfile.wipeAllData();
                 startActivity(new Intent(mContext, Step0AWelcomeStudyCode.class));
                 break;
+
         }
 
         return true;

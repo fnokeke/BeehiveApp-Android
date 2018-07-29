@@ -19,8 +19,6 @@ import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
 
-import static org.spongycastle.dvcs.DVCSRequestInfo.validate;
-
 /**
  * Created by fnokeke on 12/17/17.
  * Profile to manage study data
@@ -232,7 +230,7 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
+        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
 //        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis() + new Random().nextInt(180000) + 60000); // FIXME: 7/7/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
@@ -552,25 +550,40 @@ public class Profile {
         return String.format("Version %s - July 2018", versionName);
     }
 
-    // example of surveyJsonStr = "[...]"
-    public String generateJSONSurveyString(String surveyJsonArrStr) {
+    // example of surveyJsonStr = "{title: "surveyTitle", elements: [...]}"
+    public String generateJSONSurveyString(String surveyJsonStr) {
+        String surveyTitle = getSurveyTitle(surveyJsonStr);
+        String surveyElements = getSurveyElements(surveyJsonStr);
+        String resultTransforms = getResultsTransform(surveyElements);
         String jsonSurvey = "{\n" +
                 "  \"type\": \"recurring\",\n" +
-                "  \"identifier\": \"BeehiveSurvey\",\n" +
-                "  \"title\": \"Survey\",\n" +
-                "  \"guid\": \"survey-1\",\n" +
+                "  \"identifier\": \"" + surveyTitle + "\",\n" +
+                "  \"title\": \"" + surveyTitle + "\",\n" +
+                "  \"guid\": \"" + surveyTitle + "-1\",\n" +
                 "  \"activity\": {\n" +
                 "    \"type\": \"elementList\",\n" +
                 "    \"identifier\": \"survey_list\",\n" +
-                "    \"elements\": " + surveyJsonArrStr +
+                "    \"elements\": " + surveyElements + "\n" +
                 "    }," +
-                "    \"resultTransforms\": " + getResultsTransform(surveyJsonArrStr) +
+                "    \"resultTransforms\": " + resultTransforms +
                 "}";
 
         if (isValidSurvey(jsonSurvey)) {
             return jsonSurvey;
         }
         return null;
+    }
+
+    // example of surveyJsonStr = "{title: "surveyTitle", elements: [...]}"
+    private String getSurveyTitle(String surveyJsonStr) {
+        JSONObject survey = JsonHelper.strToJsonObject(surveyJsonStr);
+        return survey.optString("title", "missing-title").toLowerCase();
+    }
+
+    // example of surveyJsonStr = "{title: "surveyTitle", elements: [...]}"
+    private String getSurveyElements(String surveyJsonStr) {
+        JSONObject survey = JsonHelper.strToJsonObject(surveyJsonStr);
+        return survey.optString("elements", "[]");
     }
 
     private boolean isValidSurvey(String jsonSurvey) {
@@ -591,16 +604,16 @@ public class Profile {
         return "[" + jo.toString() + "]";
     }
 
-    private JSONArray generateInputMapping(String surveyJsonArrStr) {
+    private JSONArray generateInputMapping(String surveyElementArrStr) {
         JSONArray mappedArrInput = new JSONArray();
-        JSONObject jo = new JSONObject();
 
-        JSONArray surveyQuestions = JsonHelper.strToJsonArray(surveyJsonArrStr);
+        JSONArray surveyElements = JsonHelper.strToJsonArray(surveyElementArrStr);
         JSONObject question;
 
-        for (int i = 0; i < surveyQuestions.length(); i++) {
-            question = surveyQuestions.optJSONObject(i);
+        for (int i = 0; i < surveyElements.length(); i++) {
+            question = surveyElements.optJSONObject(i);
             if (!question.optString("type").equals("instruction")) {
+                JSONObject jo = new JSONObject();
                 JsonHelper.setJSONValue(jo, "stepIdentifier", question.optString("identifier"));
                 JsonHelper.setJSONValue(jo, "parameter", question.optString("identifier"));
                 mappedArrInput.put(jo);
@@ -617,9 +630,9 @@ public class Profile {
     public String generatePAMSurveyString() {
         return "{\n" +
                 "  \"type\": \"recurring\",\n" +
-                "  \"identifier\": \"BeehivePAM\",\n" +
-                "  \"title\": \"Notification Date\",\n" +
-                "  \"guid\": \"notification_date-1\",\n" +
+                "  \"identifier\": \"pam\",\n" +
+                "  \"title\": \"pam\",\n" +
+                "  \"guid\": \"pam-1\",\n" +
                 "  \"activity\": {\n" +
                 "    \"type\"      : \"elementList\",\n" +
                 "    \"identifier\": \"pam\",\n" +

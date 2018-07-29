@@ -11,9 +11,16 @@
         />
 
     <item
-        android:id="@+id/action_about"
-        android:title="About"
+        android:id="@+id/action_update"
+        android:icon="@android:drawable/arrow_down_float"
+        android:title="Update Study"
         />
+
+    <item
+        android:id="@+id/action_about"
+        android:title="About App"
+        />
+
 
     <item
         android:id="@+id/action_reset_app"

@@ -68,6 +68,10 @@ public class CallAPI {
         addRequestToQueue(context, FETCH_STUDY_URL, params, callback);
     }
 
+    public static void updateStudy(final Context context, final JSONObject params, final VolleyJsonCallback callback) {
+        addRequestToQueue(context, FETCH_STUDY_URL, params, callback);
+    }
+
 //    public static void connectStudy(final Context context, final JSONObject params, final VolleyJsonCallback callback) {
 //        addRequestToQueue(context, CONNECT_URL, params, callback);
 //    }

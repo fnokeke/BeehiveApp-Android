@@ -9,6 +9,8 @@ import com.firebase.jobdispatcher.JobService;
 
 import org.json.JSONObject;
 
+import java.io.File;
+
 import io.smalldata.beehiveapp.api.CallAPI;
 import io.smalldata.beehiveapp.api.VolleyJsonCallback;
 import io.smalldata.beehiveapp.onboarding.Constants;
@@ -39,8 +41,7 @@ public class AppJobService extends JobService {
 
     private void sendAllLocalData(Context context) {
         sendNotifLogs(context);
-        sendPAMLogs(context);
-        sendSurveyLogs(context);
+        sendAllSurveyLogs(context);
         sendInAppAnalytics(context);
     }
 
@@ -59,19 +60,19 @@ public class AppJobService extends JobService {
         CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, filename));
     }
 
-    private void sendPAMLogs(Context context) {
-        String filename = Constants.PAM_LOGS_CSV;
-        JSONObject data = getLocalData(context, filename);
-        if (!data.optString("logs").equals("")) {
-            CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
-        }
-    }
-
-    private void sendSurveyLogs(Context context) {
-        String filename = Constants.SURVEY_LOGS_CSV;
-        JSONObject data = getLocalData(context, filename);
-        if (!data.optString("logs").equals("")) {
-            CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
+    public static void sendAllSurveyLogs(Context context) {
+        File directory = new File(Constants.FULL_BEEHIVE_DIR);
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            String filename = file.getPath();
+            JSONObject data = getLocalData(context, filename);
+            if (!data.optString("logs").equals("")) {
+                if (filename.equals(Constants.PAM_LOGS_CSV)) {
+                    CallAPI.submitPAMLog(context, data, getLogResponseHandler(context, filename));
+                } else {
+                    CallAPI.submitSurveyLog(context, data, getLogResponseHandler(context, filename));
+                }
+            }
         }
     }
 

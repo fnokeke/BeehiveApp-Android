@@ -29,13 +29,13 @@ class CheckActiveStream {
     void confirmMonitorAppSetUp() {
         JSONObject experiment = mProfile.getStudyConfig().optJSONObject("experiment");
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
-            final String MONITORINIG_APP = "io.smalldata.goodvibe";
+            final String MONITORINIG_APP = "io.smalldata.beehivebg";
             if (!Helper.isPackageInstalled(mContext, MONITORINIG_APP)) {
-                final String appLink = "https://slm.smalldata.io/static/downloads/goodvibe.apk";
-                NewAlarmHelper.showInstantNotif(mContext, "This study requires Goodvibe app",
+                final String appLink = "https://slm.smalldata.io/static/downloads/beehivebg.apk";
+                NewAlarmHelper.showInstantNotif(mContext, "This study requires Beehive Bg App",
                         "Tap here to install.",
                         appLink, 2011);
-                Toast.makeText(mContext, "Goodvibe app needed...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Beehive Bg App needed...", Toast.LENGTH_SHORT).show();
             } else {
                 if (!mProfile.hasAlreadyPrompted()) {
                     mProfile.setPromptedForMonitoringApp();
