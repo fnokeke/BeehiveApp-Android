@@ -18,18 +18,25 @@ package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
+import io.smalldata.beehiveapp.utils.ConnectBeehive;
+import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
     private static final String TAG = "BeehiveFirebaseMsg";
-    private static final String SERVER_SYNC = "serverSync";
+    private static final String SYNC_STUDY = "syncStudy";
+    private static final String FORCE_SERVER_SYNC = "forceServerSync";
     private static final String NOTIFY_USER = "notifyUser";
     private static final String PROMPT_APP_UPDATE = "promptUpdate";
     private Context mContext;
@@ -41,6 +48,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
      */
     public void onMessageReceived(RemoteMessage remoteMessage) {
         mContext = getApplicationContext();
+
+
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
@@ -52,14 +61,26 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String content = data.get("content");
             String url = data.get("url");
             switch (type) {
-                case SERVER_SYNC:
-                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(getApplicationContext());
+                case SYNC_STUDY:
+                    Profile mProfile = new Profile(mContext);
+                    ConnectBeehive mConnectBeehive = new ConnectBeehive(mContext);
+                    mConnectBeehive.updateStudy(mContext, mProfile.getStudyCode());
+                    String message = String.format("Synced Beehive Study (%s)", mProfile.getStudyCode());
+                    AlarmHelper.showInstantNotif(mContext, message, "@: " + DateHelper.getFormattedTimestamp(), "io.smalldata.beehiveapp", 5003);
+                    mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
                     break;
+
+                case FORCE_SERVER_SYNC:
+                    AppJobService.sendAllSurveyLogs(mContext);
+                    ServerPeriodicUpdateReceiver.startRepeatingServerTask(mContext);
+                    break;
+
                 case NOTIFY_USER:
                     if (title != null || content != null) {
                         AlarmHelper.showInstantNotif(mContext, title, content, "io.smalldata.beehiveapp", 5003);
                     }
                     break;
+
                 case PROMPT_APP_UPDATE:
                     updateApp(title, content, url);
                     break;

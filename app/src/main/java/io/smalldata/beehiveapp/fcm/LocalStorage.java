@@ -62,7 +62,7 @@ public class LocalStorage {
     }
 
     static String readFromFile(Context context, String filename) {
-        makeSureFileExists(filename);
+//        makeSureFileExists(filename);
         String result = "";
         InputStream inputStream;
         try {
@@ -95,20 +95,20 @@ public class LocalStorage {
         return result;
     }
 
-    private static void makeSureFileExists(String filename) {
-        File file = new File(filename);
-        try {
-            if (!file.exists()) {
-                boolean status = file.createNewFile();
-                Log.i(TAG, "Created new file: " + filename + " / " + status);
-            } else {
-                Log.i(TAG, "Already exists: " + filename);
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "makeSureFileExists()", e);
-            e.printStackTrace();
-        }
-    }
+//    private static void makeSureFileExists(String filename) {
+//        File file = new File(filename);
+//        try {
+//            if (!file.exists()) {
+//                boolean status = file.createNewFile();
+//                Log.i(TAG, "Created new file: " + filename + " / " + status);
+//            } else {
+//                Log.i(TAG, "Already exists: " + filename);
+//            }
+//        } catch (IOException e) {
+//            Log.e(TAG, "makeSureFileExists()", e);
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void resetFile(Context context, String filename) {
         try {

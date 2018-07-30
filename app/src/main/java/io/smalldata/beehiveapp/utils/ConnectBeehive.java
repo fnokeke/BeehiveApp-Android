@@ -62,6 +62,7 @@ public class ConnectBeehive {
             Display.dismissBusy();
             Display.showSuccess(tvFeedback, "Successfully connected!");
             mProfile.saveStudyConfig(jsonResult);
+            FirebaseMessaging.getInstance().subscribeToTopic(mProfile.getStudyCode());
             beginLoginProcess();
         }
 

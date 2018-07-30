@@ -144,7 +144,6 @@ public class AppInfo extends RSActivity {
             case R.id.action_set_time:
                 InAppAnalytics.add(mContext, Constants.CLICKED_TIMER_BUTTON);
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
-                AppJobService.sendAllSurveyLogs(mContext);
                 break;
 
             case R.id.action_update:
