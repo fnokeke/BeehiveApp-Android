@@ -15,6 +15,7 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -236,8 +237,6 @@ public class Profile {
 
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
-//            String message = String.format("%s @ %s", notif.optString("method"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-//            AlarmHelper.showInstantNotif(mContext, message, DateHelper.getFormattedTimestamp(), "", notif.optInt("notifId") + 500);
         }
         markTodayAsIntvApplied();
         saveToAppInfoNotifAppliedToday(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
@@ -250,6 +249,9 @@ public class Profile {
 
             case Constants.TYPE_PUSH_SURVEY:
                 return new String[]{"You have a new survey.", "Tap here to view.", "push_survey", "5005"};
+
+            case Constants.TYPE_PUSH_ONE_TIME_SURVEY:
+                return new String[]{"You have a new one-time survey.", "Tap here to view.", "one_time", "6006"};
 
             case Constants.TYPE_PUSH_NOTIFICATION:
                 // get title - content
@@ -280,7 +282,15 @@ public class Profile {
         pairs = getValidPairs(pairs);
 
         String tmpChosen = pairs[getRandom(pairs.length)];
-        String[] titleContentArr = tmpChosen.split(",");
+        String[] tmpChosenArr = tmpChosen.split("/");
+        String[] titleContentArr = {"", ""};
+
+        if (tmpChosenArr.length < 2) {
+            titleContentArr[1] = tmpChosenArr[0];
+        } else {
+            titleContentArr[0] = tmpChosenArr[0];
+            titleContentArr[1] = tmpChosenArr[1];
+        }
 
         updateContentsShowed(titleContentArr[1]);
         return titleContentArr;
@@ -289,10 +299,16 @@ public class Profile {
     private String[] getValidPairs(String[] pairs) {
         String contentsAlreadyShowed = Store.getString(mContext, Constants.NOTIF_CONTENTS_SHOWED);
         StringBuilder validPairsStr = new StringBuilder();
+        String[] tmpPair;
         String potentialContent;
 
         for (String pair : pairs) {
-            potentialContent = pair.split(",")[1];
+            tmpPair = pair.split("/");
+            if (tmpPair.length < 2) {
+                potentialContent = tmpPair[0];
+            } else {
+                potentialContent = tmpPair[1];
+            }
             if (!contentsAlreadyShowed.contains(potentialContent)) {
                 validPairsStr.append(pair).append("\n");
             }
@@ -340,11 +356,11 @@ public class Profile {
         String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = "missed :/";
         if (!probableHalfNotify && coinSuccess) {
-            infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+            infoFromNewNotif = String.format("%s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
         } else if (probableHalfNotify && coinSuccess) {
-            infoFromNewNotif = String.format("success - %s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+            infoFromNewNotif = String.format("success - %s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
         } else if (probableHalfNotify && !coinSuccess) {
-            infoFromNewNotif = String.format("fail - %s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+            infoFromNewNotif = String.format("fail - %s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
         }
         allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
@@ -393,7 +409,9 @@ public class Profile {
             case "fixed":
                 alarmMillis = ExtractAlarmMillis.getFixedMillis(protocol);
                 break;
-
+            case "one_time":
+                alarmMillis = System.currentTimeMillis();
+                break;
         }
         return alarmMillis;
     }
@@ -410,6 +428,9 @@ public class Profile {
                 break;
             case "fixed":
                 notifId = 5557;
+                break;
+            case "one_time":
+                notifId = 6667;
                 break;
             default:
                 throw new UnsupportedOperationException("Protocol NotifId should have its own value");
@@ -659,5 +680,24 @@ public class Profile {
                 "    }\n" +
                 "  ]\n" +
                 "}\n";
+    }
+
+    public void applyThenRemoveOneTimeProtocols() {
+        JSONObject studyConfig = this.getStudyConfig();
+        JSONArray protocols = JsonHelper.strToJsonArray(studyConfig.optString("protocols"));
+        JSONArray nonOneTimeProtocols = new JSONArray();
+        int count = 0;
+        for (int i = 0; i < protocols.length(); i++) {
+            JSONObject p = protocols.optJSONObject(i);
+            if (p.optString("notif_type").equals("one_time")) {
+                extractThenScheduleNotif(p, true);
+                count += 1;
+            } else {
+                nonOneTimeProtocols.put(p);
+            }
+        }
+
+        JsonHelper.setJSONValue(studyConfig, "protocols", nonOneTimeProtocols.toString());
+        saveStudyConfig(studyConfig);
     }
 }

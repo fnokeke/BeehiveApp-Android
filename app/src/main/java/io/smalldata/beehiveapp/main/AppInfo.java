@@ -14,12 +14,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-
 import io.smalldata.beehiveapp.R;
-import io.smalldata.beehiveapp.fcm.AppJobService;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
-import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -27,9 +23,7 @@ import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
 import io.smalldata.beehiveapp.studyManagement.RSActivity;
 import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.ConnectBeehive;
-import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class AppInfo extends RSActivity {
 
@@ -67,13 +61,10 @@ public class AppInfo extends RSActivity {
         if (bundle != null) {
             String rsType = bundle.getString(Constants.RS_TYPE);
             if (Constants.TYPE_PAM.equals(rsType)) {
-                //                RSActivityManager.get().queueActivity(mContext, "RSpam", true);
                 RSActivityManager.get().queueActivity(mContext, mProfile.generatePAMSurveyString());
-            } else if (Constants.TYPE_PUSH_SURVEY.equals(rsType)) {
+            } else if (Constants.TYPE_PUSH_SURVEY.equals(rsType) || Constants.TYPE_PUSH_ONE_TIME_SURVEY.equals(rsType)) {
                 String surveyJsonStr = bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS);
                 RSActivityManager.get().queueActivity(mContext, mProfile.generateJSONSurveyString(surveyJsonStr));
-//            } else {
-//                AlarmHelper.showInstantNotif(mContext, "Error. Contact researcher ASAP.", "rsType: " + rsType + " " + DateHelper.getFormattedTimestamp(), "", 2021);
             }
             getIntent().removeExtra(Constants.RS_TYPE);
             Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
@@ -148,13 +139,13 @@ public class AppInfo extends RSActivity {
 
             case R.id.action_update:
                 Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
-                mConnectBeehive.updateStudy(mContext, mProfile.getStudyCode());
+                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
                 break;
 
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
-                mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
+                mProfile.applyIntvForToday();
                 break;
 
             case R.id.action_reset_app:

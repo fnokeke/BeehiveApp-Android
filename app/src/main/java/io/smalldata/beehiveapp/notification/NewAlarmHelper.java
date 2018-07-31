@@ -73,15 +73,27 @@ public class NewAlarmHelper {
         PendingIntent contentIntent = PendingIntent.getBroadcast(context, CONTENT_PREFIX + notifId, appLauncherIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, DELETE_PREFIX + notifId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setContentIntent(contentIntent);
-        builder.setContentTitle(notif.optString("title"))
-                .setContentText(notif.optString("content"))
+        builder.setContentIntent(contentIntent)
                 .setAutoCancel(true)
                 .setSound(getDefaultSound())
                 .setDeleteIntent(deletePendingIntent)
                 .setWhen(notif.optLong("alarmMillis"))
+                .setStyle(bigTextStyle)
                 .setShowWhen(true);
+
+        String title = notif.optString("title");
+        if (!title.equals("")) {
+            builder.setContentTitle(title);
+//            bigTextStyle.setBigContentTitle(title);
+        }
+
+        String content = notif.optString("content");
+        if (!content.equals("")) {
+            builder.setContentText(content);
+            bigTextStyle.bigText(content);
+        }
 
         switch (notif.optString("method")) {
             case Constants.TYPE_PAM:
@@ -89,14 +101,12 @@ public class NewAlarmHelper {
                 break;
 
             case Constants.TYPE_PUSH_SURVEY:
+            case Constants.TYPE_PUSH_ONE_TIME_SURVEY:
                 builder.setSmallIcon(android.R.drawable.ic_dialog_email);
                 break;
 
             default:
                 builder.setSmallIcon(R.drawable.mindfulness);
-//                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.end_of_day_reminder));
-//                builder.setSmallIcon(android.R.drawable.ic_popup_reminder);
-//                builder.setSmallIcon(R.drawable.new_beehive_logo);
         }
 
         return builder.build();

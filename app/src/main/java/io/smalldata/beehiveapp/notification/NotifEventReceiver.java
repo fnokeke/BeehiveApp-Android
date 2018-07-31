@@ -30,10 +30,11 @@ public class NotifEventReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
-        handleBundle(intent.getExtras());
+        handleBundle(intent);
     }
 
-    private void handleBundle(Bundle bundle) {
+    private void handleBundle(Intent intent) {
+        Bundle bundle = intent.getExtras();
         if (bundle == null) {
             AlarmHelper.showInstantNotif(mContext, "Error: handleBundle is null.", DateHelper.getFormattedTimestamp(), "", 2025);
             return;
@@ -46,39 +47,27 @@ public class NotifEventReceiver extends BroadcastReceiver {
             return;
         }
 
+        if (mContext==null) throw new AssertionError("NotifEventReceiver Error: mContext cannot be null");
+
         boolean wasDismissed = bundle.getBoolean("was_dismissed");
         if (wasDismissed) {
             Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(mContext, "Launching " + method, Toast.LENGTH_SHORT).show();
             if (method.equals(Constants.TYPE_PUSH_NOTIFICATION)) {
                 mContext.startActivity(new Intent(mContext, AppInfo.class));
                 String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
                 IntentLauncher.launchApp(mContext, appIdToLaunch);
+                Toast.makeText(mContext, "Launching app...", Toast.LENGTH_SHORT).show();
             } else {
                 Intent intentAppInfo = new Intent(mContext, AppInfo.class);
                 intentAppInfo.putExtra(Constants.RS_TYPE, method);
                 intentAppInfo.putExtra(Constants.ALARM_PROTOCOL_NOTIF_DETAILS, bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS));
+                intentAppInfo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mContext.startActivity(intentAppInfo);
+
+                Toast.makeText(mContext, "Launching survey...", Toast.LENGTH_SHORT).show();
             }
         }
-
-//            switch (method) {
-//                case Constants.TYPE_PUSH_NOTIFICATION:
-//                    String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
-//                    IntentLauncher.launchApp(mContext, appIdToLaunch);
-//                    break;
-//                case Constants.TYPE_PAM:
-//                    AlarmHelper.showInstantNotif(mContext, "NotifEvent 4 PAM", DateHelper.getFormattedTimestamp(), "", 2021);
-//                    mContext.startActivity(new Intent(mContext, AppInfo.class));
-//                    RSActivityManager.get().queueActivity(mContext, "RSpam", true);
-//                    break;
-//                case Constants.TYPE_PUSH_SURVEY:
-//                    AlarmHelper.showInstantNotif(mContext, "NotifEvent 4 Survey", DateHelper.getFormattedTimestamp(), "", 2020);
-//                    mContext.startActivity(new Intent(mContext, AppInfo.class));
-//                    RSActivityManager.get().queueActivity(mContext, "survey", true);
-//                    break;
-//            }
 
     }
 

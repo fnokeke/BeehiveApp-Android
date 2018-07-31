@@ -73,6 +73,7 @@ public class Constants {
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKDAY = "value-changed-user-window-weekday";
     public static final String TYPE_PAM = "pam";
     public static final String TYPE_PUSH_SURVEY = "push_survey";
+    public static final String TYPE_PUSH_ONE_TIME_SURVEY = "push_one_time_survey";
     public static final String TYPE_PUSH_NOTIFICATION = "push_notification";
 
     public static final String NOTIF_TYPE = "notif_type";

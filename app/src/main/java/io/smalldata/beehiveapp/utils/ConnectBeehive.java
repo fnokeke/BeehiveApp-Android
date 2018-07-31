@@ -49,13 +49,6 @@ public class ConnectBeehive {
         CallAPI.fetchStudy(mContext, data, fetchStudyResponseHandler);
     }
 
-    public void updateStudy(Context context, String code) {
-        JSONObject data = new JSONObject();
-        JsonHelper.setJSONValue(data, "code", code);
-        mProfile = new Profile(context);
-        CallAPI.updateStudy(context, data, updateStudyResponseHandler);
-    }
-
     private VolleyJsonCallback fetchStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
@@ -79,11 +72,19 @@ public class ConnectBeehive {
         }
     };
 
+    public void updateStudyThenApplyAnyInstantSurvey(Context context, String code) {
+        JSONObject data = new JSONObject();
+        JsonHelper.setJSONValue(data, "code", code);
+        mProfile = new Profile(context);
+        CallAPI.updateStudy(context, data, updateStudyResponseHandler);
+    }
+
     private VolleyJsonCallback updateStudyResponseHandler = new VolleyJsonCallback() {
         @Override
         public void onConnectSuccess(JSONObject jsonResult) {
             mProfile.saveStudyConfig(jsonResult);
-            Toast.makeText(mContext, "Successfully updated study.", Toast.LENGTH_SHORT).show();
+            mProfile.applyThenRemoveOneTimeProtocols();
+            Toast.makeText(mContext, "Successfully updated Beehive study.", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -95,70 +96,6 @@ public class ConnectBeehive {
 
     private void beginLoginProcess() {
         mContext.startActivity(new Intent(mContext, Step0BLoginUser.class));
-    }
-
-
-    // TODO: 12/16/17 remove dead code (connectToBeehive)
-//    public void connectToBeehive(JSONObject userInfo) {
-//        JSONObject fromPhoneDetails = DeviceInfo.getPhoneDetails(mContext);
-//        JsonHelper.copy(fromPhoneDetails, userInfo);
-//        Display.showBusy(mContext, "Transferring your bio...");
-//        CallAPI.connectStudy(mContext, userInfo, connectStudyResponseHandler);
-//    }
-
-//    private VolleyJsonCallback connectStudyResponseHandler = new VolleyJsonCallback() {
-//        @Override
-//        public void onConnectSuccess(JSONObject jsonResult) {
-//            Log.i(TAG, "onConnectStudySuccess: " + jsonResult.toString());
-//
-//            JSONObject jsonExperimentInfo = jsonResult.optJSONObject("experiment");
-//            Display.dismissBusy();
-//            if (jsonExperimentInfo.length() == 0) {
-//                experiment.enableSettings(false);
-//                Display.showError(tvFeedback, "Invalid code.");
-//                return;
-//            }
-//            experiment.enableSettings(true);
-//            Display.showSuccess(tvFeedback, "Successfully connected!");
-//            experiment.saveConfigs(jsonExperimentInfo);
-//
-//            JSONObject user = jsonResult.optJSONObject("user");
-//            experiment.saveUserInfo(user);
-//            FirebaseMessaging.getInstance().subscribeToTopic(user.optString("code"));
-//
-//            JSONObject response = jsonResult.optJSONObject("response");
-//            Store.setString(mContext, "formInputResponse", response.toString());
-//            Store.setString(mContext, "formInputUser", user.toString());
-//
-//            Intent intent = new Intent("ui-form-update");
-//            intent.putExtra("formInputResponse", response.toString());
-//            intent.putExtra("formInputUser", user.toString());
-//            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-//
-//            Display.dismissBusy();
-//            new AutoUpdateAlarm().setAlarmForPeriodicUpdate(mContext);
-//
-//            showSettingsTip();
-//        }
-//
-//        @Override
-//        public void onConnectFailure(VolleyError error) {
-//            experiment.enableSettings(false);
-//            Store.setBoolean(mContext, Store.IS_EXIT_BUTTON, false);
-//            Log.e("onConnectFailure: ", error.toString());
-//
-//            Display.showError(tvFeedback, "Cannot submit your bio.");
-//            String msg = String.format(OldConstants.LOCALE, "Error, submitting info. %s", error.toString());
-//            Display.showError(tvFeedback, msg);
-//            Display.dismissBusy();
-//            error.printStackTrace();
-//        }
-//    };
-
-    private void showSettingsTip() {
-        String title = "Select Preference";
-        String content = "Go to Beehive App >> Settings";
-        AlarmHelper.showInstantNotif(mContext, title, content, "", 7777);
     }
 
 }

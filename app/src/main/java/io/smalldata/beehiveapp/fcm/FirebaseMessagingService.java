@@ -18,19 +18,15 @@ package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
 import io.smalldata.beehiveapp.onboarding.Profile;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.ConnectBeehive;
-import io.smalldata.beehiveapp.utils.DateHelper;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
@@ -64,10 +60,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 case SYNC_STUDY:
                     Profile mProfile = new Profile(mContext);
                     ConnectBeehive mConnectBeehive = new ConnectBeehive(mContext);
-                    mConnectBeehive.updateStudy(mContext, mProfile.getStudyCode());
-                    String message = String.format("Synced Beehive Study (%s)", mProfile.getStudyCode());
-                    AlarmHelper.showInstantNotif(mContext, message, "@: " + DateHelper.getFormattedTimestamp(), "io.smalldata.beehiveapp", 5003);
-                    mProfile.applyIntvForToday();  // FIXME: 7/24/18 remove debug statement
+                    mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
+                    mProfile.applyIntvForToday();
                     break;
 
                 case FORCE_SERVER_SYNC:
@@ -93,24 +87,5 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             NewAlarmHelper.notifyUpdateApp(mContext, title, content, url);
         }
     }
-
-//    @Override
-//    public void onMessageReceived(RemoteMessage remoteMessage) {
-//        // Check if message contains a data payload.
-//        if (remoteMessage.getData().size() > 0) {
-//            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-//            Map<String, String> data = remoteMessage.getData();
-//            String msg = data.get("msg");
-//            if (msg.equals("server_sync")) {
-//                new SilentRefresh(getApplication()).syncExperiment();
-//            }
-//        }
-//
-//        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
-//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//        }
-//    }
-
 
 }
