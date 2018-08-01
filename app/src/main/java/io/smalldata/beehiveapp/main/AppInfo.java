@@ -31,6 +31,7 @@ public class AppInfo extends RSActivity {
     private ConnectBeehive mConnectBeehive;
     private Context mContext;
     CheckActiveStream checkActiveStream;
+    public static boolean IS_DEBUG_MODE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +68,15 @@ public class AppInfo extends RSActivity {
                 RSActivityManager.get().queueActivity(mContext, mProfile.generateJSONSurveyString(surveyJsonStr));
             }
             getIntent().removeExtra(Constants.RS_TYPE);
-            Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
+
+            if (IS_DEBUG_MODE) {
+                Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
+            }
 //            finish();
         } else {
-            Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
+            if (IS_DEBUG_MODE) {
+                Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
