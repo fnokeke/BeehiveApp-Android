@@ -29,9 +29,9 @@ class CheckActiveStream {
     void confirmMonitorAppSetUp() {
         JSONObject experiment = mProfile.getStudyConfig().optJSONObject("experiment");
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
-            final String MONITORINIG_APP = "io.smalldata.beehivebg";
+            final String MONITORINIG_APP = "io.smalldata.applogger";
             if (!Helper.isPackageInstalled(mContext, MONITORINIG_APP)) {
-                final String appLink = "https://slm.smalldata.io/static/downloads/beehivebg.apk";
+                final String appLink = "https://slm.smalldata.io/static/downloads/applogger.apk";
                 NewAlarmHelper.showInstantNotif(mContext, "This study requires Beehive Bg App",
                         "Tap here to install.",
                         appLink, 2011);

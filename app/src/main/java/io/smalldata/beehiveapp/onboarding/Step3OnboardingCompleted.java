@@ -43,15 +43,8 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
                 mProfile.indicateUserCompletedSteps();
                 InAppAnalytics.add(mContext, Constants.CLICKED_CONGRATS_FINISH_BUTTON);
 
-                if (!alreadyAppliedTodayIntv()) {
+                if (!alreadyAppliedTodayIntv(mContext)) {
                     TriggerIntervention.startDaily3amTask(mContext, true);
-                } else {
-                    // FIXME: 1/24/18 remove debug code
-//                    AlarmHelper.showInstantNotif(mContext,
-//                            "Sorry, intv already applied today.",
-//                            "at: " + DateHelper.getFormattedTimestamp(),
-//                            "",
-//                            9060);
                 }
                 startActivity(new Intent(mContext, AppInfo.class));
             }
@@ -65,7 +58,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_CONGRATS);
     }
 
-    private boolean alreadyAppliedTodayIntv() {
-        return DateHelper.getTodayDateStr().equals(Profile.getLastAppliedIntvDate(getApplicationContext()));
+    public static boolean alreadyAppliedTodayIntv(Context context) {
+        return DateHelper.getTodayDateStr().equals(Profile.getLastAppliedIntvDate(context));
     }
 }

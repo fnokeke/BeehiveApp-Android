@@ -61,7 +61,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     Profile mProfile = new Profile(mContext);
                     ConnectBeehive mConnectBeehive = new ConnectBeehive(mContext);
                     mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
-                    mProfile.applyIntvForToday();
                     break;
 
                 case FORCE_SERVER_SYNC:

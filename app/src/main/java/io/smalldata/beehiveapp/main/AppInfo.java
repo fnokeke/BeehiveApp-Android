@@ -137,15 +137,14 @@ public class AppInfo extends RSActivity {
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
                 break;
 
-            case R.id.action_update:
-                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
-                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
-                break;
+//            case R.id.action_update:
+//                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
+//                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
+//                break;
 
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
                 startActivity(new Intent(mContext, AboutApp.class));
-                mProfile.applyIntvForToday();
                 break;
 
             case R.id.action_reset_app:
