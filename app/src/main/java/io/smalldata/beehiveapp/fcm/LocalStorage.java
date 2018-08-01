@@ -29,8 +29,6 @@ public class LocalStorage {
 
     public static void initAllStorageFiles(Context context) {
         createBeehiveDirectory();
-//        LocalStorage.resetFile(context, Constants.PAM_LOGS_CSV);
-//        LocalStorage.resetFile(context, Constants.SURVEY_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.NOTIF_EVENT_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.ANALYTICS_LOG_CSV);
     }
@@ -62,6 +60,9 @@ public class LocalStorage {
     }
 
     static String readFromFile(Context context, String filename) {
+
+        if (!new File(filename).exists()) return "";
+
 //        makeSureFileExists(filename);
         String result = "";
         InputStream inputStream;

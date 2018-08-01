@@ -14,6 +14,10 @@
         <!--android:id="@+id/action_update"-->
         <!--android:title="Update Study"-->
         <!--/>-->
+    <item
+        android:id="@+id/link_applogger"
+        android:title="Link AppLogger"
+        />
 
     <item
         android:id="@+id/action_about"

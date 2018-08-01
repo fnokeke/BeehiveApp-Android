@@ -20,6 +20,7 @@ class CheckActiveStream {
 
     private Context mContext;
     private Profile mProfile;
+    final private String MONITORINIG_APP = "io.smalldata.applogger";
 
     CheckActiveStream(Context context) {
         this.mContext = context;
@@ -29,7 +30,6 @@ class CheckActiveStream {
     void confirmMonitorAppSetUp() {
         JSONObject experiment = mProfile.getStudyConfig().optJSONObject("experiment");
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
-            final String MONITORINIG_APP = "io.smalldata.applogger";
             if (!Helper.isPackageInstalled(mContext, MONITORINIG_APP)) {
                 final String appLink = "https://slm.smalldata.io/static/downloads/applogger.apk";
                 NewAlarmHelper.showInstantNotif(mContext, "This study requires Beehive Bg App",
@@ -39,13 +39,17 @@ class CheckActiveStream {
             } else {
                 if (!mProfile.hasAlreadyPrompted()) {
                     mProfile.setPromptedForMonitoringApp();
-                    JSONObject dataToTransfer = new JSONObject();
-                    JsonHelper.setJSONValue(dataToTransfer, "username", mProfile.getUsername());
-                    JsonHelper.setJSONValue(dataToTransfer, "code", mProfile.getStudyCode());
-                    IntentLauncher.launchApp(mContext, MONITORINIG_APP, dataToTransfer);
+                    connectToAppLogger();
                 }
             }
         }
+    }
+
+    public void connectToAppLogger() {
+        JSONObject dataToTransfer = new JSONObject();
+        JsonHelper.setJSONValue(dataToTransfer, "username", mProfile.getUsername());
+        JsonHelper.setJSONValue(dataToTransfer, "code", mProfile.getStudyCode());
+        IntentLauncher.launchApp(mContext, MONITORINIG_APP, dataToTransfer);
     }
 
 

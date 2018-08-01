@@ -8,6 +8,7 @@ import android.os.Environment;
  */
 
 public class Constants {
+    public static boolean IS_DEBUG_MODE = false;
 
     public final static String ALARM_NOTIF_TITLE = "title";
     public final static String ALARM_NOTIF_CONTENT = "content";
@@ -44,6 +45,7 @@ public class Constants {
     public static final String NOTIF_EVENT_LOGS_CSV = "notifLogs.csv";
     public static final String ANALYTICS_LOG_CSV = "analytics.csv";
     public static final String BEEHIVE_DIR = "/beehive/";
+    public static final String LINK_APPLOGGER = "connectAppLogger";
     public static String FULL_BEEHIVE_DIR = Environment.getExternalStorageDirectory().getPath() + BEEHIVE_DIR;
     public static final String PAM_LOGS_CSV = FULL_BEEHIVE_DIR + "pam.csv";
 

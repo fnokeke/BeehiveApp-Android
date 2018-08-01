@@ -29,7 +29,7 @@ public class ServerPeriodicUpdateReceiver extends BroadcastReceiver {
                 .setService(AppJobService.class)
                 .setReplaceCurrent(true)
                 .setLifetime(Lifetime.FOREVER)
-                .setTrigger(Trigger.executionWindow(0, 180))
+                .setTrigger(Trigger.executionWindow(60, 180))
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 .setTag(TAG)

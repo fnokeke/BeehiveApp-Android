@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
+import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -30,15 +31,14 @@ public class AppInfo extends RSActivity {
     private Profile mProfile;
     private ConnectBeehive mConnectBeehive;
     private Context mContext;
-    CheckActiveStream checkActiveStream;
-    public static boolean IS_DEBUG_MODE = false;
+    CheckActiveStream mCheckActiveStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         mProfile = new Profile(mContext);
         mConnectBeehive = new ConnectBeehive(mContext);
-        checkActiveStream = new CheckActiveStream(mContext);
+        mCheckActiveStream = new CheckActiveStream(mContext);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
@@ -52,8 +52,8 @@ public class AppInfo extends RSActivity {
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
         }
-        checkActiveStream.confirmMonitorAppSetUp();
-        checkActiveStream.confirmMeditationAppSetUp();
+        mCheckActiveStream.confirmMonitorAppSetUp();
+        mCheckActiveStream.confirmMeditationAppSetUp();
         handleRSTask();
     }
 
@@ -69,12 +69,12 @@ public class AppInfo extends RSActivity {
             }
             getIntent().removeExtra(Constants.RS_TYPE);
 
-            if (IS_DEBUG_MODE) {
+            if (Constants.IS_DEBUG_MODE) {
                 Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
             }
 //            finish();
         } else {
-            if (IS_DEBUG_MODE) {
+            if (Constants.IS_DEBUG_MODE) {
                 Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -147,6 +147,10 @@ public class AppInfo extends RSActivity {
 //                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
 //                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
 //                break;
+            case R.id.link_applogger:
+                InAppAnalytics.add(mContext, Constants.LINK_APPLOGGER);
+                mCheckActiveStream.connectToAppLogger();
+                break;
 
             case R.id.action_about:
                 InAppAnalytics.add(mContext, Constants.CLICKED_ABOUT_BUTTON);
