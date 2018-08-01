@@ -15,7 +15,7 @@ BEFORE_INSTALL:
 - ​​chmod + x gradlew 
 - export JAVA8_HOME = / usr / lib / jvm / java-8-oracle 
 - export JAVA_HOME = $ JAVA8_HOME 
-- yes | sdkmanager --licenses
+- echo y | yes | sdkmanager --licenses
 after_success: 
 - chmod + x ./upload-gh-pages. sh 
 - ./upload-apk.sh 
