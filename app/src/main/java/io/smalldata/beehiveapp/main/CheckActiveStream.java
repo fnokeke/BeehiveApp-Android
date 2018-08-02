@@ -50,6 +50,7 @@ class CheckActiveStream {
         JsonHelper.setJSONValue(dataToTransfer, "username", mProfile.getUsername());
         JsonHelper.setJSONValue(dataToTransfer, "code", mProfile.getStudyCode());
         IntentLauncher.launchApp(mContext, MONITORINIG_APP, dataToTransfer);
+        Toast.makeText(mContext, "Linking AppLogger...", Toast.LENGTH_SHORT).show();
     }
 
 

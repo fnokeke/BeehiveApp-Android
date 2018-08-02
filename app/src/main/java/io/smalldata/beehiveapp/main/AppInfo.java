@@ -1,6 +1,7 @@
 package io.smalldata.beehiveapp.main;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -46,7 +47,7 @@ public class AppInfo extends RSActivity {
 
     @Override
     public void onResume() {
-        requestStoragePermission();
+        AppInfo.requestStoragePermission(this);
         setAppInfo();
         super.onResume();
         if (mProfile.userCompletedAllSteps()) {
@@ -76,30 +77,6 @@ public class AppInfo extends RSActivity {
         } else {
             if (Constants.IS_DEBUG_MODE) {
                 Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void requestStoragePermission() {
-        requestReadStoragePermission();
-        requestWriteStoragePermission();
-    }
-
-
-    public void requestReadStoragePermission() {
-        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
-            }
-        }
-    }
-
-    public void requestWriteStoragePermission() {
-        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
             }
         }
     }
@@ -147,6 +124,7 @@ public class AppInfo extends RSActivity {
 //                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
 //                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
 //                break;
+
             case R.id.link_applogger:
                 InAppAnalytics.add(mContext, Constants.LINK_APPLOGGER);
                 mCheckActiveStream.connectToAppLogger();
@@ -164,7 +142,28 @@ public class AppInfo extends RSActivity {
                 break;
 
         }
-
         return true;
     }
+
+    public static void requestStoragePermission(Activity activity) {
+        requestReadStoragePermission(activity);
+        requestWriteStoragePermission(activity);
+    }
+
+    public static void requestReadStoragePermission(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
+            if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+            }
+        }
+    }
+
+    public static void requestWriteStoragePermission(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 23) { //permission is automatically granted on sdk<23 upon installation
+            if (activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+            }
+        }
+    }
+
 }

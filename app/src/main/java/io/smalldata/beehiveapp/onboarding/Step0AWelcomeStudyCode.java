@@ -40,6 +40,8 @@ public class Step0AWelcomeStudyCode extends AppCompatActivity {
         } else {
             startOnBoarding();
         }
+
+        AppInfo.requestStoragePermission(Step0AWelcomeStudyCode.this);
     }
 
 
