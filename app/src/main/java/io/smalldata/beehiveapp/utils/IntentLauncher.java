@@ -29,15 +29,13 @@ public class IntentLauncher {
             appStartIntent = pm.getLaunchIntentForPackage(context.getPackageName());
         }
 
-        if (dataToTransfer != null) {
+        if (dataToTransfer != null && appStartIntent != null) {
             String key, value;
             Iterator<?> keys = dataToTransfer.keys();
             while (keys.hasNext()) {
                 key = (String) keys.next();
                 value = dataToTransfer.optString(key);
-                if (appStartIntent != null) {
-                    appStartIntent.putExtra(key, value);
-                }
+                appStartIntent.putExtra(key, value);
             }
         }
 

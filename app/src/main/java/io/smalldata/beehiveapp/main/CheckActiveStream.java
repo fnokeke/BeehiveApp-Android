@@ -32,10 +32,10 @@ class CheckActiveStream {
         if (experiment.optBoolean("screen_events") || experiment.optBoolean("app_usage")) {
             if (!Helper.isPackageInstalled(mContext, MONITORINIG_APP)) {
                 final String appLink = "https://slm.smalldata.io/static/downloads/applogger.apk";
-                NewAlarmHelper.showInstantNotif(mContext, "This study requires Beehive Bg App",
+                NewAlarmHelper.showInstantNotif(mContext, "This study requires AppLogger App",
                         "Tap here to install.",
                         appLink, 2011);
-                Toast.makeText(mContext, "Beehive Bg App needed...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "AppLogger needed...", Toast.LENGTH_SHORT).show();
             } else {
                 if (!mProfile.hasAlreadyPrompted()) {
                     mProfile.setPromptedForMonitoringApp();
