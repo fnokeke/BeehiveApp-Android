@@ -28,27 +28,26 @@ public class RSRPCSVBackend implements RSRPBackEnd {
 
     public URI outputDirectory;
 
-    public RSRPCSVBackend(URI outputDirectory){
+    public RSRPCSVBackend(URI outputDirectory) {
 
         this.outputDirectory = outputDirectory;
 
         Boolean isDirectory = false;
 
-        if(shouldCreateDirectory(outputDirectory)){
+        if (shouldCreateDirectory(outputDirectory)) {
             this.createDirectory(outputDirectory);
 
         }
 
     }
 
-    public Boolean shouldCreateDirectory(URI outputDirectory){
+    public Boolean shouldCreateDirectory(URI outputDirectory) {
 
         File dir = new File(Environment.getExternalStorageDirectory() + outputDirectory.getPath());
-        if(dir.exists()){
-            if(dir.isDirectory()){
+        if (dir.exists()) {
+            if (dir.isDirectory()) {
                 return false;
-            }
-            else {
+            } else {
                 this.removeDirectory(outputDirectory);
             }
         }
@@ -58,19 +57,19 @@ public class RSRPCSVBackend implements RSRPBackEnd {
     }
 
 
-    private void createDirectory(URI directory){
+    private void createDirectory(URI directory) {
         File dir = new File(Environment.getExternalStorageDirectory() + directory.getPath());
         //            dir.createNewFile();
         boolean status = dir.mkdir();
         Log.d(TAG, "createDirectory():  " + status);
     }
 
-    private void removeDirectory(URI directory){
+    private void removeDirectory(URI directory) {
         File dir = new File(Environment.getExternalStorageDirectory() + directory.getPath());
         dir.delete();
     }
 
-    private void removeItem(String itemName){
+    private void removeItem(String itemName) {
 
         URIBuilder uriBuilder = null;
         try {
@@ -86,7 +85,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
         }
     }
 
-    public void removeFileForType(String typeIdentifier){
+    public void removeFileForType(String typeIdentifier) {
 
         String stringToAppend = typeIdentifier + ".csv";
 
@@ -126,7 +125,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
                     .build()
                     .normalize();
 
-            File dataFile = new File (fileURL);
+            File dataFile = new File(fileURL);
             FileOutputStream fOut = null;
             try {
                 fOut = new FileOutputStream(dataFile);
@@ -141,7 +140,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (URISyntaxException e){
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
@@ -149,12 +148,12 @@ public class RSRPCSVBackend implements RSRPBackEnd {
 
     }
 
-    public URL [] getFileURLs() {
+    public URL[] getFileURLs() {
 
         return null;
     }
 
-    public URL getFileURLForType(String typeIdentifier){
+    public URL getFileURLForType(String typeIdentifier) {
 
         URIBuilder uriBuilder = null;
         try {
@@ -163,14 +162,13 @@ public class RSRPCSVBackend implements RSRPBackEnd {
                     .build()
                     .normalize();
             File fileUrl = new File(Environment.getExternalStorageDirectory() + uri.getPath());
-            if (fileUrl.exists()){
+            if (fileUrl.exists()) {
                 try {
                     return fileUrl.toURI().toURL();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 return null;
             }
         } catch (URISyntaxException e) {
@@ -182,7 +180,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
 
     }
 
-    private File getOrCreateFileForType(String typeIdentifier, String header){
+    private File getOrCreateFileForType(String typeIdentifier, String header) {
 
         URIBuilder uriBuilder = null;
         String stringToAppend = typeIdentifier + ".csv";
@@ -193,10 +191,9 @@ public class RSRPCSVBackend implements RSRPBackEnd {
                     .normalize();
             File fileUrl = new File(Environment.getExternalStorageDirectory() + uri.getPath());
 
-            if(fileUrl.exists()){
+            if (fileUrl.exists()) {
                 return fileUrl;
-            }
-            else {
+            } else {
                 try {
                     fileUrl.createNewFile();
                     FileOutputStream fOut = null;
@@ -220,14 +217,14 @@ public class RSRPCSVBackend implements RSRPBackEnd {
                 return fileUrl;
             }
 
-        } catch (URISyntaxException e){
+        } catch (URISyntaxException e) {
 
         }
 
         return null;
     }
 
-    public void add(CSVEncodable[] csvRecords){
+    public void add(CSVEncodable[] csvRecords) {
 
         CSVEncodable first = csvRecords[0];
 
@@ -236,47 +233,48 @@ public class RSRPCSVBackend implements RSRPBackEnd {
 
     }
 
-    public void add(CSVEncodable encodable){
+    public void add(CSVEncodable encodable) {
 
-        String [] records = encodable.toRecords();
-        if (records.length == 0){
+        String[] records = encodable.toRecords();
+        if (records.length == 0) {
             return;
         }
 
-        this.add(encodable.getTypeString(),encodable.getHeader(),records,true);
+        this.add(encodable.getTypeString(), encodable.getHeader(), records, true);
 
     }
 
-    public Boolean add(String typeString, String header, String[] records, Boolean shouldAddToQueue){
+    public Boolean add(String typeString, String header, String[] records, Boolean shouldAddToQueue) {
 
-        File fileHandle = this.getOrCreateFileForType(typeString,header);
+        File fileHandle = this.getOrCreateFileForType(typeString, header);
         String joinedRecords = StringUtils.join(records);
 
-        if(fileHandle != null) {
+        if (fileHandle != null) {
 
             FileOutputStream fOut = null;
             try {
-                fOut = new FileOutputStream(fileHandle,true);
+                fOut = new FileOutputStream(fileHandle, true);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            OutputStreamWriter myOutWriter;
             try {
-                myOutWriter.append(joinedRecords);
-                myOutWriter.append("\n");
-                myOutWriter.close();
-                fOut.close();
+                if (fOut != null) {
+                    myOutWriter = new OutputStreamWriter(fOut);
+                    myOutWriter.append(joinedRecords);
+                    myOutWriter.append("\n");
+                    myOutWriter.close();
+                    fOut.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return true;
-        }
-        else if (shouldAddToQueue){
+        } else if (shouldAddToQueue) {
             // TODO: ADD TO TEMPQUEUE
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -289,7 +287,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
     public void add(Context context, RSRPIntermediateResult intermediateResult) {
 
         CSVEncodable datapoint = (CSVEncodable) intermediateResult;
-        if (datapoint != null){
+        if (datapoint != null) {
             this.add(datapoint);
         }
 

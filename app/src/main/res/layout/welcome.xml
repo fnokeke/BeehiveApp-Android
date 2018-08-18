@@ -51,7 +51,7 @@
 
         <EditText
             android:id="@+id/et_welcome_code"
-            android:hint="enter experiment code"
+            android:hint="enter study code"
             android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

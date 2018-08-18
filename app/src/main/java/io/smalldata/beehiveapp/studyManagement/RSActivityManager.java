@@ -4,6 +4,7 @@ package io.smalldata.beehiveapp.studyManagement;
  * Created by Christina on 8/11/17.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
@@ -102,9 +103,6 @@ public class RSActivityManager {
             boolean launched = delegate.tryToLaunchRSActivity(this, activityRun);
             if (launched) {
                 this.activityQueue.poll();
-//                AlarmHelper.showInstantNotif(context, "RSTask Launched!", DateHelper.getFormattedTimestamp(), "", 2022);
-//            } else {
-//                AlarmHelper.showInstantNotif(context, "RSTask Failed!", DateHelper.getFormattedTimestamp(), "", 2023);
             }
 
             Task task = loadTask(context, activityRun);
@@ -115,6 +113,7 @@ public class RSActivityManager {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+
         }
     }
 
@@ -127,13 +126,13 @@ public class RSActivityManager {
     }
 
     // RSpam should be json/RSpam.json
-    public void queueActivity(Context context, String filename, boolean tryToLaunch) {
-        CTFScheduleItem scheduleItem = this.getScheduleItemEnhanced(context, filename, true);
-        CTFActivityRun activityRun = activityRunForItem(scheduleItem);
-
-        this.activityQueue.add(activityRun);
-        this.tryToLaunchActivity(context);
-    }
+//    public void queueActivity(Context context, String filename, boolean tryToLaunch) {
+//        CTFScheduleItem scheduleItem = this.getScheduleItemEnhanced(context, filename, true);
+//        CTFActivityRun activityRun = activityRunForItem(scheduleItem);
+//
+//        this.activityQueue.add(activityRun);
+//        this.tryToLaunchActivity(context);
+//    }
 
     @Nullable
     private CTFScheduleItem getScheduleItem(Context context, String filename) {
@@ -226,7 +225,7 @@ public class RSActivityManager {
 //        }
 
 
-        this.tryToLaunchActivity(context);
+//        this.tryToLaunchActivity(context);
 
     }
 

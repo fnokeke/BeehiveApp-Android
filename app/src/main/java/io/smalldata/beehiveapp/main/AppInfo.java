@@ -2,8 +2,10 @@ package io.smalldata.beehiveapp.main;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,12 +14,12 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
-import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -30,7 +32,6 @@ import io.smalldata.beehiveapp.utils.ConnectBeehive;
 public class AppInfo extends RSActivity {
 
     private Profile mProfile;
-    private ConnectBeehive mConnectBeehive;
     private Context mContext;
     CheckActiveStream mCheckActiveStream;
 
@@ -38,7 +39,6 @@ public class AppInfo extends RSActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         mProfile = new Profile(mContext);
-        mConnectBeehive = new ConnectBeehive(mContext);
         mCheckActiveStream = new CheckActiveStream(mContext);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
@@ -73,7 +73,7 @@ public class AppInfo extends RSActivity {
             if (Constants.IS_DEBUG_MODE) {
                 Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
             }
-//            finish();
+
         } else {
             if (Constants.IS_DEBUG_MODE) {
                 Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
@@ -91,6 +91,11 @@ public class AppInfo extends RSActivity {
         TextView tvIntv = (TextView) findViewById(R.id.tv_interventions);
         tvIntv.setText(mProfile.getAllAppliedNotifForToday());
         tvIntv.setMovementMethod(new ScrollingMovementMethod());
+        if (!Constants.IS_DEBUG_MODE) {
+            tvIntv.setVisibility(View.GONE);
+            TextView tvTitle = (TextView) findViewById(R.id.tv_intv_section_title);
+            tvTitle.setVisibility(View.GONE);
+        }
 
         TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
         tvParticipantSince.setText(mProfile.getFirstDayOfStudy());
@@ -103,6 +108,7 @@ public class AppInfo extends RSActivity {
         String times = String.format("Weekday: %s. \nWeekend: %s.", weekdayTime, weekendTime);
         TextView tvSelectedTimes = (TextView) findViewById(R.id.tv_selected_times);
         tvSelectedTimes.setText(times);
+
     }
 
     @Override
@@ -119,11 +125,6 @@ public class AppInfo extends RSActivity {
                 InAppAnalytics.add(mContext, Constants.CLICKED_TIMER_BUTTON);
                 startActivity(new Intent(mContext, Step1SleepWakeTime.class));
                 break;
-
-//            case R.id.action_update:
-//                Toast.makeText(mContext, "Updating study...", Toast.LENGTH_SHORT).show();
-//                mConnectBeehive.updateStudyThenApplyAnyInstantSurvey(mContext, mProfile.getStudyCode());
-//                break;
 
             case R.id.link_applogger:
                 InAppAnalytics.add(mContext, Constants.LINK_APPLOGGER);

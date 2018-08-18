@@ -1,5 +1,6 @@
 package io.smalldata.beehiveapp.notification;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,10 +48,11 @@ public class NotifEventReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (mContext==null) throw new AssertionError("NotifEventReceiver Error: mContext cannot be null");
+        if (mContext == null)
+            throw new AssertionError("NotifEventReceiver Error: mContext cannot be null");
 
         boolean wasDismissed = bundle.getBoolean("was_dismissed");
-        if (wasDismissed) {
+        if (wasDismissed && Constants.IS_DEBUG_MODE) {
             Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
         } else {
             if (method.equals(Constants.TYPE_PUSH_NOTIFICATION)) {
@@ -62,10 +64,9 @@ public class NotifEventReceiver extends BroadcastReceiver {
                 Intent intentAppInfo = new Intent(mContext, AppInfo.class);
                 intentAppInfo.putExtra(Constants.RS_TYPE, method);
                 intentAppInfo.putExtra(Constants.ALARM_PROTOCOL_NOTIF_DETAILS, bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS));
-                intentAppInfo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intentAppInfo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mContext.startActivity(intentAppInfo);
-
-                Toast.makeText(mContext, "Launching survey...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Opening survey...", Toast.LENGTH_SHORT).show();
             }
         }
 

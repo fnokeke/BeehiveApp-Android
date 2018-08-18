@@ -10,6 +10,8 @@ import org.researchstack.backbone.task.Task;
 import org.researchstack.backbone.ui.PinCodeActivity;
 import org.researchstack.backbone.ui.ViewTaskActivity;
 
+import io.smalldata.beehiveapp.onboarding.Constants;
+
 /**
  * Created by jameskizer on 4/21/17.
  */
@@ -93,7 +95,8 @@ public class RSActivity extends PinCodeActivity implements RSActivityManagerDele
                 assert (activityRun != null);
                 TaskResult taskResult = (TaskResult) data.getSerializableExtra(ViewTaskActivity.EXTRA_TASK_RESULT);
                 RSActivityManager.get().completeActivity(this, taskResult, activityRun);
-
+                finish();
+                Toast.makeText(this, "Response recorded.", Toast.LENGTH_SHORT).show();
 
             } else {
 

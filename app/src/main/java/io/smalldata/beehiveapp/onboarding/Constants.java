@@ -9,6 +9,7 @@ import android.os.Environment;
 
 public class Constants {
     public static boolean IS_DEBUG_MODE = false;
+//    public static boolean IS_DEBUG_MODE = true;
 
     public final static String ALARM_NOTIF_TITLE = "title";
     public final static String ALARM_NOTIF_CONTENT = "content";
@@ -73,6 +74,7 @@ public class Constants {
     static final java.lang.String VALUE_OF_CHANGED_WEEKEND_SLEEP = "value-changed-weekend-sleep";
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKEND = "value-changed-user-window-weekend";
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKDAY = "value-changed-user-window-weekday";
+    public static final String TYPE_FINISH_ACTIVITY = "finish_activity";
     public static final String TYPE_PAM = "pam";
     public static final String TYPE_PUSH_SURVEY = "push_survey";
     public static final String TYPE_PUSH_ONE_TIME_SURVEY = "push_one_time_survey";

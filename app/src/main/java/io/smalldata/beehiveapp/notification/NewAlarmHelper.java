@@ -29,7 +29,7 @@ public class NewAlarmHelper {
 
     public static void showInstantNotif(Context context, String title, String message, String appIdToLaunch, Integer NOTIF_ID) {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-        mBuilder.setSmallIcon(R.drawable.info_tip)
+        mBuilder.setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setAutoCancel(true)
                 .setContentTitle(title)
                 .setSound(getDefaultSound())
@@ -97,16 +97,20 @@ public class NewAlarmHelper {
 
         switch (notif.optString("method")) {
             case Constants.TYPE_PAM:
-                builder.setSmallIcon(R.drawable.end_of_day_reminder);
+                builder.setSmallIcon(R.drawable.emotion);
                 break;
 
             case Constants.TYPE_PUSH_SURVEY:
             case Constants.TYPE_PUSH_ONE_TIME_SURVEY:
-                builder.setSmallIcon(android.R.drawable.ic_dialog_email);
+                builder.setSmallIcon(R.drawable.survey);
                 break;
 
             default:
-                builder.setSmallIcon(R.drawable.mindfulness);
+                if (notif.optString("appIdToLaunch").equals("com.getsomeheadspace.android")) {
+                    builder.setSmallIcon(R.drawable.mindfulness);
+                } else {
+                    builder.setSmallIcon(R.drawable.push_notif);
+                }
         }
 
         return builder.build();
