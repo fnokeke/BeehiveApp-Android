@@ -231,9 +231,10 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 7/7/18 remove debug
-//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis() + new Random().nextInt(180000) + 60000); // FIXME: 7/7/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
+        if (Constants.IS_DEBUG_MODE) {
+            JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis());
+        }
 
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
@@ -345,23 +346,23 @@ public class Profile {
         return Store.getString(context, Constants.KEY_LAST_SAVED_DATE);
     }
 
-    private void saveToAppInfoNotifAppliedToday(JSONObject notif) {
-        String allNotif = getAllAppliedNotifForToday();
-        String infoFromNewNotif = String.format("%s (%s)", notif.optString("title"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-        allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
-        Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
-    }
-
     private void saveToAppInfoNotifAppliedToday(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
-        String allNotif = getAllAppliedNotifForToday();
         String infoFromNewNotif = "missed :/";
-        if (!probableHalfNotify && coinSuccess) {
-            infoFromNewNotif = String.format("%s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-        } else if (probableHalfNotify && coinSuccess) {
-            infoFromNewNotif = String.format("success - %s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
-        } else if (probableHalfNotify && !coinSuccess) {
-            infoFromNewNotif = String.format("fail - %s (%s)", notif.optString("content"), DateHelper.millisToDateFormat(notif.optLong("alarmMillis")));
+        String timeStr = DateHelper.millisToDateFormat(notif.optLong("alarmMillis"));
+        String txt = notif.optString("title");
+        if (notif.optString("method").equals("push_notification")) {
+            txt = notif.optString("content");
         }
+
+        if (!probableHalfNotify && coinSuccess) {
+            infoFromNewNotif = String.format("%s (%s)", txt, timeStr);
+        } else if (probableHalfNotify && coinSuccess) {
+            infoFromNewNotif = String.format("success - %s (%s)", txt, timeStr);
+        } else if (probableHalfNotify && !coinSuccess) {
+            infoFromNewNotif = String.format("fail - %s (%s)", txt, timeStr);
+        }
+
+        String allNotif = getAllAppliedNotifForToday();
         allNotif = String.format("%s; %s\n", allNotif, infoFromNewNotif);
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
     }
@@ -370,7 +371,7 @@ public class Profile {
         return Store.getString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED);
     }
 
-    void clearExistingAppInfoNotifText() {
+    public void clearAppliedNotifList() {
         Store.setString(mContext, Constants.KEY_TODAY_NOTIF_APPLIED, "");
     }
 

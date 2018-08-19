@@ -20,6 +20,16 @@
         />
 
     <item
+        android:id="@+id/clear_intv_list"
+        android:title="Clear List"
+        />
+
+    <item
+        android:id="@+id/apply_intv_now"
+        android:title="Apply Now"
+        />
+
+    <item
         android:id="@+id/action_about"
         android:title="About App"
         />

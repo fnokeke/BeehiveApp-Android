@@ -69,15 +69,6 @@ public class AppInfo extends RSActivity {
                 RSActivityManager.get().queueActivity(mContext, mProfile.generateJSONSurveyString(surveyJsonStr));
             }
             getIntent().removeExtra(Constants.RS_TYPE);
-
-            if (Constants.IS_DEBUG_MODE) {
-                Toast.makeText(mContext, "bundle is good.", Toast.LENGTH_SHORT).show();
-            }
-
-        } else {
-            if (Constants.IS_DEBUG_MODE) {
-                Toast.makeText(mContext, "bundle is null.", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -115,6 +106,12 @@ public class AppInfo extends RSActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.appinfo, menu);
+
+        if (!Constants.IS_DEBUG_MODE) {
+            menu.findItem(R.id.clear_intv_list).setVisible(false);
+            menu.findItem(R.id.apply_intv_now).setVisible(false);
+        }
+
         return true;
     }
 
@@ -129,6 +126,18 @@ public class AppInfo extends RSActivity {
             case R.id.link_applogger:
                 InAppAnalytics.add(mContext, Constants.LINK_APPLOGGER);
                 mCheckActiveStream.connectToAppLogger();
+                break;
+
+            case R.id.clear_intv_list:
+                mProfile.clearAppliedNotifList();
+                TextView tvIntv = (TextView) findViewById(R.id.tv_interventions);
+                tvIntv.setText(mProfile.getAllAppliedNotifForToday());
+                Toast.makeText(mContext, "List cleared.", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.apply_intv_now:
+                mProfile.applyIntvForToday();
+                Toast.makeText(mContext, "Applying intervention...", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.action_about:
