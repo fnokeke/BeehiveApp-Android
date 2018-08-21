@@ -230,7 +230,7 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 8/21/18 remove debug
+//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 8/21/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
         if (coinSuccess) {
