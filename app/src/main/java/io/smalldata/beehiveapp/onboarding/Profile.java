@@ -15,7 +15,6 @@ import java.util.Random;
 
 import io.smalldata.beehiveapp.notification.ExtractAlarmMillis;
 import io.smalldata.beehiveapp.notification.NewAlarmHelper;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.JsonHelper;
 import io.smalldata.beehiveapp.utils.Store;
@@ -231,6 +230,7 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
+        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 8/21/18 remove debug
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
         if (coinSuccess) {
@@ -243,13 +243,13 @@ public class Profile {
     private String[] chooseTitleContentAppId(JSONObject protocol) {
         switch (protocol.optString("method")) {
             case Constants.TYPE_PAM:
-                return new String[]{"New PAM survey.", "Tap here to see.", "pam", "4004"};
+                return new String[]{"New PAM survey.", "Tap here to see.", "pam", generateStrId4Today()};
 
             case Constants.TYPE_PUSH_SURVEY:
-                return new String[]{"You have a new survey.", "Tap here to view.", "push_survey", "5005"};
+                return new String[]{"You have a new survey.", "Tap here to view.", "push_survey", generateStrId4Today()};
 
             case Constants.TYPE_PUSH_ONE_TIME_SURVEY:
-                return new String[]{"You have a new one-time survey.", "Tap here to view.", "one_time", "6006"};
+                return new String[]{"You have a new one-time survey.", "Tap here to view.", "one_time", generateStrId4Today()};
 
             case Constants.TYPE_PUSH_NOTIFICATION:
                 // get title - content
@@ -261,12 +261,53 @@ public class Profile {
                 String[] pairsAppId = notifAppIdsList.split("\n");
                 String chosenAppId = pairsAppId[getRandom(pairsAppId.length)];
 
-                return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId, "6006"};
+                return new String[]{titleContentArr[0], titleContentArr[1], chosenAppId, generateStrId4Today()};
 
             default:
                 throw new UnsupportedOperationException("Protocol type does not exist");
 
         }
+    }
+
+    private String generateStrId4Today() {
+        String todayGenIds = getTodayGenIds();
+        String genNumStr = String.valueOf(DateHelper.getRandomInt(1111, 9999));
+        while (todayGenIds.contains(genNumStr)) {
+            genNumStr = String.valueOf(DateHelper.getRandomInt(1111, 9999));
+        }
+
+        addToTodayGenIds(genNumStr);
+        return genNumStr;
+    }
+
+    private void addToTodayGenIds(String newNumStr) {
+        String existingList = Store.getString(mContext, Constants.TODAY_GEN_IDS);
+        String updatedList;
+        if (existingList.equals("")) {
+            updatedList = newNumStr;
+        } else {
+            updatedList = String.format("%s, %s", existingList, newNumStr);
+        }
+        Store.setString(mContext, Constants.TODAY_GEN_IDS, updatedList);
+        saveTodayAsLastGenDate();
+    }
+
+    private String getTodayGenIds() {
+        String lastGenDate = getLastIdGenDate();
+        String today = DateHelper.getTodayDateStr();
+        if (!lastGenDate.equals(today)) {
+            Store.setString(mContext, Constants.TODAY_GEN_IDS, "");
+        }
+
+        return Store.getString(mContext, Constants.TODAY_GEN_IDS);
+    }
+
+    private String getLastIdGenDate() {
+        return Store.getString(mContext, Constants.LAST_ID_GEN_DATE);
+    }
+
+    private void saveTodayAsLastGenDate() {
+        Store.setString(mContext, Constants.LAST_ID_GEN_DATE, DateHelper.getTodayDateStr());
     }
 
     /**

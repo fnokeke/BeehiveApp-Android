@@ -66,8 +66,8 @@ public class NotifEventReceiver extends BroadcastReceiver {
                 intentAppInfo.putExtra(Constants.ALARM_PROTOCOL_NOTIF_DETAILS, bundle.getString(Constants.ALARM_PROTOCOL_NOTIF_DETAILS));
                 intentAppInfo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mContext.startActivity(intentAppInfo);
-                String suffix = Constants.RS_TYPE.equals("pam") ? "PAM" : "Survey";
-                suffix = "Opening %s..." + suffix;
+                String suffix = method.equals("pam") ? "PAM" : "Survey";
+                suffix = String.format("Opening %s...", suffix);
                 Toast.makeText(mContext, suffix, Toast.LENGTH_SHORT).show();
             }
         }

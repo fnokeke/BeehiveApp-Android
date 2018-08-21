@@ -8,7 +8,7 @@ import android.os.Environment;
  */
 
 public class Constants {
-//    public static boolean IS_DEBUG_MODE = false;
+    //    public static boolean IS_DEBUG_MODE = false;
     public static boolean IS_DEBUG_MODE = true;
 
     public final static String ALARM_NOTIF_TITLE = "title";
@@ -34,6 +34,9 @@ public class Constants {
     final static String KEY_WEEKEND_SLEEP = "keyWeekendSleep";
     static final String KEY_ITEM_POSITION_WEEKDAY = "keyItemPositionWeekday";
     static final String KEY_ITEM_POSITION_WEEKEND = "keyItemPositionWeekend";
+
+    static final String LAST_ID_GEN_DATE = "lastIdGenDate";
+    static final String TODAY_GEN_IDS = "todayGenIds";
 
     final static String KEY_LAST_SAVED_DATE = "keyLastSavedDate";
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";

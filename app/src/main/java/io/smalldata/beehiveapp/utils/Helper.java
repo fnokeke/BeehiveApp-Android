@@ -155,11 +155,6 @@ public class Helper {
         return mainDate.getTime() >= compareDate.getTime();
     }
 
-    public static int getRandomInt(int min, int max) {
-        Random random = new Random();
-        int range = max - min + 1;
-        return random.nextInt(range) + min;
-    }
 
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
