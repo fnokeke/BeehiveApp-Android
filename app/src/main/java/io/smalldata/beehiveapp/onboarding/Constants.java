@@ -8,8 +8,8 @@ import android.os.Environment;
  */
 
 public class Constants {
-    public static boolean IS_DEBUG_MODE = false;
-//    public static boolean IS_DEBUG_MODE = true;
+//    public static boolean IS_DEBUG_MODE = false;
+    public static boolean IS_DEBUG_MODE = true;
 
     public final static String ALARM_NOTIF_TITLE = "title";
     public final static String ALARM_NOTIF_CONTENT = "content";

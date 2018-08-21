@@ -232,9 +232,6 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
-        if (Constants.IS_DEBUG_MODE) {
-            JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis());
-        }
 
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
