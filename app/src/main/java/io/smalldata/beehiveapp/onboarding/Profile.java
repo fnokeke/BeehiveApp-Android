@@ -205,18 +205,23 @@ public class Profile {
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    public void applyIntvForToday() {
+    void applyIntvForToday() {
+        applyIntvForToday(false);
+    }
+
+    public void applyIntvForToday(boolean shdApplyInstantly) {
         JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
             if (coversToday(p)) {
                 boolean coinSuccess = canContinueAfterCoinFlip(p);
-                extractThenScheduleNotif(p, coinSuccess);
+                extractThenScheduleNotif(p, coinSuccess, shdApplyInstantly);
             }
         }
     }
 
-    private void extractThenScheduleNotif(JSONObject protocol, boolean coinSuccess) {
+
+    private void extractThenScheduleNotif(JSONObject protocol, boolean coinSuccess, boolean shdApplyInstantly) {
         // There could be multiple notifications available (one per line) so randomly select one to show
         // There could be multiple app ids so randomly select one to launch
         // By default this selects notification 'content' without replacement
@@ -230,7 +235,9 @@ public class Profile {
         JsonHelper.setJSONValue(notif, "appIdToLaunch", chosen[2]);
         JsonHelper.setJSONValue(notif, "notifId", chosen[3]);
         JsonHelper.setJSONValue(notif, "alarmMillis", getAlarmMillis(protocol));
-//        JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis()); // FIXME: 8/21/18 remove debug
+        if (shdApplyInstantly) { // usually for debug purposes
+            JsonHelper.setJSONValue(notif, "alarmMillis", System.currentTimeMillis());
+        }
         JsonHelper.setJSONValue(notif, Constants.NOTIF_TYPE, protocol.optString("notif_type"));
 
         if (coinSuccess) {
@@ -725,12 +732,10 @@ public class Profile {
         JSONObject studyConfig = this.getStudyConfig();
         JSONArray protocols = JsonHelper.strToJsonArray(studyConfig.optString("protocols"));
         JSONArray nonOneTimeProtocols = new JSONArray();
-        int count = 0;
         for (int i = 0; i < protocols.length(); i++) {
             JSONObject p = protocols.optJSONObject(i);
             if (p.optString("notif_type").equals("one_time")) {
-                extractThenScheduleNotif(p, true);
-                count += 1;
+                extractThenScheduleNotif(p, true, false);
             } else {
                 nonOneTimeProtocols.put(p);
             }

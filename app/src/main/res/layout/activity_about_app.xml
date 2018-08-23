@@ -49,7 +49,7 @@
         app:layout_constraintGuide_percent="0.9557292" />
 
     <TextView
-        android:id="@+id/textView20"
+        android:id="@+id/tv_as_participant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -68,7 +68,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline10"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline9"
-        app:layout_constraintTop_toBottomOf="@+id/textView20" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_as_participant" />
 
     <TextView
         android:id="@+id/textView22"

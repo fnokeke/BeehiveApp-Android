@@ -136,7 +136,7 @@ public class AppInfo extends RSActivity {
                 break;
 
             case R.id.apply_intv_now:
-                mProfile.applyIntvForToday();
+                mProfile.applyIntvForToday(true);
                 Toast.makeText(mContext, "Applying intervention...", Toast.LENGTH_SHORT).show();
                 break;
 
