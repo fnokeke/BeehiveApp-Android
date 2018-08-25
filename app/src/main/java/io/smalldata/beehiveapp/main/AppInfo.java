@@ -2,10 +2,8 @@ package io.smalldata.beehiveapp.main;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +18,7 @@ import android.widget.Toast;
 
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
+import io.smalldata.beehiveapp.notification.DailyTaskReceiver;
 import io.smalldata.beehiveapp.onboarding.AboutApp;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
@@ -27,13 +26,15 @@ import io.smalldata.beehiveapp.onboarding.Step0AWelcomeStudyCode;
 import io.smalldata.beehiveapp.onboarding.Step1SleepWakeTime;
 import io.smalldata.beehiveapp.studyManagement.RSActivity;
 import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
-import io.smalldata.beehiveapp.utils.ConnectBeehive;
+import io.smalldata.beehiveapp.utils.Store;
 
 public class AppInfo extends RSActivity {
 
     private Profile mProfile;
     private Context mContext;
     CheckActiveStream mCheckActiveStream;
+    TextView tvIntv;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +48,24 @@ public class AppInfo extends RSActivity {
 
     @Override
     public void onResume() {
-        AppInfo.requestStoragePermission(this);
-        setAppInfo();
         super.onResume();
+        setAppInfo();
+        confirmSetUp();
+        handleRSTask();
+    }
+
+    private void confirmSetUp() {
+        AppInfo.requestStoragePermission(this);
         if (mProfile.userCompletedAllSteps()) {
             InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_APPINFO);
         }
         mCheckActiveStream.confirmMonitorAppSetUp();
         mCheckActiveStream.confirmMeditationAppSetUp();
-        handleRSTask();
+        DailyTaskReceiver.startDaily3amTask(mContext);
+    }
+
+    public static Boolean isDebugMode(Context context) {
+        return Store.getBoolean(context, Constants.KEY_IS_DEBUG_MODE);
     }
 
     private void handleRSTask() {
@@ -79,14 +89,9 @@ public class AppInfo extends RSActivity {
         TextView tvStudyDates = (TextView) findViewById(R.id.tv_study_dates);
         tvStudyDates.setText(mProfile.getStudyDates());
 
-        TextView tvIntv = (TextView) findViewById(R.id.tv_interventions);
+        tvIntv = (TextView) findViewById(R.id.tv_interventions);
         tvIntv.setText(mProfile.getAllAppliedNotifForToday());
         tvIntv.setMovementMethod(new ScrollingMovementMethod());
-        if (!Constants.IS_DEBUG_MODE) {
-            tvIntv.setVisibility(View.GONE);
-            TextView tvTitle = (TextView) findViewById(R.id.tv_intv_section_title);
-            tvTitle.setVisibility(View.GONE);
-        }
 
         TextView tvParticipantSince = (TextView) findViewById(R.id.tv_participant_since);
         tvParticipantSince.setText(mProfile.getFirstDayOfStudy());
@@ -106,14 +111,26 @@ public class AppInfo extends RSActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.appinfo, menu);
-
-        if (!Constants.IS_DEBUG_MODE) {
-            menu.findItem(R.id.clear_intv_list).setVisible(false);
-            menu.findItem(R.id.apply_intv_now).setVisible(false);
-        }
-
+        updateDebugMenuMode(menu);
         return true;
     }
+
+    private void updateDebugMenuMode(Menu menu) {
+        TextView tvTitle = (TextView) findViewById(R.id.tv_intv_section_title);
+        if (AppInfo.isDebugMode(mContext)) {
+            menu.findItem(R.id.clear_intv_list).setVisible(true);
+            menu.findItem(R.id.apply_intv_now).setVisible(true);
+            tvIntv.setVisibility(View.VISIBLE);
+            tvTitle.setVisibility(View.VISIBLE);
+        } else {
+            menu.findItem(R.id.clear_intv_list).setVisible(false);
+            menu.findItem(R.id.apply_intv_now).setVisible(false);
+            tvIntv.setVisibility(View.GONE);
+            tvTitle.setVisibility(View.GONE);
+        }
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

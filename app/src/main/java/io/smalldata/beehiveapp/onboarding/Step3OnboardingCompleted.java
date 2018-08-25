@@ -13,9 +13,8 @@ import java.util.Locale;
 import io.smalldata.beehiveapp.R;
 import io.smalldata.beehiveapp.fcm.InAppAnalytics;
 import io.smalldata.beehiveapp.main.AppInfo;
-import io.smalldata.beehiveapp.fcm.ServerPeriodicUpdateReceiver;
-import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
+import io.smalldata.beehiveapp.utils.Store;
 
 public class Step3OnboardingCompleted extends AppCompatActivity {
     private Context mContext;
@@ -40,17 +39,23 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mProfile.indicateUserCompletedSteps();
                 InAppAnalytics.add(mContext, Constants.CLICKED_CONGRATS_FINISH_BUTTON);
+                mProfile.indicateUserCompletedSteps();
 
-                if (!alreadyAppliedTodayIntv(mContext)) {
-                    TriggerIntervention.startDaily3amTask(mContext, true);
+                if (!alreadyScheduledTodayIntv()) {
+                    resetLastSavedIntvDate();
                 }
+
                 startActivity(new Intent(mContext, AppInfo.class));
             }
         });
 
     }
+
+    private void resetLastSavedIntvDate() {
+        Store.setString(mContext, Constants.KEY_LAST_SAVED_DATE, "");
+    }
+
 
     @Override
     protected void onResume() {
@@ -58,7 +63,7 @@ public class Step3OnboardingCompleted extends AppCompatActivity {
         InAppAnalytics.add(mContext, Constants.VIEWED_SCREEN_CONGRATS);
     }
 
-    public static boolean alreadyAppliedTodayIntv(Context context) {
-        return DateHelper.getTodayDateStr().equals(Profile.getLastAppliedIntvDate(context));
+    public boolean alreadyScheduledTodayIntv() {
+        return DateHelper.getTodayDateStr().equals(Profile.getLastScheduledIntvDate(mContext));
     }
 }

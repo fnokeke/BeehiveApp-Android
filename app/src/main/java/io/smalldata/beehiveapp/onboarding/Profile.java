@@ -154,7 +154,7 @@ public class Profile {
         return duration;
     }
 
-    boolean hasIntvForToday() {
+    public boolean hasIntvForToday() {
         boolean exists = false;
         JSONArray protocols = JsonHelper.strToJsonArray(this.getStudyConfig().optString("protocols"));
         for (int i = 0; i < protocols.length(); i++) {
@@ -205,7 +205,7 @@ public class Profile {
         return rightNow >= startDate.getTime() && rightNow <= endDate.getTime();
     }
 
-    void applyIntvForToday() {
+    public void applyIntvForToday() {
         applyIntvForToday(false);
     }
 
@@ -243,8 +243,8 @@ public class Profile {
         if (coinSuccess) {
             NewAlarmHelper.scheduleIntvReminder(mContext, notif);
         }
-        markTodayAsIntvApplied();
-        saveToAppInfoNotifAppliedToday(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
+        markTodayAsIntvScheduled();
+        saveToScheduledList(notif, protocol.optBoolean("probable_half_notify"), coinSuccess);
     }
 
     private String[] chooseTitleContentAppId(JSONObject protocol) {
@@ -383,15 +383,15 @@ public class Profile {
         return new Random().nextInt(limit);
     }
 
-    private void markTodayAsIntvApplied() {
+    private void markTodayAsIntvScheduled() {
         Store.setString(mContext, Constants.KEY_LAST_SAVED_DATE, DateHelper.getTodayDateStr());
     }
 
-    public static String getLastAppliedIntvDate(Context context) {
+    public static String getLastScheduledIntvDate(Context context) {
         return Store.getString(context, Constants.KEY_LAST_SAVED_DATE);
     }
 
-    private void saveToAppInfoNotifAppliedToday(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
+    private void saveToScheduledList(JSONObject notif, boolean probableHalfNotify, boolean coinSuccess) {
         String infoFromNewNotif = "missed :/";
         String timeStr = DateHelper.millisToDateFormat(notif.optLong("alarmMillis"));
         String txt = notif.optString("title");

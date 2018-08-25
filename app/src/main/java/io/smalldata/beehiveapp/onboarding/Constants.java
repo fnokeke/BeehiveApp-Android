@@ -8,8 +8,8 @@ import android.os.Environment;
  */
 
 public class Constants {
-//        public static boolean IS_DEBUG_MODE = false;
-    public static boolean IS_DEBUG_MODE = true;
+    public static String KEY_IS_DEBUG_MODE = "keyIsDebugMode";
+    static final String DOUBLE_TAP_COUNT = "doubleTapCount";
 
     public final static String ALARM_NOTIF_TITLE = "title";
     public final static String ALARM_NOTIF_CONTENT = "content";
@@ -41,7 +41,7 @@ public class Constants {
     final static String KEY_LAST_SAVED_DATE = "keyLastSavedDate";
     final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
 
-    static final int DAILY_TASK_ALARM_ID = 9991;
+    public static final int DAILY_TASK_ALARM_ID = 9991;
     static final String EMA_RESPONSE = "emaResponse";
     static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
     static final String KEY_USER_COMPLETED_STEPS = "keyUserCompletedSteps";
@@ -72,7 +72,7 @@ public class Constants {
     static final String CHANGED_WEEKEND_SLEEP = "changed-weekend-sleeptime";
 
     static final java.lang.String VALUE_OF_CHANGED_WEEKDAY_WAKE = "value-changed-weekday-wake";
-    static final java.lang.String VALUE_OF_CHANGED_WEEKEND_WAKE = "value-changed-weekend-wake" ;
+    static final java.lang.String VALUE_OF_CHANGED_WEEKEND_WAKE = "value-changed-weekend-wake";
     static final java.lang.String VALUE_OF_CHANGED_WEEKDAY_SLEEP = "value-changed-weekday-sleep";
     static final java.lang.String VALUE_OF_CHANGED_WEEKEND_SLEEP = "value-changed-weekend-sleep";
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKEND = "value-changed-user-window-weekend";

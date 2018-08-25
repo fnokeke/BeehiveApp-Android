@@ -1,6 +1,5 @@
 package io.smalldata.beehiveapp.notification;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +12,6 @@ import io.smalldata.beehiveapp.fcm.LocalStorage;
 import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
-import io.smalldata.beehiveapp.studyManagement.RSActivityManager;
 import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
 import io.smalldata.beehiveapp.utils.DeviceInfo;
@@ -52,9 +50,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
             throw new AssertionError("NotifEventReceiver Error: mContext cannot be null");
 
         boolean wasDismissed = bundle.getBoolean("was_dismissed");
-        if (wasDismissed && Constants.IS_DEBUG_MODE) {
-            Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
-        } else {
+        if (!wasDismissed) {
             if (method.equals(Constants.TYPE_PUSH_NOTIFICATION)) {
                 mContext.startActivity(new Intent(mContext, AppInfo.class));
                 String appIdToLaunch = bundle.getString(AlarmHelper.ALARM_APP_ID);
@@ -70,6 +66,10 @@ public class NotifEventReceiver extends BroadcastReceiver {
                 suffix = String.format("Opening %s...", suffix);
                 Toast.makeText(mContext, suffix, Toast.LENGTH_SHORT).show();
             }
+        }
+
+        if (wasDismissed && AppInfo.isDebugMode(mContext)) {
+            Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
         }
 
     }

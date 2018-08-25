@@ -23,7 +23,7 @@ public class ExtractAlarmMillis {
     public static long getFixedMillis(JSONObject protocol) {
         String[] timeArr = protocol.optString("notif_time").split(":");
         Calendar cal = getTodayCalendarTime(Integer.parseInt(timeArr[0]), Integer.parseInt(timeArr[1]));
-        return cal.getTimeInMillis();
+        return extendToNextDayIfBehindNow(cal.getTimeInMillis());
     }
 
     /**

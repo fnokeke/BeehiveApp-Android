@@ -10,10 +10,6 @@
         android:title="Set Time"
         />
 
-    <!--<item-->
-        <!--android:id="@+id/action_update"-->
-        <!--android:title="Update Study"-->
-        <!--/>-->
     <item
         android:id="@+id/link_applogger"
         android:title="Link AppLogger"
@@ -21,11 +17,13 @@
 
     <item
         android:id="@+id/clear_intv_list"
+        android:visible="false"
         android:title="Clear List"
         />
 
     <item
         android:id="@+id/apply_intv_now"
+        android:visible="false"
         android:title="Apply Now"
         />
 
