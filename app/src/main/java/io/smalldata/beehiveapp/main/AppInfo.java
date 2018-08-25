@@ -38,10 +38,11 @@ public class AppInfo extends RSActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mContext = this;
         mProfile = new Profile(mContext);
         mCheckActiveStream = new CheckActiveStream(mContext);
-        super.onCreate(savedInstanceState);
+        DailyTaskReceiver.startDaily3amTask(mContext);
         setContentView(R.layout.activity_app_info);
         setTitle("Ongoing Study");
     }
@@ -61,7 +62,6 @@ public class AppInfo extends RSActivity {
         }
         mCheckActiveStream.confirmMonitorAppSetUp();
         mCheckActiveStream.confirmMeditationAppSetUp();
-        DailyTaskReceiver.startDaily3amTask(mContext);
     }
 
     public static Boolean isDebugMode(Context context) {

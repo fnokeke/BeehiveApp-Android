@@ -1,9 +1,9 @@
 package io.smalldata.beehiveapp.onboarding;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Toast;
@@ -48,7 +48,7 @@ public class AboutApp extends AppCompatActivity implements GestureDetector.OnGes
     @Override
     public boolean onDoubleTap(MotionEvent e) {
         int count = Store.getInt(this, Constants.DOUBLE_TAP_COUNT);
-        if (count % 5 == 0) {
+        if (count % 7 == 0) {
             boolean debugMode = AppInfo.isDebugMode(mContext);
             debugMode = !debugMode;
             String msg = debugMode ? "Debug mode activated." : "Debug mode deactivated.";

@@ -9,13 +9,14 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import io.smalldata.beehiveapp.main.AppInfo;
 import io.smalldata.beehiveapp.onboarding.Constants;
 import io.smalldata.beehiveapp.onboarding.Profile;
+import io.smalldata.beehiveapp.utils.AlarmHelper;
 import io.smalldata.beehiveapp.utils.DateHelper;
+import io.smalldata.beehiveapp.utils.Store;
 
 public class DailyTaskReceiver extends BroadcastReceiver {
-    private Context mContext;
-    private Profile mProfile;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -39,28 +40,25 @@ public class DailyTaskReceiver extends BroadcastReceiver {
         if (am != null) {
             am.setRepeating(AlarmManager.RTC_WAKEUP, calTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
         }
-    }
 
+    }
 
     public void startIntvForToday(Context context) {
-        mContext = context;
-        mProfile = new Profile(mContext);
-        if (isNewDay() && mProfile.hasIntvForToday()) {
-            if (todayIsFirstDayOfStudy()) {
-                Toast.makeText(mContext, "Expect your first reminder tomorrow.", Toast.LENGTH_SHORT).show();
-            } else {
-                mProfile.applyIntvForToday();
-            }
+        Profile mProfile = new Profile(context);
+        if (isNewDay(context) && mProfile.hasIntvForToday()) {
+            mProfile.applyIntvForToday();
         }
-
+        logAlarmDetails(context, mProfile.hasIntvForToday(), mProfile.getAllAppliedNotifForToday());
     }
 
-    private boolean todayIsFirstDayOfStudy() {
-        return mProfile.getFirstDayOfStudy().equals(DateHelper.getTodayDateStr());
+    private void logAlarmDetails(Context context, boolean hasIntv, String allNotif) {
+        String infoFromNewNotif = String.format("hasIntv = %s (%s)", hasIntv, DateHelper.getFormattedTimestamp());
+        allNotif = String.format("%s; %s\n\n", allNotif, infoFromNewNotif);
+        Store.setString(context, Constants.KEY_TODAY_NOTIF_APPLIED, allNotif);
     }
 
-    private boolean isNewDay() {
-        String lastSavedDate = Profile.getLastScheduledIntvDate(mContext);
+    private boolean isNewDay(Context context) {
+        String lastSavedDate = Profile.getLastScheduledIntvDate(context);
         String todayDate = DateHelper.getTodayDateStr();
         return !lastSavedDate.equals(todayDate);
     }

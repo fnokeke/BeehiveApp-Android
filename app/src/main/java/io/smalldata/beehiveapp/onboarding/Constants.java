@@ -39,7 +39,7 @@ public class Constants {
     static final String TODAY_GEN_IDS = "todayGenIds";
 
     final static String KEY_LAST_SAVED_DATE = "keyLastSavedDate";
-    final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
+    public final static String KEY_TODAY_NOTIF_APPLIED = "keyTodayNotifApplied";
 
     public static final int DAILY_TASK_ALARM_ID = 9991;
     static final String EMA_RESPONSE = "emaResponse";
@@ -77,7 +77,6 @@ public class Constants {
     static final java.lang.String VALUE_OF_CHANGED_WEEKEND_SLEEP = "value-changed-weekend-sleep";
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKEND = "value-changed-user-window-weekend";
     static final java.lang.String VALUE_OF_CHANGED_USER_WINDOW_WEEKDAY = "value-changed-user-window-weekday";
-    public static final String TYPE_FINISH_ACTIVITY = "finish_activity";
     public static final String TYPE_PAM = "pam";
     public static final String TYPE_PUSH_SURVEY = "push_survey";
     public static final String TYPE_PUSH_ONE_TIME_SURVEY = "push_one_time_survey";
@@ -87,8 +86,7 @@ public class Constants {
     static final String ALARM_ID = "alarmId";
     public static final String RS_TYPE = "rs_type";
     public static final String NOTIF_CONTENTS_SHOWED = "notifContentsShowed";
-    public static final String LAST_DATE_PAM_SEEN = "lastDatePamSeen";
-    public static final String LAST_DATE_SURVEY_SEEN = "lastDateSurveySeen";
+    public static String HAS_SEEN_FIRST_PROMPT = "hasSeenFirstPrompt";
 
 
 //    final static String NOTIF_TYPE_USER_WINDOW = "user_window";
