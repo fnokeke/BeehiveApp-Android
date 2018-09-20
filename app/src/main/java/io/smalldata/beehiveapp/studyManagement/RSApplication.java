@@ -68,7 +68,7 @@ public class RSApplication extends Application {
 //                getString(R.string.ohmage_queue_directory)
 //        );
 
-        String testDirectory = Constants.BEEHIVE_DIR;
+        String testDirectory = Constants.RSUITE_SURVEY_DIR;
         URI directoryURI = null;
         try {
             directoryURI = new URI(testDirectory);

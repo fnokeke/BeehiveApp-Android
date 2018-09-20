@@ -38,7 +38,6 @@ public class NotifEventReceiver extends BroadcastReceiver {
             AlarmHelper.showInstantNotif(mContext, "Error: handleBundle is null.", DateHelper.getFormattedTimestamp(), "", 2025);
             return;
         }
-        saveNotifToLocalStorage(bundle);
 
         String method = bundle.getString(Constants.ALARM_PROTOCOL_METHOD);
         if (method == null) {
@@ -72,6 +71,7 @@ public class NotifEventReceiver extends BroadcastReceiver {
             Toast.makeText(mContext, method + " was dismissed.", Toast.LENGTH_SHORT).show();
         }
 
+        saveNotifToLocalStorage(bundle);
     }
 
     private void saveNotifToLocalStorage(Bundle bundle) {

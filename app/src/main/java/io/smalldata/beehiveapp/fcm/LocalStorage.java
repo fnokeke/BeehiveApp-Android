@@ -28,25 +28,32 @@ public class LocalStorage {
     private static final String TAG = "LocalStorage";
 
     public static void initAllStorageFiles(Context context) {
-        createBeehiveDirectory();
+        ensureBeehiveDirExists();
         LocalStorage.resetFile(context, Constants.NOTIF_EVENT_LOGS_CSV);
         LocalStorage.resetFile(context, Constants.ANALYTICS_LOG_CSV);
     }
 
-    private static void createBeehiveDirectory() {
-        File dir = new File(Environment.getExternalStorageDirectory() + Constants.BEEHIVE_DIR);
+    private static void ensureBeehiveDirExists() {
+        createNonExistingDir(Constants.FULL_RSUITE_SURVEY_DIR);
+        createNonExistingDir(Constants.FULL_OTHER_DIR);
+    }
+
+    private static void createNonExistingDir(String dirName) {
+        File dir = new File(dirName);
         if (!dir.exists() || !dir.isDirectory()) {
-            boolean status = dir.mkdir();
-            Log.d(TAG, "createBeehiveDirectory() = " + status);
+            boolean status = dir.mkdirs();
+            Log.d(TAG, "ensureBeehiveDirExists() = " + status);
         }
     }
 
     public static void appendToFile(Context context, String filename, String data) {
+        makeSureFileExists(context, filename);
+
         try {
             FileOutputStream fileOutputStream;
             if (filename.contains("/")) { // in external storage
                 File file = new File(filename);
-                fileOutputStream = new FileOutputStream(file);
+                fileOutputStream = new FileOutputStream(file, true);
             } else {
                 fileOutputStream = context.openFileOutput(filename, Context.MODE_APPEND);
             }
@@ -60,10 +67,8 @@ public class LocalStorage {
     }
 
     static String readFromFile(Context context, String filename) {
+        makeSureFileExists(context, filename);
 
-        if (!new File(filename).exists()) return "";
-
-//        makeSureFileExists(filename);
         String result = "";
         InputStream inputStream;
         try {
@@ -96,20 +101,25 @@ public class LocalStorage {
         return result;
     }
 
-//    private static void makeSureFileExists(String filename) {
-//        File file = new File(filename);
-//        try {
-//            if (!file.exists()) {
-//                boolean status = file.createNewFile();
-//                Log.i(TAG, "Created new file: " + filename + " / " + status);
-//            } else {
-//                Log.i(TAG, "Already exists: " + filename);
-//            }
-//        } catch (IOException e) {
-//            Log.e(TAG, "makeSureFileExists()", e);
-//            e.printStackTrace();
-//        }
-//    }
+    private static void makeSureFileExists(Context context, String filename) {
+//        ensureBeehiveDirExists();
+        File file = new File(filename);
+        boolean dirStatus = file.getParentFile().mkdirs();
+        Log.i(TAG, "Created file parents: " + dirStatus);
+
+        try {
+            if (!file.exists()) {
+                boolean status = file.createNewFile();
+                Log.i(TAG, "Created new file: " + filename + " / " + status);
+            } else {
+                Log.i(TAG, "Already exists: " + filename);
+            }
+        } catch (IOException e) {
+            AlarmHelper.showInstantNotif(context, "makeSureFileExists error", e.toString(), "", 5213);
+            Log.e(TAG, "makeSureFileExists()", e);
+            e.printStackTrace();
+        }
+    }
 
     public static void resetFile(Context context, String filename) {
         try {
@@ -119,7 +129,7 @@ public class LocalStorage {
             String headerBackup = "";
 
             // delete everything except header
-            if (filename.contains(Constants.BEEHIVE_DIR)) {
+            if (filename.contains(Constants.RSUITE_SURVEY_DIR)) {
                 headerBackup = readFromFile(context, filename);
                 String[] rows = headerBackup.split("\n");
                 if (rows.length > 0) {

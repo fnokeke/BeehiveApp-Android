@@ -46,12 +46,14 @@ public class Constants {
     static final String KEY_FIRST_DAY_OF_STUDY = "isFirstDayOfStudy";
     static final String KEY_USER_COMPLETED_STEPS = "keyUserCompletedSteps";
 
-    public static final String NOTIF_EVENT_LOGS_CSV = "notifLogs.csv";
-    public static final String ANALYTICS_LOG_CSV = "analytics.csv";
-    public static final String BEEHIVE_DIR = "/beehive/";
     public static final String LINK_APPLOGGER = "connectAppLogger";
-    public static String FULL_BEEHIVE_DIR = Environment.getExternalStorageDirectory().getPath() + BEEHIVE_DIR;
-    public static final String PAM_LOGS_CSV = FULL_BEEHIVE_DIR + "pam.csv";
+    public static String RSUITE_SURVEY_DIR = "/beehive/survey/";
+    public static String FULL_RSUITE_SURVEY_DIR = Environment.getExternalStorageDirectory().getPath() +  RSUITE_SURVEY_DIR;
+    public static final String PAM_LOGS_CSV = FULL_RSUITE_SURVEY_DIR + "pam.csv";
+
+    public static final String FULL_OTHER_DIR = Environment.getExternalStorageDirectory().getPath() + "/beehive/other/";
+    public static final String NOTIF_EVENT_LOGS_CSV = FULL_OTHER_DIR + "notifLogs.csv";
+    public static final String ANALYTICS_LOG_CSV = FULL_OTHER_DIR + "analytics.csv";
 
     static final String VIEWED_SCREEN_USERTIMERS = "viewed-screen-usertimers";
     static final String VIEWED_SCREEN_USERWINDOWS = "viewed-screen-userwindows";

@@ -60,7 +60,7 @@ public class RSRPCSVBackend implements RSRPBackEnd {
     private void createDirectory(URI directory) {
         File dir = new File(Environment.getExternalStorageDirectory() + directory.getPath());
         //            dir.createNewFile();
-        boolean status = dir.mkdir();
+        boolean status = dir.mkdirs();
         Log.d(TAG, "createDirectory():  " + status);
     }
 

@@ -1,6 +1,7 @@
 package io.smalldata.beehiveapp.fcm;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
@@ -54,15 +55,17 @@ public class AppJobService extends JobService {
         CallAPI.registerMobileUser(context, data, getLogResponseHandler(context, null));
     }
 
-    private void sendNotifLogs(Context context) {
+    public static void sendNotifLogs(Context context) {
         String filename = Constants.NOTIF_EVENT_LOGS_CSV;
         JSONObject data = getLocalData(context, filename);
         CallAPI.submitNotifLogs(context, data, getLogResponseHandler(context, filename));
     }
 
     public static void sendAllSurveyLogs(Context context) {
-        File directory = new File(Constants.FULL_BEEHIVE_DIR);
+        File directory = new File(Constants.FULL_RSUITE_SURVEY_DIR);
         File[] files = directory.listFiles();
+        if (files == null) return;
+
         for (File file : files) {
             String filename = file.getPath();
             JSONObject data = getLocalData(context, filename);
@@ -76,10 +79,10 @@ public class AppJobService extends JobService {
         }
     }
 
-    private void sendInAppAnalytics(Context context) {
-        String filename = Constants.ANALYTICS_LOG_CSV;
-        JSONObject data = getLocalData(context, filename);
-        CallAPI.submitAnalytics(context, data, getLogResponseHandler(context, filename));
+    public static void sendInAppAnalytics(Context context) {
+//        String filename = Constants.ANALYTICS_LOG_CSV;
+//        JSONObject data = getLocalData(context, filename);
+//        CallAPI.submitAnalytics(context, data, getLogResponseHandler(context, filename));
     }
 
     private static JSONObject getLocalData(Context context, String filename) {
