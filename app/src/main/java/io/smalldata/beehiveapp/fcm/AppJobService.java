@@ -40,7 +40,7 @@ public class AppJobService extends JobService {
         sendAllLocalData(context);
     }
 
-    private void sendAllLocalData(Context context) {
+    public static void sendAllLocalData(Context context) {
         sendNotifLogs(context);
         sendAllSurveyLogs(context);
         sendInAppAnalytics(context);
