@@ -107,12 +107,14 @@ public class AppJobService extends JobService {
             public void onConnectFailure(VolleyError error) {
                 String msg = "Contact researcher: " + error.toString();
                 Log.e(TAG, filenameToReset + " StatsError: " + msg);
-                // FIXME: 1/24/18 remove debug code
-                AlarmHelper.showInstantNotif(context,
-                        "At " + DateHelper.getFormattedTimestamp() + " sent failed!",
-                        "Error: " + msg,
-                        "",
-                        8961);
+                if (!error.toString().equals("com.android.volley.ServerError")) {
+                    AlarmHelper.showInstantNotif(context,
+                            "At " + DateHelper.getFormattedTimestamp() + " sent failed!",
+                            "Error: " + msg,
+                            "",
+                            8961);
+                }
+
             }
         };
 
