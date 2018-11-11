@@ -48,7 +48,7 @@ public class AboutApp extends AppCompatActivity implements GestureDetector.OnGes
     @Override
     public boolean onDoubleTap(MotionEvent e) {
         int count = Store.getInt(this, Constants.DOUBLE_TAP_COUNT);
-        if (count % 7 == 0) {
+        if (count > 0 && count % 7 == 0) {
             boolean debugMode = AppInfo.isDebugMode(mContext);
             debugMode = !debugMode;
             String msg = debugMode ? "Debug mode activated." : "Debug mode deactivated.";
