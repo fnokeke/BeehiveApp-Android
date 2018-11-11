@@ -51,7 +51,7 @@ public class PAMCSVEncodable extends PAMRaw implements CSVEncodable {
 
     @Override
     public String getHeader() {
-        String[] pamHeader = new String[]{"timestamp","affect_arousal","affect_valence","positive_affect","mood","negative_affect"};
+        String[] pamHeader = new String[]{"timestamp","mood","negative_affect","affect_arousal","positive_affect","affect_valence"};
         String pamHeaderJoined = StringUtils.join(pamHeader,",");
         return pamHeaderJoined;
     }

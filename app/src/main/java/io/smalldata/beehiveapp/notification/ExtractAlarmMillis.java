@@ -64,6 +64,17 @@ public class ExtractAlarmMillis {
         String[] timeArr = hrMin24Clock.split(":");
         int alarmHour = Integer.parseInt(timeArr[0]);
         int alarmMinutes = Integer.parseInt(timeArr[1]);
+
+        // avoid showing notif the last hour before sleep time
+        // for example if one sleeps at 11pm then the last notif should appear latest by 10pm
+        // 00 hours means midnight so should use 11pm/23hr as latest time
+        if (sleepWakeMode.equals("before_sleep")) {
+            alarmHour -= 1;
+            if (alarmHour < 0) {
+                alarmHour = 23;
+            }
+        }
+
         Calendar cal = getTodayCalendarTime(alarmHour, alarmMinutes);
         long alarmMillis = cal.getTimeInMillis();
         int randomMins = getRandomInt(sleepWakeHourDuration * 60);
